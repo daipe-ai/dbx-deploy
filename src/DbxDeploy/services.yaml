@@ -1,0 +1,32 @@
+DbxDeploy.Deployer:
+
+DbxDeploy.Whl.WhlUploader:
+  arguments:
+    - 'dbfs:/FileStore/jars'
+
+DbxDeploy.Dbc.DbcCreator:
+  arguments:
+    - '%databricks.projectRoot%'
+
+DbxDeploy.Dbc.DbcUploader:
+  arguments:
+    - '%databricks.projectRoot%'
+
+DbxDeploy.Dbc.PathsPreparer:
+
+DbxDeploy.Notebook.LibsCellCreator:
+  arguments:
+    - 'dbfs:/FileStore/jars'
+
+DbxDeploy.Notebook.LibsNotebookCreator:
+
+DbxNotebookExporter.Json.JsonNotebookExporter:
+
+databricks_api.DatabricksAPI:
+  import: 'from databricks_api import DatabricksAPI'
+  autowire: False
+  arguments:
+    -
+      user: '%databricks.user%'
+      host: '%databricks.host%'
+      token: '%databricks.token%'
