@@ -24,7 +24,8 @@ class DeployerCommand:
         deployConfigPath = projectBasePath.joinpath(Path('deploy.yaml'))
 
         if deployConfigPath.is_file() is False:
-            raise Exception('Config {} does not exist'.format(deployConfigPath))
+            deployConfigDistPath = projectBasePath.joinpath(Path('deploy.yaml.dist'))
+            raise Exception('Config {} does not exist, create it from {}'.format(deployConfigPath, deployConfigDistPath))
 
         with open(str(deployConfigPath), 'r', encoding='utf-8') as f:
             yamlConfig = yaml.safe_load(f.read())
