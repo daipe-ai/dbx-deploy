@@ -21,12 +21,7 @@ class Deployer:
         print('Building WHL package')
         print('-------------------------')
 
-        spec = importlib.util.spec_from_file_location('build', '{}/setup.py'.format(projectBasePath))
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-
-        setup = module.Setup() # type: SetupInterface
-        packageMetadata = setup.build(projectBasePath)
+        packageMetadata = self.__loadSetup(projectBasePath).build(projectBasePath)
 
         whlFileName = '{}-{}-py3-none-any.whl'.format(packageMetadata.getWhlPackageName(), packageMetadata.version.getWhlVersion())
 
@@ -62,3 +57,10 @@ class Deployer:
         self.__dbcUploader.upload(dbcContent, packageMetadata.version)
 
         print('Done')
+
+    def __loadSetup(self, projectBasePath) -> SetupInterface:
+        spec = importlib.util.spec_from_file_location('build', '{}/setup.py'.format(projectBasePath))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        return module.Setup()
