@@ -47,7 +47,7 @@ class Deployer:
             dbcContent = self.__dbcCreator.create(
                 notebookPaths,
                 projectBasePath,
-                packageMetadata.version,
+                packageMetadata,
                 packagesToInstall
             )
 

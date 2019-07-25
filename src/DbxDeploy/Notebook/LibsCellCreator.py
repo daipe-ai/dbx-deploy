@@ -1,14 +1,14 @@
-from DbxDeploy.Setup.Version.VersionInterface import VersionInterface
+from DbxDeploy.Whl.PackageMetadata import PackageMetadata
 
 class LibsCellCreator:
 
     def __init__(self, dbfsBasePath):
         self.__dbfsBasePath = dbfsBasePath
 
-    def create(self, packagesToInstall: list, version: VersionInterface):
+    def create(self, packagesToInstall: list, packageMetadata: PackageMetadata):
         lines = []
 
-        whlFilename = self.__dbfsBasePath + '/dev_env-{}-py3-none-any.whl'.format(version.getWhlVersion())
+        whlFilename = self.__dbfsBasePath + '/' + packageMetadata.getWhlFileName()
 
         lines.append('dbutils.library.install(\'{}\')'.format(whlFilename))
 

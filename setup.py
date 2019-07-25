@@ -1,4 +1,5 @@
 import setuptools
+import shutil
 
 BASE_DIR = 'src'
 
@@ -36,6 +37,9 @@ setuptools.setup(
         'databricks-api',
         'requirements-parser'
     ],
-    version='0.1.1',
-    script_args=['bdist_wheel'],
+    version='0.1.2',
+    script_args=['bdist_wheel']
 )
+
+shutil.rmtree('build')
+shutil.rmtree('src/dbx_deploy.egg-info')

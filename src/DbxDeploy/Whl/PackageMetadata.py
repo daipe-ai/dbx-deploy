@@ -15,3 +15,6 @@ class PackageMetadata:
 
     def getWhlPackageName(self):
         return self.packageName.replace('-', '_')
+
+    def getWhlFileName(self):
+        return '{}-{}-py3-none-any.whl'.format(self.getWhlPackageName(), self.version.getWhlVersion())
