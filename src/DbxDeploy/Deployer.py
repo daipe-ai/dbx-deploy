@@ -9,10 +9,10 @@ import requirements
 class Deployer:
 
     def __init__(self,
-            whlUploader: WhlUploader,
-            dbcCreator: DbcCreator,
-            dbcUploader: DbcUploader,
-        ):
+        whlUploader: WhlUploader,
+        dbcCreator: DbcCreator,
+        dbcUploader: DbcUploader,
+    ):
         self.__whlUploader = whlUploader
         self.__dbcCreator = dbcCreator
         self.__dbcUploader = dbcUploader
