@@ -8,3 +8,6 @@ class VersionInterface(ABC):
 
     def getDbxVersionPath(self, dbxProjectRoot: str) -> str:
         pass
+
+    def getTimeAndRandomString(self) -> str:
+        pass
