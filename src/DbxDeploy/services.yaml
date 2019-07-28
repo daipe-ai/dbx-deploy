@@ -1,4 +1,11 @@
 DbxDeploy.Deployer:
+  arguments:
+    - '%databricks.projectBasePath%'
+    - '%databricks.requirementsFile%'
+
+DbxDeploy.Setup.SetupLoader:
+
+DbxDeploy.Setup.SetupBuilder:
 
 DbxDeploy.Whl.WhlUploader:
   arguments:

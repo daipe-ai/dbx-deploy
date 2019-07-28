@@ -1,40 +1,18 @@
-from Injecta.YamlDefinitionsReaderParser import YamlDefinitionsReaderParser
-from Injecta.ContainerInitializer import ContainerInitializer
-from DbxDeploy.getLibRoot import getLibRoot
+from DbxDeploy.ContainerInit import ContainerInit
 import sys
 from pathlib import Path
-import yaml
-from box import Box
 from DbxDeploy.Deployer import Deployer
 
 class DeployerCommand:
 
     @classmethod
     def run(cls):
-        projectBasePath = Path(sys.argv[1])
+        if len(sys.argv) < 1:
+            raise Exception('Path to deployment YAML config not provided (argument #1)')
 
-        if projectBasePath.is_dir() is False:
-            raise Exception('Argument #1 must be project base directory')
+        deployYamlPath = Path(sys.argv[1])
 
-        requirementsFilePath = Path(sys.argv[2])
+        container = ContainerInit().init(deployYamlPath)
 
-        if requirementsFilePath.is_file() is False:
-            raise Exception('Requirements file path is not valid')
-
-        deployConfigPath = projectBasePath.joinpath(Path('deploy.yaml'))
-
-        if deployConfigPath.is_file() is False:
-            deployConfigDistPath = projectBasePath.joinpath(Path('deploy.yaml.dist'))
-            raise Exception('Config {} does not exist, create it from {}'.format(deployConfigPath, deployConfigDistPath))
-
-        with open(str(deployConfigPath), 'r', encoding='utf-8') as f:
-            yamlConfig = yaml.safe_load(f.read())
-            f.close()
-
-        container = ContainerInitializer().init(
-            Box(yamlConfig),
-            YamlDefinitionsReaderParser().readAndParse(getLibRoot() + '/services.yaml')
-        )
-
-        deployer = container.get(Deployer)
-        deployer.deploy(projectBasePath, requirementsFilePath)
+        deployer = container.get(Deployer) # type: Deployer
+        deployer.deploy()
