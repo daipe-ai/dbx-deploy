@@ -1,0 +1,24 @@
+from DbxDeploy.ContainerInit import ContainerInit
+import sys
+from pathlib import Path, PurePosixPath
+from DbxDeploy.DeployerJobSubmitter import DeployerJobSubmitter
+
+class DeployerJobSubmitterCommand:
+
+    @classmethod
+    def run(cls):
+        if len(sys.argv) < 2:
+            raise Exception('dbx-deploy requires exactly 2 arguments [deploy YAML config path, notebook to run (relative path)]')
+
+        deployYamlPath = Path(sys.argv[1])
+        jupyterNotebookPath = PurePosixPath(sys.argv[2])
+
+        if jupyterNotebookPath.suffix != '.ipynb':
+            raise Exception('Only Jupyter notebooks files (*.ipynb) can be submitted as Databricks job')
+
+        notebookPath = jupyterNotebookPath.relative_to('src').with_suffix('')
+
+        container = ContainerInit().init(deployYamlPath)
+
+        deployerJobSubmitter = container.get(DeployerJobSubmitter)  # type: DeployerJobSubmitter
+        deployerJobSubmitter.deployAndSubmitJob(notebookPath)

@@ -22,6 +22,7 @@ setuptools.setup(
     entry_points={
         'console_scripts': [
             'dbx-deploy = DbxDeploy.DeployerCommand:DeployerCommand.run',
+            'dbx-deploy-submit-job = DbxDeploy.DeployerJobSubmitterCommand:DeployerJobSubmitterCommand.run',
         ],
     },
     packages=setuptools.find_namespace_packages(where=BASE_DIR),

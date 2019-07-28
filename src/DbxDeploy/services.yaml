@@ -3,6 +3,8 @@ DbxDeploy.Deployer:
     - '%databricks.projectBasePath%'
     - '%databricks.requirementsFile%'
 
+DbxDeploy.DeployerJobSubmitter:
+
 DbxDeploy.Setup.SetupLoader:
 
 DbxDeploy.Setup.SetupBuilder:
@@ -28,6 +30,12 @@ DbxDeploy.Notebook.LibsCellCreator:
 DbxDeploy.Notebook.LibsNotebookCreator:
 
 DbxNotebookExporter.Json.JsonNotebookExporter:
+
+DbxDeploy.Job.JobSubmitter:
+  arguments:
+    - '%databricks.clusterId%'
+    - '%databricks.projectRoot%'
+    - '%browser%'
 
 databricks_api.DatabricksAPI:
   import: 'from databricks_api import DatabricksAPI'
