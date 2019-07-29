@@ -1,7 +1,7 @@
 from DbxNotebookExporter.Json.JsonNotebookExporter import JsonNotebookExporter
 from DbxDeploy.Dbc.PathsPreparer import PathsPreparer
 from DbxDeploy.Notebook.LibsNotebookCreator import LibsNotebookCreator
-from DbxDeploy.Whl.PackageMetadata import PackageMetadata
+from DbxDeploy.Setup.PackageMetadata import PackageMetadata
 import zipfile
 from io import BytesIO
 from pathlib import Path
@@ -21,7 +21,7 @@ class DbcCreator:
         self.__libsNotebookCreator = libsNotebookCreator
 
     def create(self, notebookPaths: list, basePath: Path, packageMetadata: PackageMetadata, packagesToInstall: list) -> bytes:
-        resources = {'libsRun': '%run {}/libs'.format(packageMetadata.version.getDbxVersionPath(self.__dbxProjectRoot))}
+        resources = {'libsRun': '%run {}/libs'.format(packageMetadata.getVersion().getDbxVersionPath(self.__dbxProjectRoot))}
 
         inMemoryOutput = BytesIO()
 

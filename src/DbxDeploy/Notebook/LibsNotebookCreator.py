@@ -1,4 +1,4 @@
-from DbxDeploy.Whl.PackageMetadata import PackageMetadata
+from DbxDeploy.Setup.PackageMetadata import PackageMetadata
 from DbxDeploy.Notebook.LibsCellCreator import LibsCellCreator
 import jinja2
 import os

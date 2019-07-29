@@ -1,6 +1,6 @@
 from DbxDeploy.Setup.SetupInterface import SetupInterface
 from pathlib import Path
-from DbxDeploy.Whl.PackageMetadata import PackageMetadata
+from DbxDeploy.Setup.PackageMetadata import PackageMetadata
 import sys
 
 class SetupBuilder:

@@ -1,4 +1,4 @@
-from DbxDeploy.Whl.PackageMetadata import PackageMetadata
+from DbxDeploy.Setup.PackageMetadata import PackageMetadata
 
 class LibsCellCreator:
 
