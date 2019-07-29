@@ -21,7 +21,7 @@ class JobSubmitter:
     def submit(self, notebookPath: PurePosixPath, version: VersionInterface):
         notebookReleasePath = PurePosixPath(version.getDbxVersionPath(self.__dbxProjectRoot) + '/' + str(notebookPath))
 
-        print('Submitting job for {}'.format(notebookReleasePath))
+        print('Submitting job for {} to cluster {}'.format(notebookReleasePath, self.__clusterId))
 
         submitedRun = self.__dbxApi.jobs.submit_run(
             run_name=version.getTimeAndRandomString(),

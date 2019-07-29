@@ -47,6 +47,13 @@ DbxDeploy.Job.JobSubmitter:
     - '%databricks.projectRoot%'
     - '%browser%'
 
+DbxDeploy.Job.RunsGetter:
+  arguments:
+    - '%databricks.clusterId%'
+    - '%databricks.projectRoot%'
+
+DbxDeploy.Job.NotebookKiller:
+
 databricks_api.DatabricksAPI:
   import: 'from databricks_api import DatabricksAPI'
   autowire: False
