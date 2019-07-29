@@ -1,9 +1,10 @@
 DbxDeploy.Deployer:
   arguments:
     - '%databricks.projectBasePath%'
-    - '%databricks.requirementsFile%'
 
 DbxDeploy.DeployerJobSubmitter:
+  arguments:
+    - '%databricks.projectBasePath%'
 
 DbxDeploy.Setup.SetupLoader:
 
@@ -12,6 +13,10 @@ DbxDeploy.Setup.SetupBuilder:
 DbxDeploy.Whl.WhlUploader:
   arguments:
     - 'dbfs:/FileStore/jars'
+
+DbxDeploy.Whl.WhlDeployer:
+  arguments:
+    - '%databricks.projectBasePath%'
 
 DbxDeploy.Dbc.DbcCreator:
   arguments:
@@ -22,6 +27,11 @@ DbxDeploy.Dbc.DbcUploader:
     - '%databricks.projectRoot%'
 
 DbxDeploy.Dbc.PathsPreparer:
+
+DbxDeploy.Dbc.DbcDeployer:
+  arguments:
+    - '%databricks.projectBasePath%'
+    - '%databricks.requirementsFile%'
 
 DbxDeploy.Notebook.LibsCellCreator:
   arguments:

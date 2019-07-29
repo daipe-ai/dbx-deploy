@@ -13,5 +13,8 @@ class CurrentTimeVersion(VersionInterface):
     def getDbxVersionPath(self, dbxProjectRoot: str) -> str:
         return dbxProjectRoot + '/' + self.getTimeAndRandomString()
 
+    def getDbxVersionPathRegEx(self, dbxProjectRoot: str) -> str:
+        return '^' + dbxProjectRoot + '/([^/]+)'
+
     def getTimeAndRandomString(self) -> str:
         return self.__dateTime.strftime('%Y-%m-%d_%H:%M:%S') + '_' + self.__randomString
