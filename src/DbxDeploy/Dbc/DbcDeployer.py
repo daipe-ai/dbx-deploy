@@ -3,6 +3,7 @@ from DbxDeploy.Dbc.DbcCreator import DbcCreator
 from DbxDeploy.Dbc.DbcUploader import DbcUploader
 from DbxDeploy.Setup.PackageMetadata import PackageMetadata
 import requirements
+from logging import Logger
 
 class DbcDeployer:
 
@@ -10,16 +11,18 @@ class DbcDeployer:
         self,
         projectBasePath: str,
         requirementsFilePath: str,
+        logger: Logger,
         dbcCreator: DbcCreator,
         dbcUploader: DbcUploader,
     ):
         self.__projectBasePath = Path(projectBasePath)
         self.__requirementsFilePath = Path(requirementsFilePath)
+        self.__logger = logger
         self.__dbcCreator = dbcCreator
         self.__dbcUploader = dbcUploader
 
     def deploy(self, packageMetadata: PackageMetadata):
-        print('Building notebooks into DBC package')
+        self.__logger.info('Building notebooks into DBC package')
 
         notebookPaths = []
 
@@ -38,4 +41,4 @@ class DbcDeployer:
 
         self.__dbcUploader.upload(dbcContent, packageMetadata.getVersion())
 
-        print('Deployment finished')
+        self.__logger.info('Deployment finished')

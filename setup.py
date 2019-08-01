@@ -38,7 +38,7 @@ setuptools.setup(
         'databricks-api',
         'requirements-parser'
     ],
-    version='0.2.0',
+    version='0.2.1',
     script_args=['bdist_wheel']
 )
 

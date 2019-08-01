@@ -3,6 +3,7 @@ from box import Box
 from databricks_api import DatabricksAPI
 from DbxDeploy.Setup.Version.VersionInterface import VersionInterface
 from pathlib import PurePosixPath
+from logging import Logger
 
 class JobSubmitter:
 
@@ -11,17 +12,19 @@ class JobSubmitter:
         clusterId: str,
         dbxProjectRoot: str,
         browserConfig: Box,
+        logger: Logger,
         dbxApi: DatabricksAPI
     ):
         self.__clusterId = clusterId
         self.__dbxProjectRoot = dbxProjectRoot
         self.__browserConfig = browserConfig
+        self.__logger = logger
         self.__dbxApi = dbxApi
 
     def submit(self, notebookPath: PurePosixPath, version: VersionInterface):
         notebookReleasePath = PurePosixPath(version.getDbxVersionPath(self.__dbxProjectRoot) + '/' + str(notebookPath))
 
-        print('Submitting job for {} to cluster {}'.format(notebookReleasePath, self.__clusterId))
+        self.__logger.info('Submitting job for {} to cluster {}'.format(notebookReleasePath, self.__clusterId))
 
         submitedRun = self.__dbxApi.jobs.submit_run(
             run_name=version.getTimeAndRandomString(),
@@ -31,7 +34,7 @@ class JobSubmitter:
             )
         )
 
-        print('Job created with ID: {}'.format(str(submitedRun['run_id'])))
+        self.__logger.info('Job created with ID: {}'.format(str(submitedRun['run_id'])))
 
         run = self.__dbxApi.jobs.get_run(
             run_id=submitedRun['run_id']
@@ -40,7 +43,7 @@ class JobSubmitter:
         self.__openJobInDatabricks(run['run_page_url'])
 
     def __openJobInDatabricks(self, runUrl: str):
-        print('Opening {}'.format(runUrl))
+        self.__logger.info('Opening {}'.format(runUrl))
 
         arguments = [self.__browserConfig.path]
 

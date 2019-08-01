@@ -1,3 +1,11 @@
+DbxDeploy.Logger.StreamLoggerFactory:
+
+logging.Logger:
+  class: logging.Logger
+  factory: ['@DbxDeploy.Logger.StreamLoggerFactory', 'create']
+  arguments:
+    - 'deploy'
+
 DbxDeploy.Deployer:
   arguments:
     - '%databricks.projectBasePath%'
