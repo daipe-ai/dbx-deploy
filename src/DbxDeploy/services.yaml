@@ -54,8 +54,7 @@ DbxDeploy.Job.RunsGetter:
 
 DbxDeploy.Job.NotebookKiller:
 
-databricks_api.DatabricksAPI:
-  import: 'from databricks_api import DatabricksAPI'
+databricks_api.databricks.DatabricksAPI:
   autowire: False
   arguments:
     -
