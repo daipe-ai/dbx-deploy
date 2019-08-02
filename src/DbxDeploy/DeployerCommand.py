@@ -2,6 +2,7 @@ from DbxDeploy.ContainerInit import ContainerInit
 import sys
 from pathlib import Path
 from DbxDeploy.Deployer import Deployer
+import asyncio
 
 class DeployerCommand:
 
@@ -15,4 +16,6 @@ class DeployerCommand:
         container = ContainerInit().init(deployYamlPath)
 
         deployer = container.get(Deployer) # type: Deployer
-        deployer.deploy()
+
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(deployer.deploy())

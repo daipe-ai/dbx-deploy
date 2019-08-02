@@ -4,6 +4,7 @@ from DbxDeploy.Whl.WhlDeployer import WhlDeployer
 from DbxDeploy.Dbc.DbcDeployer import DbcDeployer
 from DbxDeploy.Job.JobSubmitter import JobSubmitter
 from pathlib import Path, PurePosixPath
+import asyncio
 
 class DeployerJobSubmitter:
 
@@ -23,11 +24,18 @@ class DeployerJobSubmitter:
         self.__whlDeployer = whlDeployer
         self.__jobSubmitter = jobSubmitter
 
-    def deployAndSubmitJob(self, notebookPath: PurePosixPath):
+    async def deployAndSubmitJob(self, notebookPath: PurePosixPath):
         setup = self.__setupLoader.load(self.__projectBasePath)
         packageMetadata = setup.getPackageMetadata()
 
-        self.__notebookKiller.killIfRunning(notebookPath, packageMetadata.getVersion())
-        self.__whlDeployer.deploy(setup, packageMetadata)
-        self.__dbcDeployer.deploy(packageMetadata)
+        loop = asyncio.get_event_loop()
+
+        notebookKillerFuture = loop.run_in_executor(None, self.__notebookKiller.killIfRunning, notebookPath, packageMetadata.getVersion())
+        whlDeployFuture = loop.run_in_executor(None, self.__whlDeployer.deploy, setup, packageMetadata)
+        dbcDeployFuture = loop.run_in_executor(None, self.__dbcDeployer.deploy, packageMetadata)
+
+        await notebookKillerFuture
+        await whlDeployFuture
+        await dbcDeployFuture
+
         self.__jobSubmitter.submit(notebookPath, packageMetadata.getVersion())

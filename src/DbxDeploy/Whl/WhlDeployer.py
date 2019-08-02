@@ -32,3 +32,5 @@ class WhlDeployer:
 
         with whlFilePath.open('rb') as file:
             self.__whlUploader.upload(file.read(), whlFileName)
+
+        self.__logger.info('WHL package uploaded')

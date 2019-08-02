@@ -25,4 +25,4 @@ class NotebookKiller:
                 self.__logger.warning('Killing JOB #{} for {}'.format(str(runningJob['run_id']), runningJob['task']['notebook_task']['notebook_path']))
                 self.__dbxApi.jobs.cancel_run(runningJob['run_id'])
         else:
-            self.__logger.info('No such notebooks found')
+            self.__logger.info('Notebook {} is not running in any job'.format(notebookPath))

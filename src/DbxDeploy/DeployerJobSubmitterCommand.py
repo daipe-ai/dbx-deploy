@@ -2,6 +2,7 @@ from DbxDeploy.ContainerInit import ContainerInit
 import sys
 from pathlib import Path, PurePosixPath
 from DbxDeploy.DeployerJobSubmitter import DeployerJobSubmitter
+import asyncio
 
 class DeployerJobSubmitterCommand:
 
@@ -21,4 +22,6 @@ class DeployerJobSubmitterCommand:
         container = ContainerInit().init(deployYamlPath)
 
         deployerJobSubmitter = container.get(DeployerJobSubmitter)  # type: DeployerJobSubmitter
-        deployerJobSubmitter.deployAndSubmitJob(notebookPath)
+
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(deployerJobSubmitter.deployAndSubmitJob(notebookPath))

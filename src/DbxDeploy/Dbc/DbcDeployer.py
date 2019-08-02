@@ -41,4 +41,4 @@ class DbcDeployer:
 
         self.__dbcUploader.upload(dbcContent, packageMetadata.getVersion())
 
-        self.__logger.info('Deployment finished')
+        self.__logger.info('DBC deployment finished')
