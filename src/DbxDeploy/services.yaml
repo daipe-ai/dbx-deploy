@@ -18,6 +18,10 @@ DbxDeploy.DeployerJobSubmitter:
   arguments:
     - '%databricks.projectBasePath%'
 
+DbxDeploy.DeployWithCleanup:
+  arguments:
+    - '%databricks.projectBasePath%'
+
 DbxDeploy.Setup.SetupLoader:
 
 DbxDeploy.Setup.SetupBuilder:
@@ -54,6 +58,13 @@ DbxDeploy.Notebook.LibsNotebookCreator:
 DbxNotebookExporter.Json.JsonNotebookExporter:
 
 DbxDeploy.Job.JobsDeleter:
+
+DbxDeploy.Job.JobCreator:
+  arguments:
+    - '%databricks.clusterId%'
+    - '%databricks.projectRoot%'
+
+DbxDeploy.Job.JobsCreatorAndRunner:
 
 DbxDeploy.Job.JobSubmitter:
   arguments:
