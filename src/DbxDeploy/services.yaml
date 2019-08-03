@@ -1,5 +1,9 @@
 DbxDeploy.Logger.StreamLoggerFactory:
 
+DbxDeploy.Cluster.ClusterRestarter:
+  arguments:
+    - '%databricks.clusterId%'
+
 logging.Logger:
   class: logging.Logger
   factory: ['@DbxDeploy.Logger.StreamLoggerFactory', 'create']
@@ -48,6 +52,8 @@ DbxDeploy.Notebook.LibsCellCreator:
 DbxDeploy.Notebook.LibsNotebookCreator:
 
 DbxNotebookExporter.Json.JsonNotebookExporter:
+
+DbxDeploy.Job.JobsDeleter:
 
 DbxDeploy.Job.JobSubmitter:
   arguments:
