@@ -34,7 +34,7 @@ class JobSubmitter:
             )
         )
 
-        self.__logger.info('Job created with ID: {}'.format(str(submitedRun['run_id'])))
+        self.__logger.info('Job {} created'.format(str(submitedRun['run_id'])))
 
         run = self.__dbxApi.jobs.get_run(
             run_id=submitedRun['run_id']
