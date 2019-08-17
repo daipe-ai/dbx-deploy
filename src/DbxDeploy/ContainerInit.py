@@ -22,6 +22,9 @@ class ContainerInit:
         else:
             rawYamlConfig['parameters'] = deployRawConfig
 
+        if 'projectBasePath' not in rawYamlConfig['parameters']['databricks']:
+            rawYamlConfig['parameters']['databricks']['projectBasePath'] = str(deployYamlPath.parent)
+
         serviceDefinitions = ServiceDefinitionsParser().parse(rawYamlConfig['services'])
         parameters = ParametersParser().parse(rawYamlConfig['parameters'])
 
