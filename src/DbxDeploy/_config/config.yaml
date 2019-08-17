@@ -1,0 +1,89 @@
+services:
+  DbxDeploy.Logger.StreamLoggerFactory:
+
+  DbxDeploy.Cluster.ClusterRestarter:
+    arguments:
+      - '%databricks.clusterId%'
+
+  logging.Logger:
+    class: logging.Logger
+    factory: ['@DbxDeploy.Logger.StreamLoggerFactory', 'create']
+    arguments:
+      - 'deploy'
+
+  DbxDeploy.Deployer:
+    arguments:
+      - '%databricks.projectBasePath%'
+
+  DbxDeploy.DeployerJobSubmitter:
+    arguments:
+      - '%databricks.projectBasePath%'
+
+  DbxDeploy.DeployWithCleanup:
+    arguments:
+      - '%databricks.projectBasePath%'
+
+  DbxDeploy.Setup.SetupLoader:
+
+  DbxDeploy.Setup.SetupBuilder:
+
+  DbxDeploy.Whl.WhlUploader:
+    arguments:
+      - 'dbfs:/FileStore/jars'
+
+  DbxDeploy.Whl.WhlDeployer:
+    arguments:
+      - '%databricks.projectBasePath%'
+
+  DbxDeploy.Dbc.DbcCreator:
+    arguments:
+      - '%databricks.projectRoot%'
+
+  DbxDeploy.Dbc.DbcUploader:
+    arguments:
+      - '%databricks.projectRoot%'
+
+  DbxDeploy.Dbc.PathsPreparer:
+
+  DbxDeploy.Dbc.DbcDeployer:
+    arguments:
+      - '%databricks.projectBasePath%'
+      - '%databricks.requirementsFile%'
+
+  DbxDeploy.Notebook.LibsCellCreator:
+    arguments:
+      - 'dbfs:/FileStore/jars'
+
+  DbxDeploy.Notebook.LibsNotebookCreator:
+
+  DbxNotebookExporter.Json.JsonNotebookExporter:
+
+  DbxDeploy.Job.JobsDeleter:
+
+  DbxDeploy.Job.JobCreator:
+    arguments:
+      - '%databricks.clusterId%'
+      - '%databricks.projectRoot%'
+
+  DbxDeploy.Job.JobsCreatorAndRunner:
+
+  DbxDeploy.Job.JobSubmitter:
+    arguments:
+      - '%databricks.clusterId%'
+      - '%databricks.projectRoot%'
+      - '%browser%'
+
+  DbxDeploy.Job.RunsGetter:
+    arguments:
+      - '%databricks.clusterId%'
+      - '%databricks.projectRoot%'
+
+  DbxDeploy.Job.NotebookKiller:
+
+  databricks_api.databricks.DatabricksAPI:
+    autowire: False
+    arguments:
+      -
+        user: '%databricks.user%'
+        host: '%databricks.host%'
+        token: '%databricks.token%'

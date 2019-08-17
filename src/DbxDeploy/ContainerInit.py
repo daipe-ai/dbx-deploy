@@ -1,10 +1,12 @@
-from Injecta.YamlDefinitionsReaderParser import YamlDefinitionsReaderParser
-from Injecta.ContainerInitializer import ContainerInitializer
-from Injecta.ContainerInterface import ContainerInterface
-from Injecta.Config.YamlConfigReader import YamlConfigReader
-from DbxDeploy.getLibRoot import getLibRoot
 from pathlib import Path
-from box import Box
+from DbxDeploy.getLibRoot import getLibRoot
+from Injecta.Config.YamlConfigReader import YamlConfigReader
+from Injecta.Config.ConfigLoader import ConfigLoader
+from Injecta.Config.ConfigMerger import ConfigMerger
+from Injecta.ContainerInitializer import ContainerInitializer
+from Injecta.Service.ServiceDefinitionsParser import ServiceDefinitionsParser
+from Injecta.Parameter.ParametersParser import ParametersParser
+from Injecta.ContainerInterface import ContainerInterface
 
 class ContainerInit:
 
@@ -12,14 +14,15 @@ class ContainerInit:
         if deployYamlPath.is_file() is False:
             raise Exception('Config {} does not exist, create it from deploy.yaml.dist'.format(deployYamlPath))
 
-        yamlConfig = YamlConfigReader().read(str(deployYamlPath))
+        deployRawConfig = ConfigLoader().load(deployYamlPath)
+        rawYamlConfig = YamlConfigReader().read(getLibRoot() + '/_config/config.yaml')
 
-        if 'projectBasePath' in yamlConfig['databricks']:
-            yamlConfig['databricks']['projectBasePath'] = Path(yamlConfig['databricks']['projectBasePath'])
+        if 'parameters' in rawYamlConfig:
+            rawYamlConfig['parameters'] = ConfigMerger().merge(rawYamlConfig['parameters'], deployRawConfig)
         else:
-            yamlConfig['databricks']['projectBasePath'] = deployYamlPath.parent
+            rawYamlConfig['parameters'] = deployRawConfig
 
-        return ContainerInitializer().init(
-            Box(yamlConfig),
-            YamlDefinitionsReaderParser().readAndParse(getLibRoot() + '/services.yaml')
-        )
+        serviceDefinitions = ServiceDefinitionsParser().parse(rawYamlConfig['services'])
+        parameters = ParametersParser().parse(rawYamlConfig['parameters'])
+
+        return ContainerInitializer().init(parameters, serviceDefinitions)
