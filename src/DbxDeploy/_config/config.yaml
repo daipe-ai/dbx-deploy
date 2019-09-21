@@ -1,3 +1,7 @@
+parameters:
+  whl:
+    baseDir: 'dbfs:/FileStore/jars'
+
 services:
   DbxDeploy.Logger.StreamLoggerFactory:
 
@@ -29,7 +33,7 @@ services:
 
   DbxDeploy.Whl.WhlUploader:
     arguments:
-      - 'dbfs:/FileStore/jars'
+      - '%whl.baseDir%'
 
   DbxDeploy.Whl.WhlDeployer:
     arguments:
@@ -37,7 +41,7 @@ services:
 
   DbxDeploy.Dbc.DbcCreator:
     arguments:
-      - '%databricks.projectRoot%'
+      - '%whl.baseDir%'
 
   DbxDeploy.Dbc.DbcUploader:
     arguments:
@@ -48,13 +52,6 @@ services:
   DbxDeploy.Dbc.DbcDeployer:
     arguments:
       - '%databricks.projectBasePath%'
-      - '%databricks.requirementsFile%'
-
-  DbxDeploy.Notebook.LibsCellCreator:
-    arguments:
-      - 'dbfs:/FileStore/jars'
-
-  DbxDeploy.Notebook.LibsNotebookCreator:
 
   DbxNotebookExporter.Json.JsonNotebookExporter:
 

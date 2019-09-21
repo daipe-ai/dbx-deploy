@@ -33,14 +33,14 @@ setuptools.setup(
     },
     package_dir={'': BASE_DIR},
     install_requires=[
-        'injecta>=0.4.0',
+        'injecta>=0.4.2',
         'nbconvert',
         'dbx-notebook-exporter',
         'python-box',
         'databricks-api',
         'requirements-parser'
     ],
-    version='0.3.3',
+    version='0.4.0',
     script_args=['bdist_wheel']
 )
 

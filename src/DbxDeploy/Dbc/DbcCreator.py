@@ -1,6 +1,5 @@
 from DbxNotebookExporter.Json.JsonNotebookExporter import JsonNotebookExporter
 from DbxDeploy.Dbc.PathsPreparer import PathsPreparer
-from DbxDeploy.Notebook.LibsNotebookCreator import LibsNotebookCreator
 from DbxDeploy.Setup.PackageMetadata import PackageMetadata
 import zipfile
 from io import BytesIO
@@ -10,18 +9,18 @@ class DbcCreator:
 
     def __init__(
         self,
-        dbxProjectRoot: str,
+        whlBasePath: str,
         notebookExporter: JsonNotebookExporter,
-        pathsPreparer: PathsPreparer,
-        libsNotebookCreator: LibsNotebookCreator
+        pathsPreparer: PathsPreparer
     ):
-        self.__dbxProjectRoot = dbxProjectRoot
+        self.__whlBasePath = whlBasePath
         self.__scriptExporter = notebookExporter
         self.__pathsPreparer = pathsPreparer
-        self.__libsNotebookCreator = libsNotebookCreator
 
-    def create(self, notebookPaths: list, basePath: Path, packageMetadata: PackageMetadata, packagesToInstall: list) -> bytes:
-        resources = {'libsRun': '%run {}/libs'.format(packageMetadata.getVersion().getDbxVersionPath(self.__dbxProjectRoot))}
+    def create(self, notebookPaths: list, basePath: Path, packageMetadata: PackageMetadata) -> bytes:
+        whlFilename = self.__whlBasePath + '/' + packageMetadata.getWhlFileName()
+
+        resources = {'libsRun': 'dbutils.library.install(\'{}\')'.format(whlFilename)}
 
         inMemoryOutput = BytesIO()
 
@@ -36,8 +35,6 @@ class DbcCreator:
             zipPath = '/'.join(notebookPath.parts[0:-1]) + '/' + notebookPath.stem + '.python'
 
             zipFile.writestr(zipPath, script)
-
-        zipFile.writestr('src/libs.python', self.__libsNotebookCreator.create(packagesToInstall, packageMetadata))
 
         zipFile.close()
         inMemoryOutput.seek(0)
