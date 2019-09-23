@@ -1,5 +1,3 @@
-from pip._internal.req import parse_requirements
-
-def loadRequirements(fname):
-    reqs = parse_requirements(fname, session='test')
-    return [str(ir.req) for ir in reqs]
+def loadRequirements(fname: str):
+    with open(fname) as f:
+        return f.read().strip().split('\n')
