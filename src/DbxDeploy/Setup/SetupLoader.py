@@ -9,4 +9,4 @@ class SetupLoader:
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
 
-        return module.Setup() # type: SetupInterface
+        return module.Setup()

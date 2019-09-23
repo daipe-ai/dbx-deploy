@@ -20,7 +20,7 @@ class NotebookKiller:
         self.__logger.info('Looking for jobs running the {} notebook'.format(notebookPath))
         previousNotebookRuns = self.__runsGetter.get(notebookPath, version)
 
-        if len(previousNotebookRuns) > 0:
+        if previousNotebookRuns:
             for runningJob in previousNotebookRuns:
                 self.__logger.warning('Killing JOB #{} for {}'.format(str(runningJob['run_id']), runningJob['task']['notebook_task']['notebook_path']))
                 self.__dbxApi.jobs.cancel_run(runningJob['run_id'])

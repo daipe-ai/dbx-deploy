@@ -1,0 +1,6 @@
+injecta>=0.4.2
+nbconvert
+dbx-notebook-exporter
+python-box
+databricks-api
+requirements-parser

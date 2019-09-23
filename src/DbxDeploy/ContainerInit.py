@@ -1,5 +1,5 @@
 from pathlib import Path
-from DbxDeploy.getLibRoot import getLibRoot
+from DbxDeploy.LibRoot import getLibRoot
 from Injecta.Config.YamlConfigReader import YamlConfigReader
 from Injecta.Config.ConfigLoader import ConfigLoader
 from Injecta.Config.ConfigMerger import ConfigMerger
@@ -10,7 +10,7 @@ from Injecta.ContainerInterface import ContainerInterface
 
 class ContainerInit:
 
-    def init(init, deployYamlPath: Path) -> ContainerInterface:
+    def init(self, deployYamlPath: Path) -> ContainerInterface:
         if deployYamlPath.is_file() is False:
             raise Exception('Config {} does not exist, create it from deploy.yaml.dist'.format(deployYamlPath))
 

@@ -8,7 +8,7 @@ class DeployWithCleanupCommand:
 
     @classmethod
     def run(cls):
-        if len(sys.argv) < 1:
+        if not sys.argv:
             raise Exception('Path to deployment YAML config not provided (argument #1)')
 
         deployYamlPath = Path(sys.argv[1])

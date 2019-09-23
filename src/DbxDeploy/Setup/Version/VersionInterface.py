@@ -1,7 +1,6 @@
 from abc import ABC
 
 class VersionInterface(ABC):
-    pass
 
     def getWhlVersion(self) -> str:
         pass

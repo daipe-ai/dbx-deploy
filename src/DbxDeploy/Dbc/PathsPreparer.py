@@ -12,4 +12,4 @@ class PathsPreparer:
         uniquePaths = list(set(paths))
         uniquePaths = sorted(uniquePaths, key=len)
 
-        return list(map(lambda path: '/'.join(path), uniquePaths))
+        return list(map('/'.join, uniquePaths))

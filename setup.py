@@ -3,6 +3,10 @@ import shutil
 
 BASE_DIR = 'src'
 
+def loadRequirements(fname: str):
+    with open(fname) as f:
+        return f.read().strip().split('\n')
+
 with open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
 
@@ -32,15 +36,8 @@ setuptools.setup(
         '': ['*.yaml', '*.tpl']
     },
     package_dir={'': BASE_DIR},
-    install_requires=[
-        'injecta>=0.4.2',
-        'nbconvert',
-        'dbx-notebook-exporter',
-        'python-box',
-        'databricks-api',
-        'requirements-parser'
-    ],
-    version='0.4.0',
+    install_requires=loadRequirements('requirements.txt'),
+    version='0.4.1',
     script_args=['bdist_wheel']
 )
 

@@ -1,3 +1,4 @@
+# pylint: disable = too-many-instance-attributes
 from logging import Logger
 from pathlib import PurePosixPath, Path
 from DbxDeploy.Cluster.ClusterRestarter import ClusterRestarter

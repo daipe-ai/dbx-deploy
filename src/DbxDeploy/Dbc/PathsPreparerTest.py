@@ -15,7 +15,7 @@ class PathsPreparerTest(unittest.TestCase):
             Path('DataSenticsLib/Example/SubExample/notebook_pandas.ipynb')
         ]
 
-        uniquePaths = self.__pathsPreparer.prepare(paths)
+        uniquePaths = sorted(self.__pathsPreparer.prepare(paths))
 
         self.assertListEqual([
             'DataSenticsLib',
