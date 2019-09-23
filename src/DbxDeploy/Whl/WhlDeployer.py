@@ -31,6 +31,8 @@ class WhlDeployer:
         whlFilePath = self.__projectBasePath.joinpath(Path('dist/' + whlFileName))
 
         with whlFilePath.open('rb') as file:
-            self.__whlUploader.upload(file.read(), whlFileName)
+            content = file.read()
+            self.__whlUploader.upload(content, whlFileName)
+            self.__whlUploader.upload(content, packageMetadata.getCurrentWhlFileName())
 
         self.__logger.info('WHL package uploaded')

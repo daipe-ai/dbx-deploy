@@ -21,3 +21,6 @@ class PackageMetadata:
 
     def getWhlFileName(self):
         return '{}-{}-py3-none-any.whl'.format(self.getWhlPackageName(), self.__version.getWhlVersion())
+
+    def getCurrentWhlFileName(self):
+        return '{}-{}-py3-none-any.whl'.format(self.getWhlPackageName(), 'current')
