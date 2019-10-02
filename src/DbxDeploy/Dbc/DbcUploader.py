@@ -12,11 +12,11 @@ class DbcUploader:
     def upload(self, dbcContent: bytes, version: VersionInterface):
         contentToUpload = b64encode(dbcContent).decode()
 
-        self.__dbxApi.workspace.import_workspace(
-            version.getDbxVersionPath(self.__dbxProjectRoot),
-            format='DBC',
-            content=contentToUpload
-        )
+        try:
+            self.__performUpload(contentToUpload, version)
+        except HTTPError:
+            self.__dbxApi.workspace.mkdirs(self.__dbxProjectRoot)
+            self.__performUpload(contentToUpload, version)
 
         try:
             self.__dbxApi.workspace.delete(
@@ -28,6 +28,13 @@ class DbcUploader:
 
         self.__dbxApi.workspace.import_workspace(
             self.__dbxProjectRoot + '/_current',
+            format='DBC',
+            content=contentToUpload
+        )
+
+    def __performUpload(self, contentToUpload, version):
+        self.__dbxApi.workspace.import_workspace(
+            version.getDbxVersionPath(self.__dbxProjectRoot),
             format='DBC',
             content=contentToUpload
         )

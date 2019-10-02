@@ -7,6 +7,7 @@ from Injecta.ContainerInitializer import ContainerInitializer
 from Injecta.Service.ServiceDefinitionsParser import ServiceDefinitionsParser
 from Injecta.Parameter.ParametersParser import ParametersParser
 from Injecta.ContainerInterface import ContainerInterface
+from pygit2 import Repository
 
 class ContainerInit:
 
@@ -26,6 +27,8 @@ class ContainerInit:
             rawYamlConfig['parameters']['databricks']['projectBasePath'] = str(deployYamlPath.parent)
 
         serviceDefinitions = ServiceDefinitionsParser().parse(rawYamlConfig['services'])
-        parameters = ParametersParser().parse(rawYamlConfig['parameters'])
+        parameters = ParametersParser().parse(rawYamlConfig['parameters'], {
+            'currentBranch': Repository('.').head.shorthand
+        })
 
         return ContainerInitializer().init(parameters, serviceDefinitions)

@@ -4,3 +4,4 @@ dbx-notebook-exporter
 python-box
 databricks-api
 requirements-parser
+pygit2
