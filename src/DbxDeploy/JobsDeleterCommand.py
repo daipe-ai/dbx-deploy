@@ -1,4 +1,5 @@
 from DbxDeploy.ContainerInit import ContainerInit
+from DbxDeploy.Git.CurrentBranchResolver import CurrentBranchResolver
 import sys
 from pathlib import Path
 from DbxDeploy.Job.JobsDeleter import JobsDeleter
@@ -11,7 +12,7 @@ class JobsDeleterCommand:
     def run(cls):
         deployYamlPath = Path(sys.argv[1])
 
-        container = ContainerInit().init(deployYamlPath)
+        container = ContainerInit(CurrentBranchResolver()).init(deployYamlPath)
 
         logger = container.get(Logger.__module__ + '.' + Logger.__name__) # type: Logger
         clusterRestarter = container.get(ClusterRestarter) # type ClusterRestarter

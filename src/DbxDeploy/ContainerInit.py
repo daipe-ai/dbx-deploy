@@ -1,4 +1,5 @@
 from pathlib import Path
+from DbxDeploy.Git.CurrentBranchResolver import CurrentBranchResolver
 from DbxDeploy.LibRoot import getLibRoot
 from Injecta.Config.YamlConfigReader import YamlConfigReader
 from Injecta.Config.ConfigLoader import ConfigLoader
@@ -7,9 +8,11 @@ from Injecta.ContainerInitializer import ContainerInitializer
 from Injecta.Service.ServiceDefinitionsParser import ServiceDefinitionsParser
 from Injecta.Parameter.ParametersParser import ParametersParser
 from Injecta.ContainerInterface import ContainerInterface
-from pygit2 import Repository
 
 class ContainerInit:
+
+    def __init__(self, currentBranchResolver: CurrentBranchResolver):
+        self.__currentBranchResolver = currentBranchResolver
 
     def init(self, deployYamlPath: Path) -> ContainerInterface:
         if deployYamlPath.is_file() is False:
@@ -28,7 +31,7 @@ class ContainerInit:
 
         serviceDefinitions = ServiceDefinitionsParser().parse(rawYamlConfig['services'])
         parameters = ParametersParser().parse(rawYamlConfig['parameters'], {
-            'currentBranch': Repository('.').head.shorthand
+            'currentBranch': self.__currentBranchResolver.resolve()
         })
 
         return ContainerInitializer().init(parameters, serviceDefinitions)

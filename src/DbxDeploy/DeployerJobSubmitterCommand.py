@@ -1,4 +1,5 @@
 from DbxDeploy.ContainerInit import ContainerInit
+from DbxDeploy.Git.CurrentBranchResolver import CurrentBranchResolver
 import sys
 from pathlib import Path, PurePosixPath
 from DbxDeploy.DeployerJobSubmitter import DeployerJobSubmitter
@@ -19,7 +20,7 @@ class DeployerJobSubmitterCommand:
 
         notebookPath = jupyterNotebookPath.relative_to('src').with_suffix('')
 
-        container = ContainerInit().init(deployYamlPath)
+        container = ContainerInit(CurrentBranchResolver()).init(deployYamlPath)
 
         deployerJobSubmitter = container.get(DeployerJobSubmitter)  # type: DeployerJobSubmitter
 

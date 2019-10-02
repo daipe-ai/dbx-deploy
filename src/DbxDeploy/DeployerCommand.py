@@ -1,4 +1,5 @@
 from DbxDeploy.ContainerInit import ContainerInit
+from DbxDeploy.Git.CurrentBranchResolver import CurrentBranchResolver
 import sys
 from pathlib import Path
 from DbxDeploy.Deployer import Deployer
@@ -13,7 +14,7 @@ class DeployerCommand:
 
         deployYamlPath = Path(sys.argv[1])
 
-        container = ContainerInit().init(deployYamlPath)
+        container = ContainerInit(CurrentBranchResolver()).init(deployYamlPath)
 
         deployer = container.get(Deployer) # type: Deployer
 
