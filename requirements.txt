@@ -5,3 +5,4 @@ python-box
 databricks-api
 requirements-parser
 pygit2
+colorlog>=4.0.2

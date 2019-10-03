@@ -1,17 +1,20 @@
 import logging
+import colorlog
 
 class StreamLoggerFactory:
 
     def create(self, loggerName: str):
         logger = logging.getLogger(loggerName)
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.DEBUG)
 
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.INFO)
+        formatStr = '%(asctime)s %(levelname)s - %(message)s'
+        dateFormat = '%H:%M:%S'
+        cformat = '%(log_color)s' + formatStr
+        formatter = colorlog.ColoredFormatter(cformat, dateFormat)
 
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s: %(message)s', '%Y-%m-%d %H:%M:%S')
-        ch.setFormatter(formatter)
+        streamHandler = logging.StreamHandler()
+        streamHandler.setFormatter(formatter)
 
-        logger.addHandler(ch)
+        logger.addHandler(streamHandler)
 
         return logger
