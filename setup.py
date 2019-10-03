@@ -37,7 +37,7 @@ setuptools.setup(
     },
     package_dir={'': BASE_DIR},
     install_requires=loadRequirements('requirements.txt'),
-    version='0.4.1',
+    version='0.5.0',
     script_args=['bdist_wheel']
 )
 

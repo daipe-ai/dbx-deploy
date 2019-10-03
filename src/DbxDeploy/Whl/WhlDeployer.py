@@ -20,13 +20,11 @@ class WhlDeployer:
         self.__whlUploader = whlUploader
 
     def deploy(self, setup: SetupInterface, packageMetadata: PackageMetadata):
-        self.__logger.info('Building WHL package')
+        self.__logger.info('Building app package (WHL)')
 
         self.__setupBuilder.build(setup, self.__projectBasePath)
 
         whlFileName = packageMetadata.getWhlFileName()
-
-        self.__logger.info('Uploading WHL package')
 
         whlFilePath = self.__projectBasePath.joinpath(Path('dist/' + whlFileName))
 
@@ -35,4 +33,4 @@ class WhlDeployer:
             self.__whlUploader.upload(content, whlFileName)
             self.__whlUploader.upload(content, packageMetadata.getCurrentWhlFileName())
 
-        self.__logger.info('WHL package uploaded')
+        self.__logger.info('App package uploaded')

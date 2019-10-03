@@ -16,13 +16,13 @@ class JobSubmitter:
         dbxApi: DatabricksAPI
     ):
         self.__clusterId = clusterId
-        self.__dbxProjectRoot = dbxProjectRoot
+        self.__dbxProjectRoot = PurePosixPath(dbxProjectRoot)
         self.__browserConfig = browserConfig
         self.__logger = logger
         self.__dbxApi = dbxApi
 
     def submit(self, notebookPath: PurePosixPath, version: VersionInterface):
-        notebookReleasePath = PurePosixPath(version.getDbxVersionPath(self.__dbxProjectRoot) + '/' + str(notebookPath))
+        notebookReleasePath = version.getDbxVersionPath(self.__dbxProjectRoot).joinpath(notebookPath)
 
         self.__logger.info('Submitting job for {} to cluster {}'.format(notebookReleasePath, self.__clusterId))
 
@@ -50,4 +50,4 @@ class JobSubmitter:
         for argument in self.__browserConfig.arguments:
             arguments.append(argument.replace('{runUrl}', runUrl))
 
-        subprocess.run(arguments)
+        subprocess.run(arguments, check=True)

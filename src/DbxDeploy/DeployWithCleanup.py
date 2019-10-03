@@ -6,7 +6,7 @@ from DbxDeploy.Job.JobsCreatorAndRunner import JobsCreatorAndRunner
 from DbxDeploy.Job.JobsDeleter import JobsDeleter
 from DbxDeploy.Setup.SetupLoader import SetupLoader
 from DbxDeploy.Whl.WhlDeployer import WhlDeployer
-from DbxDeploy.Dbc.DbcDeployer import DbcDeployer
+from DbxDeploy.Notebook.NotebooksDeployer import NotebooksDeployer
 import asyncio
 
 class DeployWithCleanup:
@@ -15,7 +15,7 @@ class DeployWithCleanup:
         self,
         projectBasePath: str,
         setupLoader: SetupLoader,
-        dbcDeployer: DbcDeployer,
+        notebooksDeployer: NotebooksDeployer,
         whlDeployer: WhlDeployer,
         clusterRestarter: ClusterRestarter,
         jobsDeleter: JobsDeleter,
@@ -24,7 +24,7 @@ class DeployWithCleanup:
     ):
         self.__projectBasePath = Path(projectBasePath)
         self.__setupLoader = setupLoader
-        self.__dbcDeployer = dbcDeployer
+        self.__notebooksDeployer = notebooksDeployer
         self.__whlDeployer = whlDeployer
         self.__clusterRestarter = clusterRestarter
         self.__jobsDeleter = jobsDeleter
@@ -38,7 +38,7 @@ class DeployWithCleanup:
         loop = asyncio.get_event_loop()
 
         whlDeployFuture = loop.run_in_executor(None, self.__whlDeployer.deploy, setup, packageMetadata)
-        dbcDeployFuture = loop.run_in_executor(None, self.__dbcDeployer.deploy, packageMetadata)
+        dbcDeployFuture = loop.run_in_executor(None, self.__notebooksDeployer.deployWithCurrent, packageMetadata)
 
         await whlDeployFuture
         await dbcDeployFuture

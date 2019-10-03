@@ -14,12 +14,12 @@ class JobCreator:
         dbxApi: DatabricksAPI
     ):
         self.__clusterId = clusterId
-        self.__dbxProjectRoot = dbxProjectRoot
+        self.__dbxProjectRoot = PurePosixPath(dbxProjectRoot)
         self.__logger = logger
         self.__dbxApi = dbxApi
 
     def create(self, notebookPath: PurePosixPath, version: VersionInterface):
-        notebookReleasePath = PurePosixPath(version.getDbxVersionPath(self.__dbxProjectRoot) + '/' + str(notebookPath))
+        notebookReleasePath = version.getDbxVersionPath(self.__dbxProjectRoot).joinpath(notebookPath)
 
         self.__logger.info('Creating job for {}'.format(str(notebookReleasePath)))
 

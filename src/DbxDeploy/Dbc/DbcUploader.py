@@ -1,40 +1,28 @@
 from base64 import b64encode
+from pathlib import PurePosixPath
 from databricks_api import DatabricksAPI
-from DbxDeploy.Setup.Version.VersionInterface import VersionInterface
 from requests.exceptions import HTTPError
 
 class DbcUploader:
 
-    def __init__(self, dbxProjectRoot: str, dbxApi: DatabricksAPI):
-        self.__dbxProjectRoot = dbxProjectRoot
+    def __init__(
+        self,
+        dbxApi: DatabricksAPI
+    ):
         self.__dbxApi = dbxApi
 
-    def upload(self, dbcContent: bytes, version: VersionInterface):
+    def upload(self, dbcContent: bytes, releasePath: PurePosixPath):
         contentToUpload = b64encode(dbcContent).decode()
 
         try:
-            self.__performUpload(contentToUpload, version)
+            self.__performUpload(contentToUpload, releasePath)
         except HTTPError:
-            self.__dbxApi.workspace.mkdirs(self.__dbxProjectRoot)
-            self.__performUpload(contentToUpload, version)
+            self.__dbxApi.workspace.mkdirs(str(releasePath.parent))
+            self.__performUpload(contentToUpload, releasePath)
 
-        try:
-            self.__dbxApi.workspace.delete(
-                self.__dbxProjectRoot + '/_current',
-                recursive=True,
-            )
-        except HTTPError:
-            pass
-
+    def __performUpload(self, contentToUpload, releasePath: PurePosixPath):
         self.__dbxApi.workspace.import_workspace(
-            self.__dbxProjectRoot + '/_current',
+            str(releasePath),
             format='DBC',
-            content=contentToUpload
-        )
-
-    def __performUpload(self, contentToUpload, version):
-        self.__dbxApi.workspace.import_workspace(
-            version.getDbxVersionPath(self.__dbxProjectRoot),
-            format='DBC',
-            content=contentToUpload
+            content=contentToUpload,
         )

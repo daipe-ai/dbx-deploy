@@ -1,0 +1,2 @@
+class PathNotExistException(Exception):
+    pass

@@ -40,20 +40,18 @@ services:
       - '%databricks.projectBasePath%'
 
   DbxDeploy.Dbc.DbcCreator:
-    arguments:
-      - '%whl.baseDir%'
 
   DbxDeploy.Dbc.DbcUploader:
-    arguments:
-      - '%databricks.projectRoot%'
 
   DbxDeploy.Dbc.PathsPreparer:
 
-  DbxDeploy.Dbc.DbcDeployer:
+  DbxDeploy.Notebook.NotebooksDeployer:
     arguments:
-      - '%databricks.projectBasePath%'
+      - '%databricks.projectRoot%'
 
   DbxNotebookExporter.Json.JsonNotebookExporter:
+
+  DbxNotebookExporter.Databricks.DatabricksNotebookExporter:
 
   DbxDeploy.Job.JobsDeleter:
 
@@ -84,3 +82,24 @@ services:
         user: '%databricks.user%'
         host: '%databricks.host%'
         token: '%databricks.token%'
+
+  DbxDeploy.Notebook.CurrentDirectoryUpdater:
+    arguments:
+      - '%databricks.projectRoot%'
+
+  DbxDeploy.Workspace.WorkspaceImporter:
+
+  DbxDeploy.Workspace.WorkspaceExporter:
+
+  DbxDeploy.Notebook.NotebooksLocator:
+    arguments:
+      - '%databricks.projectBasePath%'
+
+  DbxDeploy.Notebook.Converter.JupyterConverter:
+    arguments:
+      - '%whl.baseDir%'
+
+  DbxDeploy.Notebook.ConverterResolver:
+    arguments:
+      -
+        - '@DbxDeploy.Notebook.Converter.JupyterConverter'

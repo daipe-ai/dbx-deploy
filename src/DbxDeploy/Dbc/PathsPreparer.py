@@ -1,6 +1,9 @@
+from pathlib import Path
+from typing import List
+
 class PathsPreparer:
 
-    def prepare(self, notebookPaths: list):
+    def prepare(self, notebookPaths: List[Path]):
         paths = list(map(lambda notebookPath: notebookPath.parts[0:-1], notebookPaths))
         paths = list(set(paths))
 

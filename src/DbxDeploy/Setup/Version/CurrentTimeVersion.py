@@ -1,4 +1,5 @@
 from datetime import datetime
+from pathlib import PurePosixPath
 from DbxDeploy.Setup.Version.VersionInterface import VersionInterface
 
 class CurrentTimeVersion(VersionInterface):
@@ -10,8 +11,8 @@ class CurrentTimeVersion(VersionInterface):
     def getWhlVersion(self) -> str:
         return self.__dateTime.strftime('%d_%m_%H_%M_%S') + '_' + self.__randomString
 
-    def getDbxVersionPath(self, dbxProjectRoot: str) -> str:
-        return dbxProjectRoot + '/' + self.getTimeAndRandomString()
+    def getDbxVersionPath(self, dbxProjectRoot: PurePosixPath) -> PurePosixPath:
+        return dbxProjectRoot.joinpath(self.getTimeAndRandomString())
 
     def getDbxVersionPathRegEx(self, dbxProjectRoot: str) -> str:
         return '^' + dbxProjectRoot + '/([^/]+)'
