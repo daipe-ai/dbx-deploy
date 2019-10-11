@@ -1,9 +1,10 @@
 # pylint: disable = too-many-instance-attributes
 from logging import Logger
-from pathlib import PurePosixPath, Path
+from pathlib import Path
 from DbxDeploy.Cluster.ClusterRestarter import ClusterRestarter
 from DbxDeploy.Job.JobsCreatorAndRunner import JobsCreatorAndRunner
 from DbxDeploy.Job.JobsDeleter import JobsDeleter
+from DbxDeploy.Notebook.NotebooksLocator import NotebooksLocator
 from DbxDeploy.Setup.SetupLoader import SetupLoader
 from DbxDeploy.Whl.WhlDeployer import WhlDeployer
 from DbxDeploy.Notebook.NotebooksDeployer import NotebooksDeployer
@@ -21,6 +22,7 @@ class DeployWithCleanup:
         jobsDeleter: JobsDeleter,
         jobsCreatorAndRunner: JobsCreatorAndRunner,
         logger: Logger,
+        notebooksLocator: NotebooksLocator,
     ):
         self.__projectBasePath = Path(projectBasePath)
         self.__setupLoader = setupLoader
@@ -30,6 +32,7 @@ class DeployWithCleanup:
         self.__jobsDeleter = jobsDeleter
         self.__jobsCreatorAndRunner = jobsCreatorAndRunner
         self.__logger = logger
+        self.__notebooksLocator = notebooksLocator
 
     async def deploy(self):
         setup = self.__setupLoader.load(self.__projectBasePath)
@@ -50,12 +53,7 @@ class DeployWithCleanup:
 
         self.__logger.info('--')
 
-        notebookPaths = []
-
-        for path in self.__projectBasePath.joinpath('src').glob('**/*.ipynb'):
-            notebookPath = path.relative_to(self.__projectBasePath.joinpath('src')).with_suffix('')
-            notebookPaths.append(PurePosixPath(notebookPath))
-
-        self.__jobsCreatorAndRunner.createAndRun(notebookPaths, packageMetadata.getVersion())
+        notebooks = self.__notebooksLocator.locateConsumers()
+        self.__jobsCreatorAndRunner.createAndRun(notebooks, packageMetadata.getVersion())
 
         self.__logger.info('Deployment completed')

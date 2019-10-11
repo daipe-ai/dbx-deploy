@@ -11,3 +11,12 @@ class NotebookConverterInterface(ABC):
 
     def resolves(self, fileExtension: str) -> bool:
         pass
+
+    def getGlobPatterns(self) -> list:
+        pass
+
+    def getConsumerGlobPatterns(self) -> list:
+        pass
+
+    def getDescription(self) -> str:
+        pass

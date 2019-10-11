@@ -1,5 +1,7 @@
+from typing import List
 from databricks_api.databricks import DatabricksAPI
 from DbxDeploy.Job.JobCreator import JobCreator
+from DbxDeploy.Notebook.Notebook import Notebook
 from DbxDeploy.Setup.Version.VersionInterface import VersionInterface
 from logging import Logger
 
@@ -15,12 +17,8 @@ class JobsCreatorAndRunner:
         self.__jobCreator = jobCreator
         self.__dbxApi = dbxApi
 
-    def createAndRun(self, notebookPaths: list, version: VersionInterface):
-        createdJobs = []
-
-        for notebookPath in notebookPaths:
-            job = self.__jobCreator.create(notebookPath, version)
-            createdJobs.append(job)
+    def createAndRun(self, notebooks: List[Notebook], version: VersionInterface):
+        createdJobs = list(map(lambda notebook: self.__jobCreator.create(notebook.databricksRelativePath, version), notebooks))
 
         self.__logger.info('--')
 

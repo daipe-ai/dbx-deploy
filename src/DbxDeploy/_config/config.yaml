@@ -95,11 +95,16 @@ services:
     arguments:
       - '%databricks.projectBasePath%'
 
-  DbxDeploy.Notebook.Converter.JupyterConverter:
+  DbxDeploy.Notebook.LibsRunPreparer:
     arguments:
       - '%whl.baseDir%'
+
+  DbxDeploy.Notebook.Converter.JupyterConverter:
+
+  DbxDeploy.Notebook.Converter.PythonNotebookConverter:
 
   DbxDeploy.Notebook.ConverterResolver:
     arguments:
       -
         - '@DbxDeploy.Notebook.Converter.JupyterConverter'
+        - '@DbxDeploy.Notebook.Converter.PythonNotebookConverter'
