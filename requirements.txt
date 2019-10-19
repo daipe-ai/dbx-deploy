@@ -1,8 +1,0 @@
-injecta>=0.4.2
-nbconvert
-dbx-notebook-exporter>=0.2.2
-python-box
-databricks-api
-requirements-parser
-pygit2
-colorlog>=4.0.2

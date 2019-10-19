@@ -1,4 +1,4 @@
-from logging import Logger
+from logging import Logger # pylint: disable = unused-import
 from DbxDeploy.ContainerInit import ContainerInit
 from DbxDeploy.Git.CurrentBranchResolver import CurrentBranchResolver
 import sys
@@ -25,7 +25,7 @@ class DeployerJobSubmitterCommand:
         if converterResolver.isSupported(jupyterNotebookPath) is False:
             formatsDescription = ', '.join(converterResolver.getSupportedFormatsDescriptions())
             logger.error('Only {} can be submitted as Databricks job'.format(formatsDescription))
-            exit(1)
+            sys.exit(1)
 
         notebookPath = jupyterNotebookPath.relative_to('src').with_suffix('')
 

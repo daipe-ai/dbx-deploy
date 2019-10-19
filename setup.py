@@ -1,11 +1,10 @@
+from pathlib import Path
 import setuptools
 import shutil
+from DbxDeploy.Requirements.PoetryLockLoader import loadRequirements
 
-BASE_DIR = 'src'
-
-def loadRequirements(fname: str):
-    with open(fname) as f:
-        return f.read().strip().split('\n')
+projectBasePath = Path.cwd()
+BASE_DIR = str(projectBasePath.joinpath(Path('src')))
 
 with open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
@@ -36,8 +35,8 @@ setuptools.setup(
         '': ['*.yaml', '*.tpl']
     },
     package_dir={'': BASE_DIR},
-    install_requires=loadRequirements('requirements.txt'),
-    version='0.6.0',
+    install_requires=loadRequirements(projectBasePath.joinpath('poetry.lock')),
+    version='0.6.1',
     script_args=['bdist_wheel']
 )
 

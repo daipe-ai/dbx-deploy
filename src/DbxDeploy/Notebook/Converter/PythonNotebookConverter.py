@@ -83,7 +83,7 @@ class PythonNotebookConverter(NotebookConverterInterface):
     def __loadJinjaTemplate(self):
         basePaths = [
             os.path.dirname(JsonNotebookExporterModule.__file__),
-            nbConvertSkeleton.__path__._path[0]
+            nbConvertSkeleton.__path__._path[0] # pylint: disable = no-member, protected-access
         ]
 
         templateLoader = jinja2.FileSystemLoader(searchpath=basePaths)

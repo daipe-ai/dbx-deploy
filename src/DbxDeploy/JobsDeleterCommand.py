@@ -1,3 +1,4 @@
+# pylint: disable = invalid-name
 from DbxDeploy.ContainerInit import ContainerInit
 from DbxDeploy.Git.CurrentBranchResolver import CurrentBranchResolver
 import sys

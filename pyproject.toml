@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "dbx-deploy"
+version = "1.0"
+description = ""
+
+authors = [
+    "Jiri Koutny <jiri.koutny@datasentics.com>"
+]
+
+[tool.poetry.dependencies]
+colorlog = "~4"
+databricks-api = "^0.3"
+dbx-notebook-exporter = "^0.2"
+injecta = "^0.4"
+nbconvert = "~5"
+pygit2 = "0.*"
+python = "~3.5"
+python-box = "~3"
+PyYAML = "~5"
+
+[tool.poetry.dev-dependencies]
+pylint = "~2"
+pytest = "~5"
