@@ -1,4 +1,4 @@
-name: injecta
+name: dbx-deploy
 channels:
   - defaults
 dependencies:
