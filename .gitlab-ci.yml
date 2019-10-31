@@ -1,7 +1,9 @@
 image: python:3.5
 
 before_script:
-  - pip install poetry==1.0b2
+  - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py --silent -o get-poetry.py
+  - python get-poetry.py -y --version 1.0.0b3
+  - ln -s ~/.poetry/bin/poetry /usr/bin/poetry
   - poetry config virtualenvs.create false
   - poetry install --no-root
   - export PYTHONPATH="$PWD/src"
