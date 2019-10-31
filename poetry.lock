@@ -707,6 +707,14 @@ test = ["pathlib2"]
 
 [[package]]
 category = "main"
+description = "Style preserving TOML library"
+name = "tomlkit"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.5.8"
+
+[[package]]
+category = "main"
 description = "Traitlets Python config system"
 name = "traitlets"
 optional = false
@@ -792,7 +800,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "368807b2bce466d837abd7215bad4a3beac8e5bf66bb6d7832c857a466057a92"
+content-hash = "afae7d11f961a159a76fbba626e5e950c6a9aafed7be1bdbc0bfaaee85e350f6"
 python-versions = "~3.5.2"
 
 [metadata.files]
@@ -1142,6 +1150,10 @@ tabulate = [
 testpath = [
     {file = "testpath-0.4.2-py2.py3-none-any.whl", hash = "sha256:46c89ebb683f473ffe2aab0ed9f12581d4d078308a3cb3765d79c6b2317b0109"},
     {file = "testpath-0.4.2.tar.gz", hash = "sha256:b694b3d9288dbd81685c5d2e7140b81365d46c29f5db4bc659de5aa6b98780f8"},
+]
+tomlkit = [
+    {file = "tomlkit-0.5.8-py2.py3-none-any.whl", hash = "sha256:96e6369288571799a3052c1ef93b9de440e1ab751aa045f435b55e9d3bcd0690"},
+    {file = "tomlkit-0.5.8.tar.gz", hash = "sha256:32c10cc16ded7e4101c79f269910658cc2a0be5913f1252121c3cd603051c269"},
 ]
 traitlets = [
     {file = "traitlets-4.3.3-py2.py3-none-any.whl", hash = "sha256:70b4c6a1d9019d7b4f6846832288f86998aa3b9207c6821f3578a6a6a467fe44"},
