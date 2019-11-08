@@ -164,12 +164,12 @@ category = "main"
 description = "Databrics Notebook Exporter"
 name = "dbx-notebook-exporter"
 optional = false
-python-versions = "*"
-version = "0.2.2"
+python-versions = ">=3.5.2"
+version = "0.2.6"
 
 [package.dependencies]
-ipython = "*"
-nbconvert = "*"
+ipython = ">=7,<8"
+nbconvert = ">=5,<6"
 
 [[package]]
 category = "main"
@@ -743,11 +743,10 @@ category = "main"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 name = "urllib3"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4"
-version = "1.25.6"
+python-versions = "*"
+version = "1.22"
 
 [package.extras]
-brotli = ["brotlipy (>=0.6.0)"]
 secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
 socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
 
@@ -800,8 +799,8 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "afae7d11f961a159a76fbba626e5e950c6a9aafed7be1bdbc0bfaaee85e350f6"
-python-versions = "~3.5.2"
+content-hash = "20975be86943b0d4d721be1e1b48cc3380a0917706e14fb2679e8d7250ad9a9e"
+python-versions = ">=3.5.2"
 
 [metadata.files]
 appnope = [
@@ -893,7 +892,8 @@ databricks-cli = [
     {file = "databricks_cli-0.9.0-py2-none-any.whl", hash = "sha256:4c19c7c9d797192a1af5920f04da48d67ec4ebc85d7980898ba1745932e1bb09"},
 ]
 dbx-notebook-exporter = [
-    {file = "dbx_notebook_exporter-0.2.2-py3-none-any.whl", hash = "sha256:2569b4efa4c0af1ba063178406751b2a0776820799da1c4edbce33203d3a3d1f"},
+    {file = "dbx-notebook-exporter-0.2.6.tar.gz", hash = "sha256:071b321c0c4906fd158ccd9ec264b345ea5bb954fea114d7e154a71b532fc14f"},
+    {file = "dbx_notebook_exporter-0.2.6-py3-none-any.whl", hash = "sha256:b2e959ae973320a447231bcc50eb4e626d53fd5111ea871591977b3f956615ca"},
 ]
 decorator = [
     {file = "decorator-4.4.0-py2.py3-none-any.whl", hash = "sha256:f069f3a01830ca754ba5258fde2278454a0b5b79e0d7f5c13b3b97e57d4acff6"},
@@ -1182,8 +1182,8 @@ typed-ast = [
     {file = "typed_ast-1.4.0.tar.gz", hash = "sha256:66480f95b8167c9c5c5c87f32cf437d585937970f3fc24386f313a4c97b44e34"},
 ]
 urllib3 = [
-    {file = "urllib3-1.25.6-py2.py3-none-any.whl", hash = "sha256:3de946ffbed6e6746608990594d08faac602528ac7015ac28d33cee6a45b7398"},
-    {file = "urllib3-1.25.6.tar.gz", hash = "sha256:9a107b99a5393caf59c7aa3c1249c16e6879447533d0887f4336dde834c7be86"},
+    {file = "urllib3-1.22-py2.py3-none-any.whl", hash = "sha256:06330f386d6e4b195fbfc736b297f58c5a892e4440e54d294d7004e3a9bbea1b"},
+    {file = "urllib3-1.22.tar.gz", hash = "sha256:cc44da8e1145637334317feebd728bd869a35285b93cbb4cca2577da7e62db4f"},
 ]
 wcwidth = [
     {file = "wcwidth-0.1.7-py2.py3-none-any.whl", hash = "sha256:f4ebe71925af7b40a864553f761ed559b43544f8f71746c2d756c7fe788ade7c"},
