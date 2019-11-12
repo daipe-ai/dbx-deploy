@@ -1,5 +1,4 @@
 from pathlib import PurePosixPath
-
 from DbxDeploy.Setup.Version.VersionInterface import VersionInterface
 from databricks_api import DatabricksAPI
 from logging import Logger
@@ -26,6 +25,9 @@ class JobCreator:
         job = self.__dbxApi.jobs.create_job(
             name=str(notebookPath),
             existing_cluster_id=self.__clusterId,
+            max_retries=-1,
+            min_retry_interval_millis=30*1000,
+            retry_on_timeout=True,
             notebook_task=dict(
                 notebook_path=str(notebookReleasePath)
             ),
