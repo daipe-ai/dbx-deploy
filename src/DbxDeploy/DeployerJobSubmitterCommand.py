@@ -2,7 +2,7 @@ from logging import Logger # pylint: disable = unused-import
 from DbxDeploy.ContainerInit import ContainerInit
 from DbxDeploy.Git.CurrentBranchResolver import CurrentBranchResolver
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from DbxDeploy.DeployerJobSubmitter import DeployerJobSubmitter
 from DbxDeploy.Notebook.ConverterResolver import ConverterResolver
 import asyncio
@@ -15,7 +15,7 @@ class DeployerJobSubmitterCommand:
             raise Exception('dbx-deploy requires exactly 2 arguments [deploy YAML config path, notebook to run (relative path)]')
 
         deployYamlPath = Path(sys.argv[1])
-        jupyterNotebookPath = Path(sys.argv[2])
+        jupyterNotebookPath = PurePosixPath(sys.argv[2])
 
         container = ContainerInit(CurrentBranchResolver()).init(deployYamlPath)
 
