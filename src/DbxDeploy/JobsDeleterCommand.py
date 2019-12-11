@@ -11,6 +11,9 @@ class JobsDeleterCommand:
 
     @classmethod
     def run(cls):
+        if len(sys.argv) - 1 < 1:
+            raise Exception('Path to deployment YAML config not provided (argument #1)')
+
         deployYamlPath = Path(sys.argv[1])
 
         container = ContainerInit(CurrentBranchResolver()).init(deployYamlPath)

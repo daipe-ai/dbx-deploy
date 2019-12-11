@@ -9,7 +9,7 @@ class DeployerCommand:
 
     @classmethod
     def run(cls):
-        if not sys.argv:
+        if len(sys.argv) - 1 < 1:
             raise Exception('Path to deployment YAML config not provided (argument #1)')
 
         deployYamlPath = Path(sys.argv[1])

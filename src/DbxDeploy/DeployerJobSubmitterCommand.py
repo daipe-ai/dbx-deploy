@@ -11,7 +11,7 @@ class DeployerJobSubmitterCommand:
 
     @classmethod
     def run(cls):
-        if len(sys.argv) < 2:
+        if len(sys.argv) - 1 < 2:
             raise Exception('dbx-deploy requires exactly 2 arguments [deploy YAML config path, notebook to run (relative path)]')
 
         deployYamlPath = Path(sys.argv[1])

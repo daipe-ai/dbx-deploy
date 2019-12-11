@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dbx-deploy"
-version = "0.6.6"
+version = "0.6.8"
 description = "Databrics Deployment Tool"
 readme = "README.md"
 repository = "https://github.com/DataSentics/dbx-deploy"
