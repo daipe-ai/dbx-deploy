@@ -27,17 +27,16 @@ services:
     arguments:
       - '%databricks.projectBasePath%'
 
-  DbxDeploy.Setup.SetupLoader:
+  DbxDeploy.Package.PackageMetadataLoader:
 
-  DbxDeploy.Setup.SetupBuilder:
+  DbxDeploy.Whl.WhlBuilder:
 
   DbxDeploy.Whl.WhlUploader:
-    arguments:
-      - '%whl.baseDir%'
 
   DbxDeploy.Whl.WhlDeployer:
     arguments:
       - '%databricks.projectBasePath%'
+      - '%whl.baseDir%'
 
   DbxDeploy.Dbc.DbcCreator:
 
@@ -48,6 +47,7 @@ services:
   DbxDeploy.Notebook.NotebooksDeployer:
     arguments:
       - '%databricks.projectRoot%'
+      - '%whl.baseDir%'
 
   DbxNotebookExporter.Json.JsonNotebookExporter:
 
@@ -96,8 +96,6 @@ services:
       - '%databricks.projectBasePath%'
 
   DbxDeploy.Notebook.LibsRunPreparer:
-    arguments:
-      - '%whl.baseDir%'
 
   DbxDeploy.Notebook.Converter.JupyterConverter:
 

@@ -27,9 +27,9 @@ class CurrentDirectoryUpdater:
         self.__workspaceImporter = workspaceImporter
         self.__converterResolver = converterResolver
 
-    def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, whlFileName: str):
+    def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, whlFilePath: PurePosixPath):
         self.__removeDeletedNotebooks(currentReleasePath, notebooks)
-        self.__updateNotebooks(currentReleasePath, notebooks, whlFileName)
+        self.__updateNotebooks(currentReleasePath, notebooks, whlFilePath)
 
     def __removeDeletedNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook]):
         try:
@@ -45,11 +45,11 @@ class CurrentDirectoryUpdater:
             self.__logger.warning('Removing deleted notebook {}'.format(fullNotebookPath))
             self.__dbxApi.workspace.delete(str(fullNotebookPath))
 
-    def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], whlFileName: str):
+    def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], whlFilePath: PurePosixPath):
         for notebook in notebooks:
             targetPath = currentReleasePath.joinpath(notebook.databricksRelativePath)
             resolver = self.__converterResolver.resolve(notebook.path)
-            script = resolver.toWorkspaceImportNotebook(notebook.path, whlFileName)
+            script = resolver.toWorkspaceImportNotebook(notebook.path, whlFilePath)
 
             self.__logger.info('Updating {}'.format(targetPath))
             self.__workspaceImporter.overwriteScript(script, targetPath)

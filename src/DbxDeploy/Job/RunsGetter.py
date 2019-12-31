@@ -1,6 +1,6 @@
 from databricks_api import DatabricksAPI
 from pathlib import PurePosixPath
-from DbxDeploy.Setup.Version.VersionInterface import VersionInterface
+from DbxDeploy.Package.PackageMetadata import PackageMetadata
 import re
 
 class RunsGetter:
@@ -15,7 +15,7 @@ class RunsGetter:
         self.__dbxProjectRoot = dbxProjectRoot
         self.__dbxApi = dbxApi
 
-    def get(self, notebookPath: PurePosixPath, version: VersionInterface):
+    def get(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
         notebookRuns = []
 
         page = 1
@@ -29,7 +29,7 @@ class RunsGetter:
             )
 
             if 'runs' in response:
-                newRuns = list(filter(lambda run: self.__filterRun(run, notebookPath, version), response['runs']))
+                newRuns = list(filter(lambda run: self.__filterRun(run, notebookPath, packageMetadata), response['runs']))
                 notebookRuns = notebookRuns + newRuns
 
             if response['has_more'] is False:
@@ -39,8 +39,8 @@ class RunsGetter:
 
         return notebookRuns
 
-    def __filterRun(self, run: dict, notebookPath: PurePosixPath, version: VersionInterface):
-        regEx = version.getDbxVersionPathRegEx(self.__dbxProjectRoot) + '/' + str(notebookPath) + '$'
+    def __filterRun(self, run: dict, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
+        regEx = packageMetadata.getNotebookPathRegEx(self.__dbxProjectRoot, notebookPath)
 
         return (
             re.match(regEx, run['task']['notebook_task']['notebook_path'])

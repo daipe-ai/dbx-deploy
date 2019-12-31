@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import List
 from DbxDeploy.Notebook.Converter.NotebookConverterInterface import NotebookConverterInterface
 from DbxNotebookExporter.Json.formatCellContent import formatCellContent
@@ -17,7 +17,7 @@ class PythonNotebookConverter(NotebookConverterInterface):
     ):
         self.__libsRunPreparer = libsRunPreparer
 
-    def toDbcNotebook(self, notebookPath: Path, whlFilename: str) -> str:
+    def toDbcNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
         originalScript = self.__loadNotebook(notebookPath)
         cells = self.__extractCells(originalScript)
         template = self.__loadJinjaTemplate()
@@ -40,7 +40,7 @@ class PythonNotebookConverter(NotebookConverterInterface):
 
         return script
 
-    def toWorkspaceImportNotebook(self, notebookPath: Path, whlFilename: str) -> str:
+    def toWorkspaceImportNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
         script = self.__loadNotebook(notebookPath)
 
         script = (

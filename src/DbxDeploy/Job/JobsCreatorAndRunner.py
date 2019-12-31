@@ -2,7 +2,7 @@ from typing import List
 from databricks_api.databricks import DatabricksAPI
 from DbxDeploy.Job.JobCreator import JobCreator
 from DbxDeploy.Notebook.Notebook import Notebook
-from DbxDeploy.Setup.Version.VersionInterface import VersionInterface
+from DbxDeploy.Package.PackageMetadata import PackageMetadata
 from logging import Logger
 
 class JobsCreatorAndRunner:
@@ -17,8 +17,8 @@ class JobsCreatorAndRunner:
         self.__jobCreator = jobCreator
         self.__dbxApi = dbxApi
 
-    def createAndRun(self, notebooks: List[Notebook], version: VersionInterface):
-        createdJobs = list(map(lambda notebook: self.__jobCreator.create(notebook.databricksRelativePath, version), notebooks))
+    def createAndRun(self, notebooks: List[Notebook], packageMetadata: PackageMetadata):
+        createdJobs = list(map(lambda notebook: self.__jobCreator.create(notebook.databricksRelativePath, packageMetadata), notebooks))
 
         self.__logger.info('--')
 

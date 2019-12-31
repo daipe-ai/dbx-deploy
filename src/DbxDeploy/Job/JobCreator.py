@@ -1,5 +1,5 @@
 from pathlib import PurePosixPath
-from DbxDeploy.Setup.Version.VersionInterface import VersionInterface
+from DbxDeploy.Package.PackageMetadata import PackageMetadata
 from databricks_api import DatabricksAPI
 from logging import Logger
 
@@ -17,8 +17,8 @@ class JobCreator:
         self.__logger = logger
         self.__dbxApi = dbxApi
 
-    def create(self, notebookPath: PurePosixPath, version: VersionInterface):
-        notebookReleasePath = version.getDbxVersionPath(self.__dbxProjectRoot).joinpath(notebookPath)
+    def create(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
+        notebookReleasePath = packageMetadata.getNotebookReleasePath(self.__dbxProjectRoot, notebookPath)
 
         self.__logger.info('Creating job for {}'.format(str(notebookReleasePath)))
 

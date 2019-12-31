@@ -1,6 +1,6 @@
 from pathlib import PurePosixPath
 from DbxDeploy.Job.RunsGetter import RunsGetter
-from DbxDeploy.Setup.Version.VersionInterface import VersionInterface
+from DbxDeploy.Package.PackageMetadata import PackageMetadata
 from databricks_api import DatabricksAPI
 from logging import Logger
 
@@ -16,9 +16,9 @@ class NotebookKiller:
         self.__runsGetter = runsGetter
         self.__dbxApi = dbxApi
 
-    def killIfRunning(self, notebookPath: PurePosixPath, version: VersionInterface):
+    def killIfRunning(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
         self.__logger.info('Looking for jobs running the {} notebook'.format(notebookPath))
-        previousNotebookRuns = self.__runsGetter.get(notebookPath, version)
+        previousNotebookRuns = self.__runsGetter.get(notebookPath, packageMetadata)
 
         if previousNotebookRuns:
             for runningJob in previousNotebookRuns:

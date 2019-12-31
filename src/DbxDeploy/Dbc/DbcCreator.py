@@ -1,3 +1,4 @@
+from pathlib import PurePosixPath
 from typing import List
 from DbxDeploy.Dbc.PathsPreparer import PathsPreparer
 from DbxDeploy.Notebook.Notebook import Notebook
@@ -15,7 +16,7 @@ class DbcCreator:
         self.__pathsPreparer = pathsPreparer
         self.__converterResolver = converterResolver
 
-    def create(self, notebooks: List[Notebook], whlFilename: str) -> bytes:
+    def create(self, notebooks: List[Notebook], whlFilename: PurePosixPath) -> bytes:
         notebookRelativePaths = list(map(lambda notebook: notebook.relativePath, notebooks))
 
         inMemoryOutput = BytesIO()

@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from DbxNotebookExporter.Databricks.DatabricksNotebookExporter import DatabricksNotebookExporter
 from DbxDeploy.Notebook.Converter.NotebookConverterInterface import NotebookConverterInterface
 from DbxNotebookExporter.Json.JsonNotebookExporter import JsonNotebookExporter
@@ -16,13 +16,13 @@ class JupyterConverter(NotebookConverterInterface):
         self.__jsonNotebookExporter = jsonNotebookExporter
         self.__databricksNotebookExporter = databricksNotebookExporter
 
-    def toDbcNotebook(self, notebookPath: Path, whlFilename: str) -> str:
+    def toDbcNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
         resources = {'libsRun': self.__libsRunPreparer.prepare(whlFilename)}
         script, _ = self.__jsonNotebookExporter.from_filename(str(notebookPath), resources)
 
         return script
 
-    def toWorkspaceImportNotebook(self, notebookPath: Path, whlFilename: str) -> str:
+    def toWorkspaceImportNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
         resources = {'libsRun': self.__libsRunPreparer.prepare(whlFilename)}
         script, _ = self.__databricksNotebookExporter.from_filename(str(notebookPath), resources)
 
