@@ -20,26 +20,21 @@ classifiers = [
 include = ["*.yaml", "*.tpl"]
 
 packages = [
-    { include = "DbxDeploy", from = "src" },
+    { include = "dbxdeploy", from = "src" },
 ]
-
-[tool.poetry.scripts]
-"dbx-deploy" = "DbxDeploy.DeployerCommand:DeployerCommand.run"
-"dbx-deploy-submit-job" = "DbxDeploy.DeployerJobSubmitterCommand:DeployerJobSubmitterCommand.run"
-"dbx-deploy-with-cleanup" = "DbxDeploy.DeployWithCleanupCommand:DeployWithCleanupCommand.run"
-"dbx-delete-all-jobs" = "DbxDeploy.JobsDeleterCommand:JobsDeleterCommand.run"
 
 [tool.poetry.dependencies]
 colorlog = "4.0.*"
 databricks-api = "0.3.*"
 dbx-notebook-exporter = "0.2.*"
-injecta = "0.4.*"
+injecta = "0.5.*"
 nbconvert = "5.6.*"
 pygit2 = "0.28.*"
 python = "~3.7.3"
 python-box = "3.4.*"
 PyYAML = "5.1.*"
 tomlkit = "0.5.*"
+console-bundle = "0.1*"
 
 [tool.poetry.dev-dependencies]
 pylint = "2.4.*"
