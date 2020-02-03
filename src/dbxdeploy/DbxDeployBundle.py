@@ -13,14 +13,6 @@ class DbxDeployBundle(Bundle):
         self.__definitionsPreparer = createDefinitionsPreparer()
         self.__configMerger = ConfigMerger()
 
-    def modifyDefinitions(self, definitions: List[Definition]):
-        currentDir = os.path.dirname(os.path.abspath(__file__))
-        config = self.__configReader.read(currentDir + '/_config/services.yaml')
-
-        newDefinitions = self.__definitionsPreparer.prepare(config['services'])
-
-        return definitions + newDefinitions
-
     def modifyRawConfig(self, rawConfig: dict) -> dict:
         defaultConfig = {
             'browser': {
@@ -40,3 +32,11 @@ class DbxDeployBundle(Bundle):
         })
 
         return rawConfig
+
+    def modifyDefinitions(self, definitions: List[Definition]):
+        currentDir = os.path.dirname(os.path.abspath(__file__))
+        config = self.__configReader.read(currentDir + '/_config/services.yaml')
+
+        newDefinitions = self.__definitionsPreparer.prepare(config['services'])
+
+        return definitions + newDefinitions
