@@ -24,17 +24,15 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-colorlog = "4.0.*"
+python = "~3.7.3"
 databricks-api = "0.3.*"
 dbx-notebook-exporter = "0.2.*"
-injecta = "0.5.*"
 nbconvert = "5.6.*"
 pygit2 = "0.28.*"
-python = "~3.7.3"
 python-box = "3.4.*"
-PyYAML = "5.1.*"
 tomlkit = "0.5.*"
-console-bundle = "0.1*"
+pyfony-bundles = "0.2.*"
+console-bundle = "0.2.*"
 
 [tool.poetry.dev-dependencies]
 pylint = "2.4.*"

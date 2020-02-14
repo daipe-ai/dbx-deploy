@@ -9,12 +9,12 @@ class NotebookKiller:
     def __init__(
         self,
         logger: Logger,
+        dbxApi: DatabricksAPI,
         runsGetter: RunsGetter,
-        dbxApi: DatabricksAPI
     ):
         self.__logger = logger
-        self.__runsGetter = runsGetter
         self.__dbxApi = dbxApi
+        self.__runsGetter = runsGetter
 
     def killIfRunning(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
         self.__logger.info('Looking for jobs running the {} notebook'.format(notebookPath))

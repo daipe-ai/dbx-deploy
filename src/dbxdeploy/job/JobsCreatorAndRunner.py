@@ -10,12 +10,12 @@ class JobsCreatorAndRunner:
     def __init__(
         self,
         logger: Logger,
+        dbxApi: DatabricksAPI,
         jobCreator: JobCreator,
-        dbxApi: DatabricksAPI
     ):
         self.__logger = logger
-        self.__jobCreator = jobCreator
         self.__dbxApi = dbxApi
+        self.__jobCreator = jobCreator
 
     def createAndRun(self, notebooks: List[Notebook], packageMetadata: PackageMetadata):
         createdJobs = list(map(lambda notebook: self.__jobCreator.create(notebook.databricksRelativePath, packageMetadata), notebooks))

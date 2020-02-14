@@ -8,13 +8,13 @@ class JupyterConverter(NotebookConverterInterface):
 
     def __init__(
         self,
-        libsRunPreparer: LibsRunPreparer,
         jsonNotebookExporter: JsonNotebookExporter,
         databricksNotebookExporter: DatabricksNotebookExporter,
+        libsRunPreparer: LibsRunPreparer,
     ):
-        self.__libsRunPreparer = libsRunPreparer
         self.__jsonNotebookExporter = jsonNotebookExporter
         self.__databricksNotebookExporter = databricksNotebookExporter
+        self.__libsRunPreparer = libsRunPreparer
 
     def toDbcNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
         resources = {'libsRun': self.__libsRunPreparer.prepare(whlFilename)}

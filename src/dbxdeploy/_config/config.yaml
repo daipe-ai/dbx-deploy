@@ -1,8 +1,18 @@
+parameters:
+  dbxdeploy:
+    browser:
+      path: 'c:/Program Files (x86)/Google/Chrome/Application/chrome.exe'
+      arguments: ['-d', '{runUrl}']
+    databricks:
+      projectRoot': '/{currentBranch}'
+      whlBaseDir': 'dbfs:/FileStore/jars'
+
 services:
   dbxdeploy.cluster.ClusterRestarter:
     arguments:
       - '%dbxdeploy.databricks.clusterId%'
       - '@consolebundle.logger'
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.deploy.WorkingDirectoryPathFactory:
 
@@ -42,6 +52,7 @@ services:
   dbxdeploy.whl.WhlUploader:
     arguments:
       - '@consolebundle.logger'
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.whl.WhlDeployer:
     arguments:
@@ -52,6 +63,8 @@ services:
   dbxdeploy.dbc.DbcCreator:
 
   dbxdeploy.dbc.DbcUploader:
+    arguments:
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.dbc.PathsPreparer:
 
@@ -61,13 +74,16 @@ services:
       - '%dbxdeploy.databricks.whlBaseDir%'
       - '@consolebundle.logger'
 
-  DbxNotebookExporter.Json.JsonNotebookExporter:
+  dbxdeploy.export.jsonNotebookExporter:
+    class: DbxNotebookExporter.Json.JsonNotebookExporter
 
-  DbxNotebookExporter.Databricks.DatabricksNotebookExporter:
+  dbxdeploy.export.databricksNotebookExporter:
+    class: DbxNotebookExporter.Databricks.DatabricksNotebookExporter
 
   dbxdeploy.job.JobsDeleter:
     arguments:
       - '@consolebundle.logger'
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.job.JobsDeleterCommand:
     arguments:
@@ -80,10 +96,12 @@ services:
       - '%dbxdeploy.databricks.clusterId%'
       - '@dbxdeploy.workspace.projectRootPath'
       - '@consolebundle.logger'
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.job.JobsCreatorAndRunner:
     arguments:
       - '@consolebundle.logger'
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.job.JobSubmitter:
     arguments:
@@ -91,17 +109,21 @@ services:
       - '@dbxdeploy.workspace.projectRootPath'
       - '%dbxdeploy.browser%'
       - '@consolebundle.logger'
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.job.RunsGetter:
     arguments:
       - '%dbxdeploy.databricks.clusterId%'
       - '@dbxdeploy.workspace.projectRootPath'
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.job.NotebookKiller:
     arguments:
       - '@consolebundle.logger'
+      - '@dbxdeploy.databricksApi'
 
-  databricks_api.databricks.DatabricksAPI:
+  dbxdeploy.databricksApi:
+    class: databricks_api.databricks.DatabricksAPI
     autowire: False
     arguments:
       -
@@ -113,6 +135,7 @@ services:
     arguments:
       - '@dbxdeploy.workspace.projectRootPath'
       - '@consolebundle.logger'
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.workspace.ProjectRootPathFactory:
     arguments:
@@ -123,8 +146,12 @@ services:
     factory: ['@dbxdeploy.workspace.ProjectRootPathFactory', 'create']
 
   dbxdeploy.workspace.WorkspaceImporter:
+    arguments:
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.workspace.WorkspaceExporter:
+    arguments:
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.notebook.NotebooksLocator:
     arguments:
@@ -133,6 +160,9 @@ services:
   dbxdeploy.notebook.LibsRunPreparer:
 
   dbxdeploy.notebook.converter.JupyterConverter:
+    arguments:
+      - '@dbxdeploy.export.jsonNotebookExporter'
+      - '@dbxdeploy.export.databricksNotebookExporter'
 
   dbxdeploy.notebook.converter.PythonNotebookConverter:
 
