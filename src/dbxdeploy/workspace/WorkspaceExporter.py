@@ -9,10 +9,10 @@ import base64
 
 class WorkspaceExporter:
 
-    def __init__(self, dbxApi: DatabricksAPI) -> List[str]:
+    def __init__(self, dbxApi: DatabricksAPI):
         self.__dbxApi = dbxApi
 
-    def export(self, path: PurePosixPath):
+    def export(self, path: PurePosixPath) -> List[str]:
         try:
             response = self.__dbxApi.workspace.export_workspace(str(path), format='DBC')
         except HTTPError:
