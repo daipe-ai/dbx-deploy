@@ -135,11 +135,11 @@ testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2)", "pytes
 
 [[package]]
 category = "main"
-description = "Console"
+description = "Console Bundle for the Pyfony Framework"
 name = "console-bundle"
 optional = false
 python-versions = ">=3.7.3,<3.8.0"
-version = "0.2.0"
+version = "0.2.1"
 
 [package.dependencies]
 colorlog = ">=4.0.0,<4.1.0"
@@ -908,8 +908,8 @@ configparser = [
     {file = "configparser-4.0.2.tar.gz", hash = "sha256:c7d282687a5308319bf3d2e7706e575c635b0a470342641c93bea0ea3b5331df"},
 ]
 console-bundle = [
-    {file = "console-bundle-0.2.0.tar.gz", hash = "sha256:1d7375cd3bd3d694157517ec64cd473665fa94d0b934c240f69ce320bdd5b516"},
-    {file = "console_bundle-0.2.0-py3-none-any.whl", hash = "sha256:c239601f1e020e869ae0a8db6410ecba144fca0dcd7394c86e394c9c676f3889"},
+    {file = "console-bundle-0.2.1.tar.gz", hash = "sha256:e6396164f5083a85ab6a788726ca6f2141a01ac53d6893020d749d21a429d0d5"},
+    {file = "console_bundle-0.2.1-py3-none-any.whl", hash = "sha256:db1c73f45a9b7832e9007ec9579a93341f21ece58ddfea7a9e4f6e98f7b1f6a2"},
 ]
 databricks-api = [
     {file = "databricks_api-0.3.0-py2.py3-none-any.whl", hash = "sha256:8f637288d05b3d214ea1636bb31d6423c751d85fdccd25fd0d0c86657e7c0abc"},
