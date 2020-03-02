@@ -6,6 +6,7 @@ parameters:
     databricks:
       projectRoot': '/{currentBranch}'
       whlBaseDir': 'dbfs:/FileStore/jars'
+      createReleases: True
 
 services:
   dbxdeploy.cluster.ClusterRestarter:
@@ -19,6 +20,10 @@ services:
   dbxdeploy.deploy.workingDirectoryPath:
     class: pathlib.Path
     factory: ['@dbxdeploy.deploy.WorkingDirectoryPathFactory', 'create']
+
+  dbxdeploy.deploy.CurrentAndReleaseDeployer:
+    arguments:
+      - '%dbxdeploy.databricks.createReleases%'
 
   dbxdeploy.deploy.Deployer:
     arguments:

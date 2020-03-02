@@ -1,6 +1,6 @@
+from dbxdeploy.deploy.CurrentAndReleaseDeployer import CurrentAndReleaseDeployer
 from dbxdeploy.package.PackageMetadataLoader import PackageMetadataLoader
 from dbxdeploy.whl.WhlDeployer import WhlDeployer
-from dbxdeploy.notebook.NotebooksDeployer import NotebooksDeployer
 from pathlib import Path
 import asyncio
 
@@ -10,12 +10,12 @@ class Deployer:
         self,
         projectBasePath: Path,
         packageMetadataLoader: PackageMetadataLoader,
-        notebooksDeployer: NotebooksDeployer,
+        currentAndReleaseDeployer: CurrentAndReleaseDeployer,
         whlDeployer: WhlDeployer,
     ):
         self.__projectBasePath = projectBasePath
         self.__packageMetadataLoader = packageMetadataLoader
-        self.__notebooksDeployer = notebooksDeployer
+        self.__currentAndReleaseDeployer = currentAndReleaseDeployer
         self.__whlDeployer = whlDeployer
 
     async def deploy(self):
@@ -24,7 +24,7 @@ class Deployer:
         loop = asyncio.get_event_loop()
 
         whlDeployFuture = loop.run_in_executor(None, self.__whlDeployer.deploy, packageMetadata)
-        dbcDeployFuture = loop.run_in_executor(None, self.__notebooksDeployer.deployWithCurrent, packageMetadata)
+        dbcDeployFuture = loop.run_in_executor(None, self.__currentAndReleaseDeployer.deploy, packageMetadata)
 
         await whlDeployFuture
         await dbcDeployFuture
