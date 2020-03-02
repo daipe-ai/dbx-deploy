@@ -7,6 +7,10 @@ parameters:
       projectRoot': '/{currentBranch}'
       whlBaseDir': 'dbfs:/FileStore/jars'
       createReleases: True
+    notebooks:
+      consumerGlobs: ['**/*.consumer.py']
+      jobGlobs: ['**/*.job.py']
+      notebookGlobs: []
 
 services:
   dbxdeploy.cluster.ClusterRestarter:
@@ -166,10 +170,14 @@ services:
 
   dbxdeploy.notebook.converter.JupyterConverter:
     arguments:
+      - '%dbxdeploy.notebooks.consumerGlobs%'
       - '@dbxdeploy.export.jsonNotebookExporter'
       - '@dbxdeploy.export.databricksNotebookExporter'
 
   dbxdeploy.notebook.converter.PythonNotebookConverter:
+    arguments:
+      - '%dbxdeploy.notebooks.consumerGlobs%'
+      - '%dbxdeploy.notebooks.jobGlobs%'
 
   dbxdeploy.notebook.ConverterResolver:
     arguments:

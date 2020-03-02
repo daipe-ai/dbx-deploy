@@ -13,8 +13,12 @@ class PythonNotebookConverter(NotebookConverterInterface):
 
     def __init__(
         self,
+        consumerGlobs: list,
+        jobGlobs: list,
         libsRunPreparer: LibsRunPreparer,
     ):
+        self.__consumerGlobs = consumerGlobs
+        self.__jobGlobs = jobGlobs
         self.__libsRunPreparer = libsRunPreparer
 
     def toDbcNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
@@ -58,13 +62,13 @@ class PythonNotebookConverter(NotebookConverterInterface):
         return fileExtension == 'py'
 
     def getGlobPatterns(self) -> list:
-        return ['**/*.consumer.py', '**/*.job.py']
+        return self.__consumerGlobs + self.__jobGlobs
 
     def getConsumerGlobPatterns(self) -> list:
-        return ['**/*.consumer.py']
+        return self.__consumerGlobs
 
     def getDescription(self):
-        return 'Python consumers (*.consumer.py) and jobs (*.job.py)'
+        return 'Python consumers and jobs'
 
     def __extractCells(self, originalScript: str) -> List[dict]:
         def removeEndingSpaces(cell: str):

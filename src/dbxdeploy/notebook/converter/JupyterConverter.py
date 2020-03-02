@@ -8,10 +8,12 @@ class JupyterConverter(NotebookConverterInterface):
 
     def __init__(
         self,
+        consumerGlobs: list,
         jsonNotebookExporter: JsonNotebookExporter,
         databricksNotebookExporter: DatabricksNotebookExporter,
         libsRunPreparer: LibsRunPreparer,
     ):
+        self.__consumerGlobs = consumerGlobs
         self.__jsonNotebookExporter = jsonNotebookExporter
         self.__databricksNotebookExporter = databricksNotebookExporter
         self.__libsRunPreparer = libsRunPreparer
@@ -35,7 +37,7 @@ class JupyterConverter(NotebookConverterInterface):
         return ['**/*.ipynb']
 
     def getConsumerGlobPatterns(self) -> list:
-        return ['**/*.consumer.ipynb']
+        return self.__consumerGlobs
 
     def getDescription(self):
         return 'Jupyter notebooks (*.ipynb)'
