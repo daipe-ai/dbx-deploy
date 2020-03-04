@@ -29,7 +29,13 @@ class WorkspaceExporter:
 
         for file in zipFile.filelist:
             if file.orig_filename[-1:] != '/':
-                fileNames.append(file.orig_filename)
+                """
+                _current/myproject/foo/bar.python -> myproject/foo/bar.python (releases enabled)
+                mybranch/myproject/foo/bar.python -> myproject/foo/bar.python (releases disabled)
+                """
+                filePathWithoutRootdir = file.orig_filename[file.orig_filename.index('/') + 1:]
+
+                fileNames.append(filePathWithoutRootdir)
 
         zipFile.close()
         buffer.seek(0)

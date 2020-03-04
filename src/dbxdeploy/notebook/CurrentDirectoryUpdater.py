@@ -38,7 +38,7 @@ class CurrentDirectoryUpdater:
             existingNotebooksFullPaths = []
 
         existingNotebooks = set(map(lambda path: re.sub(r'\.python$', '', path), existingNotebooksFullPaths))
-        newNotebooks = set(map(lambda notebook: str(PurePosixPath('_current').joinpath(notebook.databricksRelativePath)), notebooks))
+        newNotebooks = set(map(lambda notebook: str(notebook.databricksRelativePath), notebooks))
 
         for notebookToDelete in existingNotebooks - newNotebooks:
             fullNotebookPath = self.__dbxProjectRoot.joinpath(notebookToDelete)
