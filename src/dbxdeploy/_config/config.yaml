@@ -172,6 +172,8 @@ services:
 
   dbxdeploy.notebook.converter.DbcScriptRenderer:
 
+  dbxdeploy.notebook.converter.CellsExtractor:
+
   dbxdeploy.notebook.converter.JupyterConverter:
     arguments:
       - '%dbxdeploy.notebooks.consumerGlobs%'

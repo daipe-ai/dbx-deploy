@@ -1,7 +1,7 @@
 import re
 from pathlib import Path, PurePosixPath
-from typing import List
 from dbxdeploy.notebook.LibsRunPreparer import LibsRunPreparer
+from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
 from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
 from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
@@ -13,18 +13,20 @@ class PythonNotebookConverter(NotebookConverterInterface):
         consumerGlobs: list,
         jobGlobs: list,
         libsRunPreparer: LibsRunPreparer,
+        cellsExtractor: CellsExtractor,
         jinjaTemplateLoader: JinjaTemplateLoader,
         dbcScriptRenderer: DbcScriptRenderer,
     ):
         self.__consumerGlobs = consumerGlobs
         self.__jobGlobs = jobGlobs
         self.__libsRunPreparer = libsRunPreparer
+        self.__cellsExtractor = cellsExtractor
         self.__jinjaTemplateLoader = jinjaTemplateLoader
         self.__dbcScriptRenderer = dbcScriptRenderer
 
     def toDbcNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
         originalScript = self.__loadNotebook(notebookPath)
-        cells = self.__extractCells(originalScript)
+        cells = self.__cellsExtractor.extract(originalScript, r'#%%\n+')
         template = self.__jinjaTemplateLoader.load()
 
         return self.__dbcScriptRenderer.render(notebookPath, template, cells, whlFilename)
@@ -54,16 +56,6 @@ class PythonNotebookConverter(NotebookConverterInterface):
 
     def getDescription(self):
         return 'Python consumers and jobs'
-
-    def __extractCells(self, originalScript: str) -> List[dict]:
-        def removeEndingSpaces(cell: str):
-            return re.sub(r'\n+$', '', cell)
-
-        rawCells = re.split(r'#%%\n+', originalScript)
-        rawCells = list(filter(lambda rawCell: rawCell != '', rawCells))
-        rawCells = list(map(removeEndingSpaces, rawCells))
-
-        return list(map(lambda rawCell: {'source': rawCell, 'cell_type': 'code'}, rawCells))
 
     def __loadNotebook(self, notebookPath: Path):
         with notebookPath.open() as f:
