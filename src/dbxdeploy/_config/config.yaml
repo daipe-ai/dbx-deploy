@@ -168,6 +168,10 @@ services:
 
   dbxdeploy.notebook.LibsRunPreparer:
 
+  dbxdeploy.notebook.converter.JinjaTemplateLoader:
+
+  dbxdeploy.notebook.converter.DbcScriptRenderer:
+
   dbxdeploy.notebook.converter.JupyterConverter:
     arguments:
       - '%dbxdeploy.notebooks.consumerGlobs%'
