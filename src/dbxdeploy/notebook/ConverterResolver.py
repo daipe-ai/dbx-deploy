@@ -1,5 +1,6 @@
-from pathlib import Path, PurePosixPath
+from pathlib import PurePosixPath
 from typing import List
+from dbxdeploy.notebook.converter.ConverterGlobPatterns import ConverterGlobPatterns
 from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
 
 class ConverterResolver:
@@ -22,20 +23,20 @@ class ConverterResolver:
     def getSupportedFormatsDescriptions(self) -> list:
         return list(map(lambda converter: converter.getDescription(), self.__converters))
 
-    def resolve(self, path: Path) -> NotebookConverterInterface:
-        fileExtension = path.suffix[1:]
-
+    def resolve(self, converterClass: str) -> NotebookConverterInterface:
         for converter in self.__converters:
-            if converter.resolves(fileExtension) is True:
+            if converter.__class__.__name__ == converterClass:
                 return converter
 
-        raise Exception('No converter for .{}'.format(fileExtension))
+        raise Exception('No converter for: {}'.format(converterClass))
 
     def getGlobPatterns(self):
         patterns = []
 
         for converter in self.__converters:
-            patterns = patterns + converter.getGlobPatterns()
+            className = converter.__class__.__name__
+
+            patterns.append(ConverterGlobPatterns(className, converter.getGlobPatterns()))
 
         return patterns
 
@@ -43,6 +44,8 @@ class ConverterResolver:
         patterns = []
 
         for converter in self.__converters:
-            patterns = patterns + converter.getConsumerGlobPatterns()
+            className = converter.__class__.__name__
+
+            patterns.append(ConverterGlobPatterns(className, converter.getConsumerGlobPatterns()))
 
         return patterns

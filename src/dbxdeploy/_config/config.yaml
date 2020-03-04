@@ -10,7 +10,7 @@ parameters:
     notebooks:
       consumerGlobs: ['**/*.consumer.py']
       jobGlobs: ['**/*.job.py']
-      notebookGlobs: []
+      databricksNotebookGlobs: []
 
 services:
   dbxdeploy.cluster.ClusterRestarter:
@@ -185,8 +185,13 @@ services:
       - '%dbxdeploy.notebooks.consumerGlobs%'
       - '%dbxdeploy.notebooks.jobGlobs%'
 
+  dbxdeploy.notebook.converter.DatabricksNotebookConverter:
+    arguments:
+      - '%dbxdeploy.notebooks.databricksNotebookGlobs%'
+
   dbxdeploy.notebook.ConverterResolver:
     arguments:
       -
         - '@dbxdeploy.notebook.converter.JupyterConverter'
         - '@dbxdeploy.notebook.converter.PythonNotebookConverter'
+        - '@dbxdeploy.notebook.converter.DatabricksNotebookConverter'

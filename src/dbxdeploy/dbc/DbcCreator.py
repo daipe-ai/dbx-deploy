@@ -28,7 +28,7 @@ class DbcCreator:
             zipFile.writestr(dirPath + '/', '')
 
         for notebook in notebooks:
-            converter = self.__converterResolver.resolve(notebook.path)
+            converter = self.__converterResolver.resolve(notebook.converterClass)
             zipPath = '/'.join(notebook.relativePath.parts[0:-1]) + '/' + notebook.relativePath.stem + '.python'
 
             zipFile.writestr(zipPath, converter.toDbcNotebook(notebook.path, whlFilename))

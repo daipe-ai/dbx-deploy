@@ -48,7 +48,7 @@ class CurrentDirectoryUpdater:
     def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], whlFilePath: PurePosixPath):
         for notebook in notebooks:
             targetPath = currentReleasePath.joinpath(notebook.databricksRelativePath)
-            resolver = self.__converterResolver.resolve(notebook.path)
+            resolver = self.__converterResolver.resolve(notebook.converterClass)
             script = resolver.toWorkspaceImportNotebook(notebook.path, whlFilePath)
 
             self.__logger.info('Updating {}'.format(targetPath))
