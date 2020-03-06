@@ -58,6 +58,10 @@ services:
 
   dbxdeploy.package.PackageMetadataLoader:
 
+  dbxdeploy.whl.WhlBuilder:
+
+  dbxdeploy.whl.RequirementsLineConverter:
+
   dbxdeploy.whl.WhlUploader:
     arguments:
       - '@consolebundle.logger'
