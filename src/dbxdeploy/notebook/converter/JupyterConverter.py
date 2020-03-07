@@ -1,7 +1,7 @@
 from pathlib import Path, PurePosixPath
-from DbxNotebookExporter.Databricks.DatabricksNotebookExporter import DatabricksNotebookExporter
+from dbxnotebookexporter.databricks.DatabricksNotebookExporter import DatabricksNotebookExporter
 from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
-from DbxNotebookExporter.Json.JsonNotebookExporter import JsonNotebookExporter
+from dbxnotebookexporter.json.JsonNotebookExporter import JsonNotebookExporter
 from dbxdeploy.notebook.LibsRunPreparer import LibsRunPreparer
 
 class JupyterConverter(NotebookConverterInterface):

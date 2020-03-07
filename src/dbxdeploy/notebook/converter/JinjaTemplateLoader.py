@@ -1,5 +1,5 @@
-from DbxNotebookExporter.Json.formatCellContent import formatCellContent
-import DbxNotebookExporter.Json.JsonNotebookExporter as JsonNotebookExporterModule
+from dbxnotebookexporter.json.formatCellContent import formatCellContent
+import dbxnotebookexporter.json.JsonNotebookExporter as JsonNotebookExporterModule
 import nbconvert.templates.skeleton as nbConvertSkeleton
 import jinja2
 import os

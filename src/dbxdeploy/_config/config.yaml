@@ -88,10 +88,10 @@ services:
       - '@consolebundle.logger'
 
   dbxdeploy.export.jsonNotebookExporter:
-    class: DbxNotebookExporter.Json.JsonNotebookExporter
+    class: dbxnotebookexporter.json.JsonNotebookExporter
 
   dbxdeploy.export.databricksNotebookExporter:
-    class: DbxNotebookExporter.Databricks.DatabricksNotebookExporter
+    class: dbxnotebookexporter.databricks.DatabricksNotebookExporter
 
   dbxdeploy.job.JobsDeleter:
     arguments:

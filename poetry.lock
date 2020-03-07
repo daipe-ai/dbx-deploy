@@ -177,7 +177,7 @@ description = "Databrics Notebook Exporter"
 name = "dbx-notebook-exporter"
 optional = false
 python-versions = ">=3.5.2"
-version = "0.2.6"
+version = "0.3.0"
 
 [package.dependencies]
 ipython = ">=7,<8"
@@ -825,7 +825,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools"]
 
 [metadata]
-content-hash = "13f95625548c7e193da4cdd9dfd541d73147e90395978fc52b73e7f7872aca6c"
+content-hash = "940b4a3ad62b6ba9f4659c93892030d89a8c0016b87281275d7fb2cfd3679ce9"
 python-versions = "~3.7.3"
 
 [metadata.files]
@@ -920,8 +920,8 @@ databricks-cli = [
     {file = "databricks_cli-0.9.1-py2-none-any.whl", hash = "sha256:baeb52ddebe55305797e30641ebbc3c3f520535cd4df67afb05d06a90cc1b837"},
 ]
 dbx-notebook-exporter = [
-    {file = "dbx-notebook-exporter-0.2.6.tar.gz", hash = "sha256:071b321c0c4906fd158ccd9ec264b345ea5bb954fea114d7e154a71b532fc14f"},
-    {file = "dbx_notebook_exporter-0.2.6-py3-none-any.whl", hash = "sha256:b2e959ae973320a447231bcc50eb4e626d53fd5111ea871591977b3f956615ca"},
+    {file = "dbx-notebook-exporter-0.3.0.tar.gz", hash = "sha256:29c4a1aaffc408b7f46700266e734d23c1abda3ad16b9f0cba115eb36e1ecee4"},
+    {file = "dbx_notebook_exporter-0.3.0-py3-none-any.whl", hash = "sha256:2b69a73dd58609f6be2954a2b03406020c094105cde51d2ad0f48f726316abeb"},
 ]
 decorator = [
     {file = "decorator-4.4.1-py2.py3-none-any.whl", hash = "sha256:5d19b92a3c8f7f101c8dd86afd86b0f061a8ce4540ab8cd401fa2542756bce6d"},
