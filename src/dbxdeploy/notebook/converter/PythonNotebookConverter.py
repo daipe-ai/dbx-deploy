@@ -58,5 +58,5 @@ class PythonNotebookConverter(NotebookConverterInterface):
         return 'Python consumers and jobs'
 
     def __loadNotebook(self, notebookPath: Path):
-        with notebookPath.open() as f:
+        with notebookPath.open('r', encoding='utf-8') as f:
             return f.read()
