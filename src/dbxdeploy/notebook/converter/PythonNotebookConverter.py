@@ -26,10 +26,16 @@ class PythonNotebookConverter(NotebookConverterInterface):
 
     def toDbcNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
         originalScript = self.__loadNotebook(notebookPath)
-        cells = self.__cellsExtractor.extract(originalScript, r'#%%\n+')
+
+        libsRunCell = {
+            'source': self.__libsRunPreparer.prepare(whlFilename),
+            'cell_type': 'code',
+        }
+
+        cells = [libsRunCell] + self.__cellsExtractor.extract(originalScript, r'#%%\n+')
         template = self.__jinjaTemplateLoader.load()
 
-        return self.__dbcScriptRenderer.render(notebookPath, template, cells, whlFilename)
+        return self.__dbcScriptRenderer.render(notebookPath, template, cells)
 
     def toWorkspaceImportNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
         script = self.__loadNotebook(notebookPath)

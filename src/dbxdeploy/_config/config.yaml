@@ -74,6 +74,8 @@ services:
       - '@consolebundle.logger'
 
   dbxdeploy.dbc.DbcCreator:
+    arguments:
+      - '@dbxdeploy.deploy.workingDirectoryPath'
 
   dbxdeploy.dbc.DbcUploader:
     arguments:

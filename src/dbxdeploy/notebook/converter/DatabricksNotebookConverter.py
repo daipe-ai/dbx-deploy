@@ -1,3 +1,4 @@
+import re
 from pathlib import Path, PurePosixPath
 from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
@@ -20,10 +21,20 @@ class DatabricksNotebookConverter(NotebookConverterInterface):
 
     def toDbcNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
         originalScript = self.__loadNotebook(notebookPath)
+
         cells = self.__cellsExtractor.extract(originalScript, r'#[\s]+COMMAND[\s]+[\-]+\n+')
+
+        def cleanupCell(cell: dict):
+            cell['source'] = re.sub(r'^# Databricks notebook source[\r\n]+', '', cell['source'])
+            cell['source'] = re.sub(r'^# MAGIC ', '', cell['source'])
+
+            return cell
+
+        cells = list(map(cleanupCell, cells))
+
         template = self.__jinjaTemplateLoader.load()
 
-        return self.__dbcScriptRenderer.render(notebookPath, template, cells, whlFilename)
+        return self.__dbcScriptRenderer.render(notebookPath, template, cells)
 
     def toWorkspaceImportNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
         return self.__loadNotebook(notebookPath)
