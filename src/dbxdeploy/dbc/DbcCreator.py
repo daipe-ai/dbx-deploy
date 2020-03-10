@@ -1,4 +1,4 @@
-from pathlib import PurePosixPath
+from pathlib import PurePosixPath, Path
 from typing import List
 from dbxdeploy.dbc.PathsPreparer import PathsPreparer
 from dbxdeploy.notebook.Notebook import Notebook
@@ -10,9 +10,11 @@ class DbcCreator:
 
     def __init__(
         self,
+        workingDirectory: Path,
         pathsPreparer: PathsPreparer,
         converterResolver: ConverterResolver
     ):
+        self.__workingDirectory = workingDirectory
         self.__pathsPreparer = pathsPreparer
         self.__converterResolver = converterResolver
 
@@ -36,4 +38,9 @@ class DbcCreator:
         zipFile.close()
         inMemoryOutput.seek(0)
 
-        return inMemoryOutput.getvalue()
+        zipContent = inMemoryOutput.getvalue()
+
+        with self.__workingDirectory.joinpath('dist/notebooks.dbc').open('wb') as f:
+            f.write(zipContent)
+
+        return zipContent
