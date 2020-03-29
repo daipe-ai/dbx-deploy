@@ -4,15 +4,19 @@ from pathlib import Path, PurePosixPath
 class NotebookConverterInterface(ABC):
 
     @abstractmethod
-    def toDbcNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
+    def getSupportedExtensions(self) -> list:
         pass
 
     @abstractmethod
-    def toWorkspaceImportNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
+    def loadSource(self, notebookPath) -> str:
         pass
 
     @abstractmethod
-    def resolves(self, fileExtension: str) -> bool:
+    def toDbcNotebook(self, notebookName: str, source: str, whlFilename: PurePosixPath) -> str:
+        pass
+
+    @abstractmethod
+    def toWorkspaceImportNotebook(self, source: str, whlFilename: PurePosixPath) -> str:
         pass
 
     @abstractmethod

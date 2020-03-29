@@ -3,6 +3,7 @@ from typing import List
 from databricks_api import DatabricksAPI
 from pathlib import PurePosixPath
 from dbxdeploy.notebook.ConverterResolver import ConverterResolver
+from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.workspace.WorkspaceImporter import WorkspaceImporter
 from dbxdeploy.workspace.PathNotExistException import PathNotExistException
 from dbxdeploy.workspace.WorkspaceExporter import WorkspaceExporter
@@ -48,8 +49,14 @@ class CurrentDirectoryUpdater:
     def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], whlFilePath: PurePosixPath):
         for notebook in notebooks:
             targetPath = currentReleasePath.joinpath(notebook.databricksRelativePath)
-            resolver = self.__converterResolver.resolve(notebook.converterClass)
-            script = resolver.toWorkspaceImportNotebook(notebook.path, whlFilePath)
+            converter = self.__converterResolver.resolve(notebook.converterClass)
+
+            try:
+                source = converter.loadSource(notebook.path)
+            except UnexpectedSourceException:
+                continue
+
+            script = converter.toWorkspaceImportNotebook(source, whlFilePath)
 
             self.__logger.info('Updating {}'.format(targetPath))
             self.__workspaceImporter.overwriteScript(script, targetPath)

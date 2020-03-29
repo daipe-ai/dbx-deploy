@@ -1,13 +1,12 @@
-from pathlib import Path
 from typing import List
 from jinja2 import Template
 
 class DbcScriptRenderer:
 
-    def render(self, notebookPath: Path, template: Template, cells: List[dict]):
+    def render(self, notebookName: str, template: Template, cells: List[dict]):
         resources = {
             'metadata': {
-                'name': notebookPath.stem
+                'name': notebookName,
             },
             'global_content_filter': {
                 'include_code': True,

@@ -1,10 +1,11 @@
 from pathlib import PurePosixPath, Path
 from typing import List
+import zipfile
+from io import BytesIO
 from dbxdeploy.dbc.PathsPreparer import PathsPreparer
 from dbxdeploy.notebook.Notebook import Notebook
 from dbxdeploy.notebook.ConverterResolver import ConverterResolver
-import zipfile
-from io import BytesIO
+from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 
 class DbcCreator:
 
@@ -33,7 +34,13 @@ class DbcCreator:
             converter = self.__converterResolver.resolve(notebook.converterClass)
             zipPath = '/'.join(notebook.relativePath.parts[0:-1]) + '/' + notebook.relativePath.stem + '.python'
 
-            zipFile.writestr(zipPath, converter.toDbcNotebook(notebook.path, whlFilename))
+            try:
+                source = converter.loadSource(notebook.path)
+            except UnexpectedSourceException:
+                continue
+
+            notebookSource = converter.toDbcNotebook(notebook.path.stem, source, whlFilename)
+            zipFile.writestr(zipPath, notebookSource)
 
         zipFile.close()
         inMemoryOutput.seek(0)

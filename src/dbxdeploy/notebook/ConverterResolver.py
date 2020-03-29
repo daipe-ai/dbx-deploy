@@ -2,6 +2,7 @@ from pathlib import PurePosixPath
 from typing import List
 from dbxdeploy.notebook.converter.ConverterGlobPatterns import ConverterGlobPatterns
 from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
+from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 
 class ConverterResolver:
 
@@ -11,12 +12,19 @@ class ConverterResolver:
     ):
         self.__converters = converters
 
-    def isSupported(self, path: PurePosixPath):
+    def isSupported(self, path: PurePosixPath) -> bool:
         fileExtension = path.suffix[1:]
 
         for converter in self.__converters:
-            if converter.resolves(fileExtension) is True:
-                return True
+            if fileExtension not in converter.getSupportedExtensions():
+                continue
+
+            try:
+                converter.loadSource(fileExtension)
+            except UnexpectedSourceException:
+                continue
+
+            return True
 
         return False
 

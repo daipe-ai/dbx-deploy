@@ -5,6 +5,7 @@ from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
 from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
 from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
+from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 
 class PythonNotebookConverter(NotebookConverterInterface):
 
@@ -24,35 +25,40 @@ class PythonNotebookConverter(NotebookConverterInterface):
         self.__jinjaTemplateLoader = jinjaTemplateLoader
         self.__dbcScriptRenderer = dbcScriptRenderer
 
-    def toDbcNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
-        originalScript = self.__loadNotebook(notebookPath)
+    def getSupportedExtensions(self) -> list:
+        return ['py']
 
+    def loadSource(self, notebookPath: Path) -> str:
+        with notebookPath.open('r', encoding='utf-8') as f:
+            source = f.read()
+
+        if re.match(r'^#%%[\r\n]', source) is None:
+            raise UnexpectedSourceException()
+
+        return source
+
+    def toDbcNotebook(self, notebookName: str, source: str, whlFilename: PurePosixPath) -> str:
         libsRunCell = {
             'source': self.__libsRunPreparer.prepare(whlFilename),
             'cell_type': 'code',
         }
 
-        cells = [libsRunCell] + self.__cellsExtractor.extract(originalScript, r'#%%\n+')
+        cells = [libsRunCell] + self.__cellsExtractor.extract(source, r'#%%\n+')
         template = self.__jinjaTemplateLoader.load()
 
-        return self.__dbcScriptRenderer.render(notebookPath, template, cells)
+        return self.__dbcScriptRenderer.render(notebookName, template, cells)
 
-    def toWorkspaceImportNotebook(self, notebookPath: Path, whlFilename: PurePosixPath) -> str:
-        script = self.__loadNotebook(notebookPath)
-
+    def toWorkspaceImportNotebook(self, source: str, whlFilename: PurePosixPath) -> str:
         script = (
             '# Databricks notebook source\n\n' +
             self.__libsRunPreparer.prepare(whlFilename) + '\n\n' +
-            script
+            source
         )
 
         cellSeparatorRegex = re.compile(r'^#%%', re.MULTILINE)
         script = re.sub(cellSeparatorRegex, '# COMMAND ----------', script)
 
         return script
-
-    def resolves(self, fileExtension: str) -> bool:
-        return fileExtension == 'py'
 
     def getGlobPatterns(self) -> list:
         return self.__consumerGlobs + self.__jobGlobs
@@ -62,7 +68,3 @@ class PythonNotebookConverter(NotebookConverterInterface):
 
     def getDescription(self):
         return 'Python consumers and jobs'
-
-    def __loadNotebook(self, notebookPath: Path):
-        with notebookPath.open('r', encoding='utf-8') as f:
-            return f.read()

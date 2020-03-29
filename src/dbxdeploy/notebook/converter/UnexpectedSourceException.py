@@ -1,0 +1,2 @@
+class UnexpectedSourceException(Exception):
+    pass
