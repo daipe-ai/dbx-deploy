@@ -1,8 +1,11 @@
+# pylint: disable = too-many-instance-attributes
+import re
 from logging import Logger
 from typing import List
 from zipfile import ZipInfo, ZipFile
 from databricks_api import DatabricksAPI
 from pathlib import PurePosixPath
+from pygit2 import Repository, GitError # pylint: disable = no-name-in-module
 from dbxdeploy.notebook.ConverterNotFoundException import ConverterNotFoundException
 from dbxdeploy.notebook.ConverterResolver import ConverterResolver
 from dbxdeploy.notebook.loader import loadNotebook
@@ -11,12 +14,12 @@ from dbxdeploy.workspace.WorkspaceExportException import WorkspaceExportExceptio
 from dbxdeploy.workspace.WorkspaceImporter import WorkspaceImporter
 from dbxdeploy.workspace.WorkspaceExporter import WorkspaceExporter
 from dbxdeploy.notebook.Notebook import Notebook
-import re
 
 class CurrentDirectoryUpdater:
 
     def __init__(
         self,
+        createReleases: bool,
         dbxProjectRoot: PurePosixPath,
         logger: Logger,
         dbxApi: DatabricksAPI,
@@ -25,6 +28,7 @@ class CurrentDirectoryUpdater:
         workspaceImporter: WorkspaceImporter,
         converterResolver: ConverterResolver,
     ):
+        self.__createReleases = createReleases
         self.__dbxProjectRoot = dbxProjectRoot
         self.__logger = logger
         self.__dbxApi = dbxApi
@@ -34,10 +38,12 @@ class CurrentDirectoryUpdater:
         self.__converterResolver = converterResolver
 
     def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, whlFilePath: PurePosixPath):
-        self.__removeDeletedNotebooks(currentReleasePath, notebooks)
+        if self.__shouldRemoveMissingNotebooks():
+            self.__removeMissingNotebooks(currentReleasePath, notebooks)
+
         self.__updateNotebooks(currentReleasePath, notebooks, whlFilePath)
 
-    def __removeDeletedNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook]):
+    def __removeMissingNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook]):
         existingNotebooksFullPaths = self.__resolveExistingNotebooksPaths(currentReleasePath)
 
         existingNotebooks = set(map(lambda path: re.sub(r'\.python$', '', path), existingNotebooksFullPaths))
@@ -45,7 +51,7 @@ class CurrentDirectoryUpdater:
 
         for notebookToDelete in existingNotebooks - newNotebooks:
             fullNotebookPath = self.__dbxProjectRoot.joinpath(notebookToDelete)
-            self.__logger.warning('Removing deleted notebook {}'.format(fullNotebookPath))
+            self.__logger.warning('Removing deleted/missing notebook {}'.format(fullNotebookPath))
             self.__dbxApi.workspace.delete(str(fullNotebookPath))
 
     def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], whlFilePath: PurePosixPath):
@@ -63,6 +69,17 @@ class CurrentDirectoryUpdater:
 
             self.__logger.info('Updating {}'.format(targetPath))
             self.__workspaceImporter.overwriteScript(script, targetPath)
+
+    def __shouldRemoveMissingNotebooks(self):
+        if self.__createReleases:
+            return True
+
+        try:
+            currentGitBranch = Repository('.').head.shorthand
+        except GitError:
+            return False
+
+        return currentGitBranch == 'master'
 
     def __resolveExistingNotebooksPaths(self, currentReleasePath: PurePosixPath):
         fileNames = []

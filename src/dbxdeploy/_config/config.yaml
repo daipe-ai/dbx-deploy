@@ -151,6 +151,7 @@ services:
 
   dbxdeploy.notebook.CurrentDirectoryUpdater:
     arguments:
+      - '%dbxdeploy.databricks.createReleases%'
       - '@dbxdeploy.workspace.projectRootPath'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricksApi'
