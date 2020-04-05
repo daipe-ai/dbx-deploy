@@ -22,7 +22,7 @@ class JobSubmitter:
         self.__dbxApi = dbxApi
 
     def submit(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
-        notebookReleasePath = packageMetadata.getNotebookReleasePath(self.__dbxProjectRoot, notebookPath)
+        notebookReleasePath = self.__dbxProjectRoot.joinpath(notebookPath)
 
         self.__logger.info('Submitting job for {} to cluster {}'.format(notebookReleasePath, self.__clusterId))
 

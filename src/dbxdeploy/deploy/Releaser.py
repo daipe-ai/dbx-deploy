@@ -1,20 +1,22 @@
 # pylint: disable = too-many-instance-attributes
 from logging import Logger
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from dbxdeploy.cluster.ClusterRestarter import ClusterRestarter
 from dbxdeploy.deploy.CurrentAndReleaseDeployer import CurrentAndReleaseDeployer
 from dbxdeploy.job.JobsCreatorAndRunner import JobsCreatorAndRunner
 from dbxdeploy.job.JobsDeleter import JobsDeleter
+from dbxdeploy.notebook.Notebook import Notebook
 from dbxdeploy.notebook.NotebooksLocator import NotebooksLocator
 from dbxdeploy.package.PackageMetadataLoader import PackageMetadataLoader
 from dbxdeploy.whl.WhlDeployer import WhlDeployer
 import asyncio
 
-class DeployWithCleanup:
+class Releaser:
 
     def __init__(
         self,
         projectBasePath: Path,
+        dbxProjectRoot: PurePosixPath,
         logger: Logger,
         packageMetadataLoader: PackageMetadataLoader,
         currentAndReleaseDeployer: CurrentAndReleaseDeployer,
@@ -25,6 +27,7 @@ class DeployWithCleanup:
         notebooksLocator: NotebooksLocator,
     ):
         self.__projectBasePath = projectBasePath
+        self.__dbxProjectRoot = dbxProjectRoot
         self.__logger = logger
         self.__packageMetadataLoader = packageMetadataLoader
         self.__currentAndReleaseDeployer = currentAndReleaseDeployer
@@ -34,25 +37,33 @@ class DeployWithCleanup:
         self.__jobsCreatorAndRunner = jobsCreatorAndRunner
         self.__notebooksLocator = notebooksLocator
 
-    async def deploy(self):
+    async def release(self):
         packageMetadata = self.__packageMetadataLoader.load(self.__projectBasePath)
 
         loop = asyncio.get_event_loop()
 
         whlDeployFuture = loop.run_in_executor(None, self.__whlDeployer.deploy, packageMetadata)
-        dbcDeployFuture = loop.run_in_executor(None, self.__currentAndReleaseDeployer.deploy, packageMetadata)
+        dbcDeployFuture = loop.run_in_executor(None, self.__currentAndReleaseDeployer.release, packageMetadata)
 
         await whlDeployFuture
         await dbcDeployFuture
 
         self.__logger.info('--')
 
-        self.__clusterRestarter.restart()
-        self.__jobsDeleter.removeAll()
+        consumerNotebooks = self.__notebooksLocator.locateConsumers()
 
-        self.__logger.info('--')
+        if consumerNotebooks:
+            self.__clusterRestarter.restart()
 
-        notebooks = self.__notebooksLocator.locateConsumers()
-        self.__jobsCreatorAndRunner.createAndRun(notebooks, packageMetadata)
+            def createJobNotebookPath(consumerNotebook: Notebook):
+                return str(packageMetadata.getNotebookReleasePath(self.__dbxProjectRoot, consumerNotebook.databricksRelativePath))
+
+            consumerNotebooksReleasePaths = set(map(createJobNotebookPath, consumerNotebooks))
+
+            self.__jobsDeleter.remove(consumerNotebooksReleasePaths)
+
+            self.__logger.info('--')
+
+            self.__jobsCreatorAndRunner.createAndRun(consumerNotebooks, packageMetadata)
 
         self.__logger.info('Deployment completed')

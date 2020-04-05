@@ -6,7 +6,6 @@ parameters:
     databricks:
       projectRoot': '/{currentBranch}'
       whlBaseDir': 'dbfs:/FileStore/jars'
-      createReleases: True
     notebooks:
       paths: ['**/*.py']
       consumerPaths: ['**/*.consumer.py']
@@ -25,8 +24,6 @@ services:
     factory: ['@dbxdeploy.deploy.WorkingDirectoryPathFactory', 'create']
 
   dbxdeploy.deploy.CurrentAndReleaseDeployer:
-    arguments:
-      - '%dbxdeploy.databricks.createReleases%'
 
   dbxdeploy.deploy.Deployer:
     arguments:
@@ -46,12 +43,13 @@ services:
     tags:
       - 'console.command'
 
-  dbxdeploy.deploy.DeployWithCleanup:
+  dbxdeploy.deploy.Releaser:
     arguments:
       - '@dbxdeploy.deploy.workingDirectoryPath'
+      - '@dbxdeploy.workspace.projectRootPath'
       - '@consolebundle.logger'
 
-  dbxdeploy.deploy.DeployWithCleanupCommand:
+  dbxdeploy.deploy.ReleaseCommand:
     tags:
       - 'console.command'
 
@@ -144,7 +142,6 @@ services:
 
   dbxdeploy.notebook.CurrentDirectoryUpdater:
     arguments:
-      - '%dbxdeploy.databricks.createReleases%'
       - '@dbxdeploy.workspace.projectRootPath'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricksApi'

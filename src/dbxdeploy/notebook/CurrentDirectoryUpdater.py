@@ -19,7 +19,6 @@ class CurrentDirectoryUpdater:
 
     def __init__(
         self,
-        createReleases: bool,
         dbxProjectRoot: PurePosixPath,
         logger: Logger,
         dbxApi: DatabricksAPI,
@@ -28,7 +27,6 @@ class CurrentDirectoryUpdater:
         workspaceImporter: WorkspaceImporter,
         databricksNotebookConverter: DatabricksNotebookConverter,
     ):
-        self.__createReleases = createReleases
         self.__dbxProjectRoot = dbxProjectRoot
         self.__logger = logger
         self.__dbxApi = dbxApi
@@ -71,9 +69,6 @@ class CurrentDirectoryUpdater:
             self.__workspaceImporter.overwriteScript(script, targetPath)
 
     def __shouldRemoveMissingNotebooks(self):
-        if self.__createReleases:
-            return True
-
         try:
             currentGitBranch = Repository('.').head.shorthand
         except GitError:

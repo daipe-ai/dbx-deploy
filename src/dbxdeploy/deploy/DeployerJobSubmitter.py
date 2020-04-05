@@ -31,15 +31,15 @@ class DeployerJobSubmitter:
     async def deployAndSubmitJob(self, notebookPath: PurePosixPath):
         packageMetadata = self.__packageMetadataLoader.load(self.__projectBasePath)
 
-        def deployRelease(packageMetadata: PackageMetadata):
+        def deployRoot(packageMetadata: PackageMetadata):
             notebooks = self.__notebooksLocator.locate()
-            self.__notebooksDeployer.deployRelease(packageMetadata, notebooks)
+            self.__notebooksDeployer.deployRoot(packageMetadata, notebooks)
 
         loop = asyncio.get_event_loop()
 
         notebookKillerFuture = loop.run_in_executor(None, self.__notebookKiller.killIfRunning, notebookPath, packageMetadata)
         whlDeployFuture = loop.run_in_executor(None, self.__whlDeployer.deploy, packageMetadata)
-        dbcDeployFuture = loop.run_in_executor(None, deployRelease, packageMetadata)
+        dbcDeployFuture = loop.run_in_executor(None, deployRoot, packageMetadata)
 
         await notebookKillerFuture
         await whlDeployFuture
