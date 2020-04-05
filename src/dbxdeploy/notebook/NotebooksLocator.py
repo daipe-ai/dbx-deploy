@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import List
 from dbxdeploy.notebook.ConverterResolver import ConverterResolver
 from dbxdeploy.notebook.Notebook import Notebook
-from dbxdeploy.notebook.converter.ConverterGlobPatterns import ConverterGlobPatterns
 
 class NotebooksLocator:
 
@@ -24,24 +23,23 @@ class NotebooksLocator:
 
         return self.__locate(convertersWithGlobPatterns)
 
-    def __locate(self, convertersWithGlobPatterns: List[ConverterGlobPatterns]):
+    def __locate(self, globPatternsByConverter: List[List[str]]):
         basePath = self.__projectBasePath.joinpath('src')  # type: Path
         output = []
 
-        def createNotebook(path: Path, converterClass: str):
+        def createNotebook(path: Path):
             return Notebook(
                 path,
                 path.relative_to(self.__projectBasePath),
                 path.relative_to(self.__projectBasePath).relative_to('src').with_suffix('').as_posix(),
-                converterClass,
             )
 
-        for converterGlobPatterns in convertersWithGlobPatterns:
+        for globPatterns in globPatternsByConverter:
             filesGrabbed = []
 
-            for globPattern in converterGlobPatterns.globPatterns:
+            for globPattern in globPatterns:
                 filesGrabbed.extend(basePath.glob(globPattern))
 
-                output += list(map(lambda fileGrabbed: createNotebook(fileGrabbed, converterGlobPatterns.converterClass), filesGrabbed)) # pylint: disable = cell-var-from-loop
+                output += list(map(createNotebook, filesGrabbed)) # pylint: disable = cell-var-from-loop
 
         return output

@@ -1,6 +1,6 @@
-from pathlib import PurePosixPath
+from pathlib import Path
 from typing import List
-from dbxdeploy.notebook.converter.ConverterGlobPatterns import ConverterGlobPatterns
+from dbxdeploy.notebook.ConverterNotFoundException import ConverterNotFoundException
 from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 
@@ -12,7 +12,10 @@ class ConverterResolver:
     ):
         self.__converters = converters
 
-    def isSupported(self, path: PurePosixPath) -> bool:
+    def getSupportedFormatsDescriptions(self) -> list:
+        return list(map(lambda converter: converter.getDescription(), self.__converters))
+
+    def resolve(self, path: Path, content):
         fileExtension = path.suffix[1:]
 
         for converter in self.__converters:
@@ -20,40 +23,24 @@ class ConverterResolver:
                 continue
 
             try:
-                converter.loadSource(fileExtension)
+                converter.validateSource(content)
             except UnexpectedSourceException:
                 continue
 
+            return converter
+
+        raise ConverterNotFoundException()
+
+    def isSupported(self, path: Path, content) -> bool:
+        try:
+            self.resolve(path, content)
+
             return True
-
-        return False
-
-    def getSupportedFormatsDescriptions(self) -> list:
-        return list(map(lambda converter: converter.getDescription(), self.__converters))
-
-    def resolve(self, converterClass: str) -> NotebookConverterInterface:
-        for converter in self.__converters:
-            if converter.__class__.__name__ == converterClass:
-                return converter
-
-        raise Exception('No converter for: {}'.format(converterClass))
+        except ConverterNotFoundException:
+            return False
 
     def getGlobPatterns(self):
-        patterns = []
-
-        for converter in self.__converters:
-            className = converter.__class__.__name__
-
-            patterns.append(ConverterGlobPatterns(className, converter.getGlobPatterns()))
-
-        return patterns
+        return list(map(lambda converter: converter.getGlobPatterns(), self.__converters))
 
     def getConsumerGlobPatterns(self):
-        patterns = []
-
-        for converter in self.__converters:
-            className = converter.__class__.__name__
-
-            patterns.append(ConverterGlobPatterns(className, converter.getConsumerGlobPatterns()))
-
-        return patterns
+        return list(map(lambda converter: converter.getConsumerGlobPatterns(), self.__converters))

@@ -2,10 +2,11 @@ import asyncio
 import sys
 from logging import Logger
 from argparse import Namespace, ArgumentParser
-from pathlib import PurePosixPath
+from pathlib import PurePosixPath, Path
 from dbxdeploy.deploy.DeployerJobSubmitter import DeployerJobSubmitter
 from dbxdeploy.notebook.ConverterResolver import ConverterResolver
 from consolebundle.ConsoleCommand import ConsoleCommand
+from dbxdeploy.notebook.loader import loadNotebook
 
 class DeployerJobSubmitterCommand(ConsoleCommand):
 
@@ -29,14 +30,15 @@ class DeployerJobSubmitterCommand(ConsoleCommand):
         return 'Deploy to DBX and submit selected notebook as job'
 
     def run(self, inputArgs: Namespace):
-        jupyterNotebookPath = PurePosixPath(inputArgs.notebookPath)
+        relativeNotebookPath = PurePosixPath(inputArgs.notebookPath)
+        notebookPath = Path().cwd().joinpath(relativeNotebookPath)
 
-        if self.__converterResolver.isSupported(jupyterNotebookPath) is False:
+        if self.__converterResolver.isSupported(notebookPath, loadNotebook(notebookPath)) is False:
             formatsDescription = ', '.join(self.__converterResolver.getSupportedFormatsDescriptions())
             self.__logger.error('Only {} can be submitted as Databricks job'.format(formatsDescription))
             sys.exit(1)
 
-        notebookPath = jupyterNotebookPath.relative_to('src').with_suffix('')
+        relativeNotebookPath = relativeNotebookPath.relative_to('src').with_suffix('')
 
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.__deployerJobSubmitter.deployAndSubmitJob(notebookPath))
+        loop.run_until_complete(self.__deployerJobSubmitter.deployAndSubmitJob(relativeNotebookPath))

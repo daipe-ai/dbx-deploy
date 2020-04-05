@@ -1,5 +1,7 @@
+# pylint: disable = too-many-instance-attributes
 import re
-from pathlib import Path, PurePosixPath
+from pathlib import PurePosixPath
+from dbxdeploy.dbc.NotebookConverter import NotebookConverter
 from dbxdeploy.notebook.LibsRunPreparer import LibsRunPreparer
 from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
@@ -11,15 +13,19 @@ class PythonNotebookConverter(NotebookConverterInterface):
 
     def __init__(
         self,
+        whlBaseDir: str,
         consumerGlobs: list,
         jobGlobs: list,
+        notebookConverter: NotebookConverter,
         libsRunPreparer: LibsRunPreparer,
         cellsExtractor: CellsExtractor,
         jinjaTemplateLoader: JinjaTemplateLoader,
         dbcScriptRenderer: DbcScriptRenderer,
     ):
+        self.__whlBaseDir = whlBaseDir
         self.__consumerGlobs = consumerGlobs
         self.__jobGlobs = jobGlobs
+        self.__notebookConverter = notebookConverter
         self.__libsRunPreparer = libsRunPreparer
         self.__cellsExtractor = cellsExtractor
         self.__jinjaTemplateLoader = jinjaTemplateLoader
@@ -28,14 +34,23 @@ class PythonNotebookConverter(NotebookConverterInterface):
     def getSupportedExtensions(self) -> list:
         return ['py']
 
-    def loadSource(self, notebookPath: Path) -> str:
-        with notebookPath.open('r', encoding='utf-8') as f:
-            source = f.read()
-
+    def validateSource(self, source: str):
         if re.match(r'^#%%[\r\n]', source) is None:
             raise UnexpectedSourceException()
 
-        return source
+    def fromDbcNotebook(self, content: dict) -> str:
+        def convertCommand(command: dict):
+            regExp = (
+                '^' + re.escape('dbutils.library.install(\'' + self.__whlBaseDir) +
+                '/[^/]+/[\\d]{4}-[\\d]{2}-[\\d]{2}_[\\d]{2}-[\\d]{2}-[\\d]{2}_[\\w]+/[^-]+-[\\d.]+-py3-none-any.whl\'\\)$'
+            )
+
+            if re.match(regExp, command['command']):
+                return None
+
+            return command['command']
+
+        return self.__notebookConverter.convert(content['commands'], convertCommand, '#%%\n', '#%%')
 
     def toDbcNotebook(self, notebookName: str, source: str, whlFilename: PurePosixPath) -> str:
         libsRunCell = {
@@ -67,4 +82,4 @@ class PythonNotebookConverter(NotebookConverterInterface):
         return self.__consumerGlobs
 
     def getDescription(self):
-        return 'Python consumers and jobs'
+        return 'Python notebooks (*.py, #%% cell separator)'

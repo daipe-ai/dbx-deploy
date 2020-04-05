@@ -76,12 +76,15 @@ services:
   dbxdeploy.dbc.DbcCreator:
     arguments:
       - '@dbxdeploy.deploy.workingDirectoryPath'
+      - '@consolebundle.logger'
 
   dbxdeploy.dbc.DbcUploader:
     arguments:
       - '@dbxdeploy.databricksApi'
 
   dbxdeploy.dbc.PathsPreparer:
+
+  dbxdeploy.dbc.NotebookConverter:
 
   dbxdeploy.notebook.NotebooksDeployer:
     arguments:
@@ -168,6 +171,15 @@ services:
     arguments:
       - '@dbxdeploy.databricksApi'
 
+  dbxdeploy.workspace.WorkspaceExportCommand:
+    arguments:
+      - '@dbxdeploy.workspace.projectRootPath'
+      - '@dbxdeploy.deploy.workingDirectoryPath'
+    tags:
+      - 'console.command'
+
+  dbxdeploy.workspace.DbcFilesHandler:
+
   dbxdeploy.notebook.NotebooksLocator:
     arguments:
       - '@dbxdeploy.deploy.workingDirectoryPath'
@@ -188,6 +200,7 @@ services:
 
   dbxdeploy.notebook.converter.PythonNotebookConverter:
     arguments:
+      - '%dbxdeploy.databricks.whlBaseDir%'
       - '%dbxdeploy.notebooks.consumerGlobs%'
       - '%dbxdeploy.notebooks.jobGlobs%'
 

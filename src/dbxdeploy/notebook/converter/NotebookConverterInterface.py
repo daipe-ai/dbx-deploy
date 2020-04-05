@@ -8,7 +8,11 @@ class NotebookConverterInterface(ABC):
         pass
 
     @abstractmethod
-    def loadSource(self, notebookPath) -> str:
+    def validateSource(self, source: str):
+        pass
+
+    @abstractmethod
+    def fromDbcNotebook(self, content: dict) -> str:
         pass
 
     @abstractmethod

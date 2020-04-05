@@ -1,21 +1,25 @@
+from logging import Logger
 from pathlib import PurePosixPath, Path
 from typing import List
 import zipfile
 from io import BytesIO
 from dbxdeploy.dbc.PathsPreparer import PathsPreparer
+from dbxdeploy.notebook.ConverterNotFoundException import ConverterNotFoundException
 from dbxdeploy.notebook.Notebook import Notebook
 from dbxdeploy.notebook.ConverterResolver import ConverterResolver
-from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
+from dbxdeploy.notebook.loader import loadNotebook
 
 class DbcCreator:
 
     def __init__(
         self,
         workingDirectory: Path,
+        logger: Logger,
         pathsPreparer: PathsPreparer,
         converterResolver: ConverterResolver
     ):
         self.__workingDirectory = workingDirectory
+        self.__logger = logger
         self.__pathsPreparer = pathsPreparer
         self.__converterResolver = converterResolver
 
@@ -31,12 +35,13 @@ class DbcCreator:
             zipFile.writestr(dirPath + '/', '')
 
         for notebook in notebooks:
-            converter = self.__converterResolver.resolve(notebook.converterClass)
+            source = loadNotebook(notebook.path)
             zipPath = '/'.join(notebook.relativePath.parts[0:-1]) + '/' + notebook.relativePath.stem + '.python'
 
             try:
-                source = converter.loadSource(notebook.path)
-            except UnexpectedSourceException:
+                converter = self.__converterResolver.resolve(notebook.path, source)
+            except ConverterNotFoundException:
+                self.__logger.debug(f'Skipping unrecognized file {notebook.relativePath}')
                 continue
 
             notebookSource = converter.toDbcNotebook(notebook.path.stem, source, whlFilename)

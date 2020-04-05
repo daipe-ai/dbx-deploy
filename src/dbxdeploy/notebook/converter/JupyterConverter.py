@@ -23,9 +23,11 @@ class JupyterConverter(NotebookConverterInterface):
     def getSupportedExtensions(self) -> list:
         return ['ipynb']
 
-    def loadSource(self, notebookPath: Path) -> str:
-        with notebookPath.open('r', encoding='utf-8') as f:
-            return f.read()
+    def validateSource(self, source: str):
+        pass
+
+    def fromDbcNotebook(self, content: dict) -> str:
+        raise Exception('Not implemented')
 
     def toDbcNotebook(self, notebookName: str, source: str, whlFilename: PurePosixPath) -> str:
         nbSource = nbformat.reads(source, as_version=4)
