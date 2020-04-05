@@ -4,29 +4,25 @@ from dbxdeploy.dbc.NotebookConverter import NotebookConverter
 from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
 from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
-from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 
-class DatabricksNotebookConverter(NotebookConverterInterface):
+class DatabricksNotebookConverter:
 
     firstLine = '# Databricks notebook source'
 
     def __init__(
         self,
-        notebookGlobs: list,
+        whlBaseDir: str,
         notebookConverter: NotebookConverter,
         cellsExtractor: CellsExtractor,
         jinjaTemplateLoader: JinjaTemplateLoader,
         dbcScriptRenderer: DbcScriptRenderer,
     ):
-        self.__notebookGlobs = notebookGlobs
+        self.__whlBaseDir = whlBaseDir
         self.__notebookConverter = notebookConverter
         self.__cellsExtractor = cellsExtractor
         self.__jinjaTemplateLoader = jinjaTemplateLoader
         self.__dbcScriptRenderer = dbcScriptRenderer
-
-    def getSupportedExtensions(self) -> list:
-        return ['py']
 
     def validateSource(self, source: str):
         if re.match(r'^' + self.firstLine + '[\r\n]', source) is None:
@@ -39,6 +35,14 @@ class DatabricksNotebookConverter(NotebookConverterInterface):
 
             if command['commandTitle']:
                 return '# DBTITLE 1,' + command['commandTitle'] + '\n' + command['command']
+
+            regExp = (
+                '^' + re.escape('dbutils.library.install(\'' + self.__whlBaseDir) +
+                '/[^/]+/[\\d]{4}-[\\d]{2}-[\\d]{2}_[\\d]{2}-[\\d]{2}-[\\d]{2}_[\\w]+/[^-]+-[\\d.]+-py3-none-any.whl\'\\)$'
+            )
+
+            if re.match(regExp, command['command']):
+                return '# MAGIC %installMasterPackageWhl'
 
             return command['command']
 
@@ -53,6 +57,9 @@ class DatabricksNotebookConverter(NotebookConverterInterface):
         cells = self.__cellsExtractor.extract(source, r'#[\s]+COMMAND[\s]+[\-]+\n+')
 
         def cleanupCell(cell: dict):
+            if cell['source'] == '# MAGIC %installMasterPackageWhl':
+                cell['source'] = self.__getMasterPackageInstallCommand(whlFilename)
+
             cell['source'] = re.sub(r'^' + self.firstLine + '[\r\n]+', '', cell['source'])
             cell['source'] = re.sub(r'^# MAGIC ', '', cell['source'])
 
@@ -65,13 +72,7 @@ class DatabricksNotebookConverter(NotebookConverterInterface):
         return self.__dbcScriptRenderer.render(notebookName, template, cells)
 
     def toWorkspaceImportNotebook(self, source: str, whlFilename: PurePosixPath) -> str:
-        return source
+        return source.replace('# MAGIC %installMasterPackageWhl', self.__getMasterPackageInstallCommand(whlFilename))
 
-    def getGlobPatterns(self) -> list:
-        return self.__notebookGlobs
-
-    def getConsumerGlobPatterns(self) -> list:
-        return []
-
-    def getDescription(self):
-        return 'Databricks notebooks'
+    def __getMasterPackageInstallCommand(self, whlFilename: PurePosixPath):
+        return 'dbutils.library.install(\'{}\')'.format(whlFilename)

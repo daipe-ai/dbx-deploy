@@ -6,8 +6,8 @@ from zipfile import ZipInfo, ZipFile
 from databricks_api import DatabricksAPI
 from pathlib import PurePosixPath
 from pygit2 import Repository, GitError # pylint: disable = no-name-in-module
-from dbxdeploy.notebook.ConverterNotFoundException import ConverterNotFoundException
-from dbxdeploy.notebook.ConverterResolver import ConverterResolver
+from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
+from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.notebook.loader import loadNotebook
 from dbxdeploy.workspace.DbcFilesHandler import DbcFilesHandler
 from dbxdeploy.workspace.WorkspaceExportException import WorkspaceExportException
@@ -26,7 +26,7 @@ class CurrentDirectoryUpdater:
         workspaceExporter: WorkspaceExporter,
         dbcFilesHandler: DbcFilesHandler,
         workspaceImporter: WorkspaceImporter,
-        converterResolver: ConverterResolver,
+        databricksNotebookConverter: DatabricksNotebookConverter,
     ):
         self.__createReleases = createReleases
         self.__dbxProjectRoot = dbxProjectRoot
@@ -35,7 +35,7 @@ class CurrentDirectoryUpdater:
         self.__workspaceExporter = workspaceExporter
         self.__dbcFilesHandler = dbcFilesHandler
         self.__workspaceImporter = workspaceImporter
-        self.__converterResolver = converterResolver
+        self.__databricksNotebookConverter = databricksNotebookConverter
 
     def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, whlFilePath: PurePosixPath):
         if self.__shouldRemoveMissingNotebooks():
@@ -60,12 +60,12 @@ class CurrentDirectoryUpdater:
             source = loadNotebook(notebook.path)
 
             try:
-                converter = self.__converterResolver.resolve(notebook.path, source)
-            except ConverterNotFoundException:
+                self.__databricksNotebookConverter.validateSource(source)
+            except UnexpectedSourceException:
                 self.__logger.debug(f'Skipping unrecognized file {notebook.relativePath}')
                 continue
 
-            script = converter.toWorkspaceImportNotebook(source, whlFilePath)
+            script = self.__databricksNotebookConverter.toWorkspaceImportNotebook(source, whlFilePath)
 
             self.__logger.info('Updating {}'.format(targetPath))
             self.__workspaceImporter.overwriteScript(script, targetPath)

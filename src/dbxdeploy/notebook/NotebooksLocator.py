@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import List
-from dbxdeploy.notebook.ConverterResolver import ConverterResolver
 from dbxdeploy.notebook.Notebook import Notebook
 
 class NotebooksLocator:
@@ -8,25 +7,20 @@ class NotebooksLocator:
     def __init__(
         self,
         projectBasePath: Path,
-        converterResolver: ConverterResolver,
+        pathsPatterns: list,
+        consumerPathsPatterns: list,
     ):
         self.__projectBasePath = projectBasePath
-        self.__converterResolver = converterResolver
+        self.__pathsPatterns = pathsPatterns
+        self.__consumerPathsPatterns = consumerPathsPatterns
 
     def locate(self) -> List[Notebook]:
-        convertersWithGlobPatterns = self.__converterResolver.getGlobPatterns()
-
-        return self.__locate(convertersWithGlobPatterns)
+        return self.__locate(self.__pathsPatterns)
 
     def locateConsumers(self):
-        convertersWithGlobPatterns = self.__converterResolver.getConsumerGlobPatterns()
+        return self.__locate(self.__consumerPathsPatterns)
 
-        return self.__locate(convertersWithGlobPatterns)
-
-    def __locate(self, globPatternsByConverter: List[List[str]]):
-        basePath = self.__projectBasePath.joinpath('src')  # type: Path
-        output = []
-
+    def __locate(self, pathsPatterns: list):
         def createNotebook(path: Path):
             return Notebook(
                 path,
@@ -34,12 +28,11 @@ class NotebooksLocator:
                 path.relative_to(self.__projectBasePath).relative_to('src').with_suffix('').as_posix(),
             )
 
-        for globPatterns in globPatternsByConverter:
-            filesGrabbed = []
+        basePath = self.__projectBasePath.joinpath('src')  # type: Path
 
-            for globPattern in globPatterns:
-                filesGrabbed.extend(basePath.glob(globPattern))
+        filesGrabbed = []
 
-                output += list(map(createNotebook, filesGrabbed)) # pylint: disable = cell-var-from-loop
+        for pathPattern in pathsPatterns:
+            filesGrabbed.extend(basePath.glob(pathPattern))
 
-        return output
+        return list(map(createNotebook, filesGrabbed)) # pylint: disable = cell-var-from-loop

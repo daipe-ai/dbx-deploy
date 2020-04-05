@@ -1,2 +1,0 @@
-class ConverterNotFoundException(Exception):
-    pass

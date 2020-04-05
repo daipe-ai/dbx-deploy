@@ -8,9 +8,8 @@ parameters:
       whlBaseDir': 'dbfs:/FileStore/jars'
       createReleases: True
     notebooks:
-      consumerGlobs: ['**/*.consumer.py']
-      jobGlobs: ['**/*.job.py']
-      databricksNotebookGlobs: []
+      paths: ['**/*.py']
+      consumerPaths: ['**/*.consumer.py']
 
 services:
   dbxdeploy.cluster.ClusterRestarter:
@@ -92,12 +91,6 @@ services:
       - '%dbxdeploy.databricks.whlBaseDir%'
       - '@consolebundle.logger'
 
-  dbxdeploy.export.jsonNotebookExporter:
-    class: dbxnotebookexporter.json.JsonNotebookExporter
-
-  dbxdeploy.export.databricksNotebookExporter:
-    class: dbxnotebookexporter.databricks.DatabricksNotebookExporter
-
   dbxdeploy.job.JobsDeleter:
     arguments:
       - '@consolebundle.logger'
@@ -176,6 +169,7 @@ services:
     arguments:
       - '@dbxdeploy.workspace.projectRootPath'
       - '@dbxdeploy.deploy.workingDirectoryPath'
+      - '@consolebundle.logger'
     tags:
       - 'console.command'
 
@@ -184,8 +178,8 @@ services:
   dbxdeploy.notebook.NotebooksLocator:
     arguments:
       - '@dbxdeploy.deploy.workingDirectoryPath'
-
-  dbxdeploy.notebook.LibsRunPreparer:
+      - '%dbxdeploy.notebooks.paths%'
+      - '%dbxdeploy.notebooks.consumerPaths%'
 
   dbxdeploy.notebook.converter.JinjaTemplateLoader:
 
@@ -193,25 +187,7 @@ services:
 
   dbxdeploy.notebook.converter.CellsExtractor:
 
-  dbxdeploy.notebook.converter.JupyterConverter:
-    arguments:
-      - '%dbxdeploy.notebooks.consumerGlobs%'
-      - '@dbxdeploy.export.jsonNotebookExporter'
-      - '@dbxdeploy.export.databricksNotebookExporter'
-
-  dbxdeploy.notebook.converter.PythonNotebookConverter:
-    arguments:
-      - '%dbxdeploy.databricks.whlBaseDir%'
-      - '%dbxdeploy.notebooks.consumerGlobs%'
-      - '%dbxdeploy.notebooks.jobGlobs%'
-
   dbxdeploy.notebook.converter.DatabricksNotebookConverter:
     arguments:
-      - '%dbxdeploy.notebooks.databricksNotebookGlobs%'
+      - '%dbxdeploy.databricks.whlBaseDir%'
 
-  dbxdeploy.notebook.ConverterResolver:
-    arguments:
-      -
-        - '@dbxdeploy.notebook.converter.JupyterConverter'
-        - '@dbxdeploy.notebook.converter.PythonNotebookConverter'
-        - '@dbxdeploy.notebook.converter.DatabricksNotebookConverter'

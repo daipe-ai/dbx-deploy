@@ -4,9 +4,9 @@ from typing import List
 import zipfile
 from io import BytesIO
 from dbxdeploy.dbc.PathsPreparer import PathsPreparer
-from dbxdeploy.notebook.ConverterNotFoundException import ConverterNotFoundException
 from dbxdeploy.notebook.Notebook import Notebook
-from dbxdeploy.notebook.ConverterResolver import ConverterResolver
+from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
+from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.notebook.loader import loadNotebook
 
 class DbcCreator:
@@ -16,12 +16,12 @@ class DbcCreator:
         workingDirectory: Path,
         logger: Logger,
         pathsPreparer: PathsPreparer,
-        converterResolver: ConverterResolver
+        databricksNotebookConverter: DatabricksNotebookConverter,
     ):
         self.__workingDirectory = workingDirectory
         self.__logger = logger
         self.__pathsPreparer = pathsPreparer
-        self.__converterResolver = converterResolver
+        self.__databricksNotebookConverter = databricksNotebookConverter
 
     def create(self, notebooks: List[Notebook], whlFilename: PurePosixPath) -> bytes:
         notebookRelativePaths = list(map(lambda notebook: notebook.relativePath, notebooks))
@@ -39,12 +39,12 @@ class DbcCreator:
             zipPath = '/'.join(notebook.relativePath.parts[0:-1]) + '/' + notebook.relativePath.stem + '.python'
 
             try:
-                converter = self.__converterResolver.resolve(notebook.path, source)
-            except ConverterNotFoundException:
+                self.__databricksNotebookConverter.validateSource(source)
+            except UnexpectedSourceException:
                 self.__logger.debug(f'Skipping unrecognized file {notebook.relativePath}')
                 continue
 
-            notebookSource = converter.toDbcNotebook(notebook.path.stem, source, whlFilename)
+            notebookSource = self.__databricksNotebookConverter.toDbcNotebook(notebook.path.stem, source, whlFilename)
             zipFile.writestr(zipPath, notebookSource)
 
         zipFile.close()
