@@ -3,7 +3,7 @@ from argparse import Namespace
 from dbxdeploy.deploy.Deployer import Deployer
 from consolebundle.ConsoleCommand import ConsoleCommand
 
-class DeployerCommand(ConsoleCommand):
+class DeployCommand(ConsoleCommand):
 
     def __init__(
         self,

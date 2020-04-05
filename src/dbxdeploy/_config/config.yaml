@@ -32,7 +32,7 @@ services:
     arguments:
       - '@dbxdeploy.deploy.workingDirectoryPath'
 
-  dbxdeploy.deploy.DeployerCommand:
+  dbxdeploy.deploy.DeployCommand:
     tags:
       - 'console.command'
 
@@ -40,7 +40,7 @@ services:
     arguments:
       - '@dbxdeploy.deploy.workingDirectoryPath'
 
-  dbxdeploy.deploy.DeployerJobSubmitterCommand:
+  dbxdeploy.deploy.DeployJobSubmitCommand:
     arguments:
       - '@consolebundle.logger'
     tags:

@@ -9,7 +9,7 @@ from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksN
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.notebook.loader import loadNotebook
 
-class DeployerJobSubmitterCommand(ConsoleCommand):
+class DeployJobSubmitCommand(ConsoleCommand):
 
     def __init__(
         self,
