@@ -136,7 +136,6 @@ services:
     autowire: False
     arguments:
       -
-        user: '%dbxdeploy.databricks.user%'
         host: '%dbxdeploy.databricks.host%'
         token: '%dbxdeploy.databricks.token%'
 

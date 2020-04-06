@@ -2,7 +2,6 @@ parameters:
   dbxdeploy:
     databricks:
       host: ''
-      user: ''
       token: ''
       clusterId: ''
       projectRoot: ''
