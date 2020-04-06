@@ -1,6 +1,7 @@
 class NotebookConverter:
 
     def convert(self, commands: list, convertCommandCallback: callable, firstLine: str, cellSeparator: str) -> str:
+        commands.sort(key=lambda command: command['position'])
         commands = list(map(convertCommandCallback, commands))
         commands = list(filter(lambda command: command is not None, commands))
 
