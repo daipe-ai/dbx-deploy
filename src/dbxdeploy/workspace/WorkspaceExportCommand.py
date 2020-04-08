@@ -35,8 +35,12 @@ class WorkspaceExportCommand(ConsoleCommand):
         return 'Export notebooks from Databricks workspace to local project'
 
     def run(self, inputArgs: Namespace):
+        self.__logger.info(f'Exporting {self.__dbxProjectRoot} to {self.__projectSrcPath}')
+
         dbcContent = self.__workspaceExporter.export(self.__dbxProjectRoot)
         self.__dbcFilesHandler.handle(dbcContent, self.__readFile)
+
+        self.__logger.info(f'Export completed')
 
     def __readFile(self, zipFile: ZipFile, file: ZipInfo):
         if file.orig_filename[-1:] == '/':
