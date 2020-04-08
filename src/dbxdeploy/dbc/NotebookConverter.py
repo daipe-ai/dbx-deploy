@@ -1,12 +1,19 @@
+from dbxdeploy.dbc.CommandConverter import CommandConverter
+
 class NotebookConverter:
 
-    def convert(self, commands: list, convertCommandCallback: callable, firstLine: str, cellSeparator: str) -> str:
-        commands.sort(key=lambda command: command['position'])
-        commands = list(map(convertCommandCallback, commands))
-        commands = list(filter(lambda command: command is not None, commands))
+    def __init__(
+        self,
+        commandConverter: CommandConverter,
+    ):
+        self.__commandConverter = commandConverter
 
-        while commands[len(commands) - 1] == '':
+    def convert(self, commands: list, firstLine: str, cellSeparator: str) -> str:
+        while commands[len(commands) - 1]['command'] == '':
             commands.pop()
+
+        commands.sort(key=lambda command: command['position'])
+        commands = list(map(self.__commandConverter.convert, commands))
 
         output = f'\n\n{cellSeparator}\n\n'.join(commands)
 

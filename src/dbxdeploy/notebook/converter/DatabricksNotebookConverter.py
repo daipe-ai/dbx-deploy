@@ -9,16 +9,15 @@ from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSou
 class DatabricksNotebookConverter:
 
     firstLine = '# Databricks notebook source'
+    cellSeparator = '# COMMAND ----------'
 
     def __init__(
         self,
-        whlBaseDir: str,
         notebookConverter: NotebookConverter,
         cellsExtractor: CellsExtractor,
         jinjaTemplateLoader: JinjaTemplateLoader,
         dbcScriptRenderer: DbcScriptRenderer,
     ):
-        self.__whlBaseDir = whlBaseDir
         self.__notebookConverter = notebookConverter
         self.__cellsExtractor = cellsExtractor
         self.__jinjaTemplateLoader = jinjaTemplateLoader
@@ -29,29 +28,7 @@ class DatabricksNotebookConverter:
             raise UnexpectedSourceException()
 
     def fromDbcNotebook(self, content: dict) -> str:
-        def convertCommand(command: dict):
-            if command['command'][0:5] == '%run ' or command['command'][0:4] == '%md ':
-                return '# MAGIC ' + command['command']
-
-            if command['commandTitle']:
-                return '# DBTITLE 1,' + command['commandTitle'] + '\n' + command['command']
-
-            regExp = (
-                '^' + re.escape('dbutils.library.install(\'' + self.__whlBaseDir) +
-                '/[^/]+/[\\d]{4}-[\\d]{2}-[\\d]{2}_[\\d]{2}-[\\d]{2}-[\\d]{2}_[\\w]+/[^-]+-[\\d.]+-py3-none-any.whl\'\\)$'
-            )
-
-            if re.match(regExp, command['command']):
-                return '# MAGIC %installMasterPackageWhl'
-
-            return command['command']
-
-        return self.__notebookConverter.convert(
-            content['commands'],
-            convertCommand,
-            self.firstLine,
-            '# COMMAND ----------'
-        )
+        return self.__notebookConverter.convert(content['commands'], self.firstLine, self.cellSeparator)
 
     def toDbcNotebook(self, notebookName: str, source: str, whlFilename: PurePosixPath) -> str:
         cells = self.__cellsExtractor.extract(source, r'#[\s]+COMMAND[\s]+[\-]+\n+')

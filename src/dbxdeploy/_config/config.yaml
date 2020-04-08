@@ -83,6 +83,10 @@ services:
 
   dbxdeploy.dbc.NotebookConverter:
 
+  dbxdeploy.dbc.CommandConverter:
+    arguments:
+      - '%dbxdeploy.databricks.whlBaseDir%'
+
   dbxdeploy.notebook.NotebooksDeployer:
     arguments:
       - '@dbxdeploy.workspace.projectRootPath'
@@ -184,6 +188,3 @@ services:
   dbxdeploy.notebook.converter.CellsExtractor:
 
   dbxdeploy.notebook.converter.DatabricksNotebookConverter:
-    arguments:
-      - '%dbxdeploy.databricks.whlBaseDir%'
-
