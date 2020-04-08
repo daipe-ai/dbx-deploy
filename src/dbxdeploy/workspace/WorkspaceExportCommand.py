@@ -22,7 +22,7 @@ class WorkspaceExportCommand(ConsoleCommand):
         databricksNotebookConverter: DatabricksNotebookConverter,
     ):
         self.__dbxProjectRoot = dbxProjectRoot
-        self.__projectBasePath = projectBasePath
+        self.__projectSrcPath = projectBasePath.joinpath('src')
         self.__logger = logger
         self.__workspaceExporter = workspaceExporter
         self.__dbcFilesHandler = dbcFilesHandler
@@ -35,27 +35,27 @@ class WorkspaceExportCommand(ConsoleCommand):
         return 'Export notebooks from Databricks workspace to local project'
 
     def run(self, inputArgs: Namespace):
-        def readFile(zipFile: ZipFile, file: ZipInfo):
-            if file.orig_filename[-1:] == '/':
+        dbcContent = self.__workspaceExporter.export(self.__dbxProjectRoot)
+        self.__dbcFilesHandler.handle(dbcContent, self.__readFile)
+
+    def __readFile(self, zipFile: ZipFile, file: ZipInfo):
+        if file.orig_filename[-1:] == '/':
+            return
+
+        filePathWithoutRootdir = file.orig_filename[file.orig_filename.index('/') + 1:file.orig_filename.rindex('.')] + '.py'
+        localFilePath = self.__projectSrcPath.joinpath(filePathWithoutRootdir)
+
+        if localFilePath.exists():
+            localFileSource = loadNotebook(localFilePath)
+
+            try:
+                self.__databricksNotebookConverter.validateSource(localFileSource)
+            except UnexpectedSourceException:
+                self.__logger.error(f'Skipping unrecognized file {localFilePath}')
                 return
 
-            filePathWithoutRootdir = file.orig_filename[file.orig_filename.index('/') + 1:file.orig_filename.rindex('.')] + '.py'
-            localFilePath = self.__projectBasePath.joinpath('src').joinpath(filePathWithoutRootdir)
+        with localFilePath.open('wb') as f:
+            zippedFileContent = zipFile.read(file.orig_filename).decode('utf-8')
+            pyContent = self.__databricksNotebookConverter.fromDbcNotebook(json.loads(zippedFileContent))
 
-            if localFilePath.exists():
-                localFileSource = loadNotebook(localFilePath)
-
-                try:
-                    self.__databricksNotebookConverter.validateSource(localFileSource)
-                except UnexpectedSourceException:
-                    self.__logger.error(f'Skipping unrecognized file {localFilePath}')
-                    return
-
-            with localFilePath.open('wb') as f:
-                zippedFileContent = zipFile.read(file.orig_filename).decode('utf-8')
-                pyContent = self.__databricksNotebookConverter.fromDbcNotebook(json.loads(zippedFileContent))
-
-                f.write(pyContent.encode('utf-8'))
-
-        dbcContent = self.__workspaceExporter.export(self.__dbxProjectRoot)
-        self.__dbcFilesHandler.handle(dbcContent, readFile)
+            f.write(pyContent.encode('utf-8'))
