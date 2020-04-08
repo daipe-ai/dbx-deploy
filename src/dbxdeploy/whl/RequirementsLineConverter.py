@@ -13,6 +13,16 @@ class RequirementsLineConverter:
         matches = re.match(r'^-e git\+(git@[^@]+)@([^#]+)#egg=(.+)$', line)
 
         if matches:
+            return self.__parseGitOldLine(matches)
+
+        matches = re.match(r'^-e git\+(https://(?:[^@]+@)?[^@]+)@([^#]+)#egg=(.+)$', line)
+
+        if matches:
+            return self.__parseGitOldLine(matches)
+
+        matches = re.match(r'^([^ ]+) @ git\+(https://(?:[^@]+@)?[^@]+)@([^#]+)(?:#egg=.+)?$', line)
+
+        if matches:
             return self.__parseGitLine(matches)
 
         raise Exception('Invalid requirements.txt line: {}'.format(line))
@@ -27,9 +37,16 @@ class RequirementsLineConverter:
 
         return [matches.group(1), it]
 
-    def __parseGitLine(self, matches: Match[str]):
+    def __parseGitOldLine(self, matches: Match[str]):
         it = inline_table()
         it.append('git', matches.group(1))
         it.append('rev', matches.group(2))
 
         return [matches.group(3), it]
+
+    def __parseGitLine(self, matches: Match[str]):
+        it = inline_table()
+        it.append('git', matches.group(2))
+        it.append('rev', matches.group(3))
+
+        return [matches.group(1), it]
