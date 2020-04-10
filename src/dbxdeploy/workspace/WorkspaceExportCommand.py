@@ -58,6 +58,9 @@ class WorkspaceExportCommand(ConsoleCommand):
                 self.__logger.error(f'Skipping unrecognized file {localFilePath}')
                 return
 
+        if not localFilePath.parent.exists():
+            localFilePath.parent.mkdir(parents=True)
+
         with localFilePath.open('wb') as f:
             zippedFileContent = zipFile.read(file.orig_filename).decode('utf-8')
             pyContent = self.__databricksNotebookConverter.fromDbcNotebook(json.loads(zippedFileContent))
