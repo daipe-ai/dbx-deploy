@@ -1,18 +1,17 @@
 from pathlib import PurePosixPath
-from pygit2 import Repository, GitError # pylint: disable = no-name-in-module
+from dbxdeploy.git.CurrentBranchResolver import CurrentBranchResolver
 
 class WorkspaceBaseDirFactory:
 
-    def __init__(self, workspaceBaseDirTemplate: str):
+    def __init__(
+        self,
+        workspaceBaseDirTemplate: str,
+        currentBranchResolver: CurrentBranchResolver,
+    ):
         self.__workspaceBaseDirTemplate = workspaceBaseDirTemplate
+        self.__currentBranchResolver = currentBranchResolver
 
     def create(self):
-        try:
-            currentGitBranch = Repository('.').head.shorthand
-        except GitError as e:
-            if str(e) != 'Repository not found at .':
-                raise
-
-            currentGitBranch = 'git_repo_missing'
+        currentGitBranch = self.__currentBranchResolver.resolve()
 
         return PurePosixPath(self.__workspaceBaseDirTemplate.replace('{currentBranch}', currentGitBranch))

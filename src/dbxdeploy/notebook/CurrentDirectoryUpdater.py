@@ -5,7 +5,8 @@ from typing import List
 from zipfile import ZipInfo, ZipFile
 from databricks_api import DatabricksAPI
 from pathlib import PurePosixPath
-from pygit2 import Repository, GitError # pylint: disable = no-name-in-module
+from pygit2 import GitError # pylint: disable = no-name-in-module
+from dbxdeploy.git.CurrentBranchResolver import CurrentBranchResolver
 from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.notebook.loader import loadNotebook
@@ -20,20 +21,24 @@ class CurrentDirectoryUpdater:
     def __init__(
         self,
         workspaceBaseDir: PurePosixPath,
+        gitDevBranch: str,
         logger: Logger,
         dbxApi: DatabricksAPI,
         workspaceExporter: WorkspaceExporter,
         dbcFilesHandler: DbcFilesHandler,
         workspaceImporter: WorkspaceImporter,
         databricksNotebookConverter: DatabricksNotebookConverter,
+        currentBranchResolver: CurrentBranchResolver,
     ):
         self.__workspaceBaseDir = workspaceBaseDir
+        self.__gitDevBranch = gitDevBranch
         self.__logger = logger
         self.__dbxApi = dbxApi
         self.__workspaceExporter = workspaceExporter
         self.__dbcFilesHandler = dbcFilesHandler
         self.__workspaceImporter = workspaceImporter
         self.__databricksNotebookConverter = databricksNotebookConverter
+        self.__currentBranchResolver = currentBranchResolver
 
     def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, whlFilePath: PurePosixPath):
         if self.__shouldRemoveMissingNotebooks():
@@ -70,11 +75,11 @@ class CurrentDirectoryUpdater:
 
     def __shouldRemoveMissingNotebooks(self):
         try:
-            currentGitBranch = Repository('.').head.shorthand
+            currentGitBranch = self.__currentBranchResolver.resolve()
         except GitError:
             return False
 
-        return currentGitBranch == 'master'
+        return currentGitBranch == self.__gitDevBranch
 
     def __resolveExistingNotebooksPaths(self, currentReleasePath: PurePosixPath):
         fileNames = []

@@ -3,6 +3,9 @@ parameters:
     browser:
       path: 'c:/Program Files (x86)/Google/Chrome/Application/chrome.exe'
       arguments: ['-d', '{runUrl}']
+    git:
+      baseDir: '.'
+      devBranch: 'master'
     source:
       notebooks:
         patterns: '%dbxdeploy.notebooks.paths%'
@@ -59,6 +62,10 @@ services:
   dbxdeploy.deploy.ReleaseCommand:
     tags:
       - 'console.command'
+
+  dbxdeploy.git.CurrentBranchResolver:
+    arguments:
+      - '%dbxdeploy.git.baseDir%'
 
   dbxdeploy.package.PackageMetadataLoader:
 
@@ -153,6 +160,7 @@ services:
   dbxdeploy.notebook.CurrentDirectoryUpdater:
     arguments:
       - '@dbxdeploy.target.workspaceBaseDir'
+      - '%dbxdeploy.git.devBranch%'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricksApi'
 
