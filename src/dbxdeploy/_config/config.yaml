@@ -4,8 +4,8 @@ parameters:
       path: 'c:/Program Files (x86)/Google/Chrome/Application/chrome.exe'
       arguments: ['-d', '{runUrl}']
     databricks:
-      projectRoot': '/{currentBranch}'
-      whlBaseDir': 'dbfs:/FileStore/jars'
+      projectRoot: '/{currentBranch}'
+      whlBaseDir: 'dbfs:/FileStore/jars'
     notebooks:
       paths: ['**/*.py']
       consumerPaths: ['**/*.consumer.py']
