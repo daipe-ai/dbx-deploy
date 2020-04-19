@@ -84,8 +84,8 @@ class CurrentDirectoryUpdater:
                 return
 
             """
-            _current/myproject/foo/bar.python -> myproject/foo/bar.python (releases enabled)
-            mybranch/myproject/foo/bar.python -> myproject/foo/bar.python (releases disabled)
+            _current/myproject/foo/bar.python -> myproject/foo/bar.python (dbx:release)
+            mybranch/myproject/foo/bar.python -> myproject/foo/bar.python (dbx:deploy)
             """
             filePathWithoutRootdir = file.orig_filename[file.orig_filename.index('/') + 1:]
 
