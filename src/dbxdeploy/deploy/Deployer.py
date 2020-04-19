@@ -8,18 +8,18 @@ class Deployer:
 
     def __init__(
         self,
-        projectBasePath: Path,
+        projectBaseDir: Path,
         packageMetadataLoader: PackageMetadataLoader,
         currentAndReleaseDeployer: CurrentAndReleaseDeployer,
         whlDeployer: WhlDeployer,
     ):
-        self.__projectBasePath = projectBasePath
+        self.__projectBaseDir = projectBaseDir
         self.__packageMetadataLoader = packageMetadataLoader
         self.__currentAndReleaseDeployer = currentAndReleaseDeployer
         self.__whlDeployer = whlDeployer
 
     async def deploy(self):
-        packageMetadata = self.__packageMetadataLoader.load(self.__projectBasePath)
+        packageMetadata = self.__packageMetadataLoader.load(self.__projectBaseDir)
 
         loop = asyncio.get_event_loop()
 

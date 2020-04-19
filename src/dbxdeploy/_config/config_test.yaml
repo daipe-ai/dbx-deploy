@@ -4,4 +4,3 @@ parameters:
       host: ''
       token: ''
       clusterId: ''
-      projectRoot: ''

@@ -26,16 +26,16 @@ class PackageMetadata:
     def getWhlUploadPathForCurrent(self, dbfsBasePath: PurePosixPath) -> PurePosixPath:
         return dbfsBasePath.joinpath(self.__packageName + '/_current').joinpath(self.getWhlFileName())
 
-    def getWorkspaceReleasePath(self, dbxProjectRoot: PurePosixPath) -> PurePosixPath:
+    def getWorkspaceReleasePath(self, workspaceBaseDir: PurePosixPath) -> PurePosixPath:
         releaseDirName = self.__dateTime.strftime('%Y-%m-%d_%H:%M:%S') + '_' + self.__randomString
 
-        return dbxProjectRoot.joinpath(releaseDirName)
+        return workspaceBaseDir.joinpath(releaseDirName)
 
-    def getNotebookReleasePath(self, dbxProjectRoot: PurePosixPath, notebookPath: PurePosixPath) -> PurePosixPath:
-        return self.getWorkspaceReleasePath(dbxProjectRoot).joinpath(notebookPath)
+    def getNotebookReleasePath(self, workspaceBaseDir: PurePosixPath, notebookPath: PurePosixPath) -> PurePosixPath:
+        return self.getWorkspaceReleasePath(workspaceBaseDir).joinpath(notebookPath)
 
-    def getNotebookPathRegEx(self, dbxProjectRoot: PurePosixPath, notebookPath: PurePosixPath) -> str:
-        return '^' + str(dbxProjectRoot) + '/([^/]+)/' + str(notebookPath) + '$'
+    def getNotebookPathRegEx(self, workspaceBaseDir: PurePosixPath, notebookPath: PurePosixPath) -> str:
+        return '^' + str(workspaceBaseDir) + '/([^/]+)/' + str(notebookPath) + '$'
 
     def getJobRunName(self) -> str:
         return self.__dateTime.strftime('%Y-%m-%d_%H:%M:%S') + '_' + self.__randomString

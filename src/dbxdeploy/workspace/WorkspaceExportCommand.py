@@ -14,15 +14,15 @@ class WorkspaceExportCommand(ConsoleCommand):
 
     def __init__(
         self,
-        dbxProjectRoot: PurePosixPath,
-        projectBasePath: Path,
+        workspaceBaseDir: PurePosixPath,
+        projectBaseDir: Path,
         logger: Logger,
         workspaceExporter: WorkspaceExporter,
         dbcFilesHandler: DbcFilesHandler,
         databricksNotebookConverter: DatabricksNotebookConverter,
     ):
-        self.__dbxProjectRoot = dbxProjectRoot
-        self.__projectSrcPath = projectBasePath.joinpath('src')
+        self.__workspaceBaseDir = workspaceBaseDir
+        self.__projectSrcPath = projectBaseDir.joinpath('src')
         self.__logger = logger
         self.__workspaceExporter = workspaceExporter
         self.__dbcFilesHandler = dbcFilesHandler
@@ -35,9 +35,9 @@ class WorkspaceExportCommand(ConsoleCommand):
         return 'Export notebooks from Databricks workspace to local project'
 
     def run(self, inputArgs: Namespace):
-        self.__logger.info(f'Exporting {self.__dbxProjectRoot} to {self.__projectSrcPath}')
+        self.__logger.info(f'Exporting {self.__workspaceBaseDir} to {self.__projectSrcPath}')
 
-        dbcContent = self.__workspaceExporter.export(self.__dbxProjectRoot)
+        dbcContent = self.__workspaceExporter.export(self.__workspaceBaseDir)
         self.__dbcFilesHandler.handle(dbcContent, self.__readFile)
 
         self.__logger.info(f'Export completed')

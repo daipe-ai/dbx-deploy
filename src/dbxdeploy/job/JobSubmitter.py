@@ -10,19 +10,19 @@ class JobSubmitter:
     def __init__(
         self,
         clusterId: str,
-        dbxProjectRoot: PurePosixPath,
+        workspaceBaseDir: PurePosixPath,
         browserConfig: Box,
         logger: Logger,
         dbxApi: DatabricksAPI,
     ):
         self.__clusterId = clusterId
-        self.__dbxProjectRoot = dbxProjectRoot
+        self.__workspaceBaseDir = workspaceBaseDir
         self.__browserConfig = browserConfig
         self.__logger = logger
         self.__dbxApi = dbxApi
 
     def submit(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
-        notebookReleasePath = self.__dbxProjectRoot.joinpath(notebookPath)
+        notebookReleasePath = self.__workspaceBaseDir.joinpath(notebookPath)
 
         self.__logger.info('Submitting job for {} to cluster {}'.format(notebookReleasePath, self.__clusterId))
 

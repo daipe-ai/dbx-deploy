@@ -15,8 +15,8 @@ class Releaser:
 
     def __init__(
         self,
-        projectBasePath: Path,
-        dbxProjectRoot: PurePosixPath,
+        projectBaseDir: Path,
+        workspaceBaseDir: PurePosixPath,
         logger: Logger,
         packageMetadataLoader: PackageMetadataLoader,
         currentAndReleaseDeployer: CurrentAndReleaseDeployer,
@@ -26,8 +26,8 @@ class Releaser:
         jobsCreatorAndRunner: JobsCreatorAndRunner,
         notebooksLocator: NotebooksLocator,
     ):
-        self.__projectBasePath = projectBasePath
-        self.__dbxProjectRoot = dbxProjectRoot
+        self.__projectBaseDir = projectBaseDir
+        self.__workspaceBaseDir = workspaceBaseDir
         self.__logger = logger
         self.__packageMetadataLoader = packageMetadataLoader
         self.__currentAndReleaseDeployer = currentAndReleaseDeployer
@@ -38,7 +38,7 @@ class Releaser:
         self.__notebooksLocator = notebooksLocator
 
     async def release(self):
-        packageMetadata = self.__packageMetadataLoader.load(self.__projectBasePath)
+        packageMetadata = self.__packageMetadataLoader.load(self.__projectBaseDir)
 
         loop = asyncio.get_event_loop()
 
@@ -56,7 +56,7 @@ class Releaser:
             self.__clusterRestarter.restart()
 
             def createJobNotebookPath(consumerNotebook: Notebook):
-                return str(packageMetadata.getNotebookReleasePath(self.__dbxProjectRoot, consumerNotebook.databricksRelativePath))
+                return str(packageMetadata.getNotebookReleasePath(self.__workspaceBaseDir, consumerNotebook.databricksRelativePath))
 
             consumerNotebooksReleasePaths = set(map(createJobNotebookPath, consumerNotebooks))
 

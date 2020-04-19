@@ -8,11 +8,11 @@ class RunsGetter:
     def __init__(
         self,
         clusterId: str,
-        dbxProjectRoot: PurePosixPath,
+        workspaceBaseDir: PurePosixPath,
         dbxApi: DatabricksAPI
     ):
         self.__clusterId = clusterId
-        self.__dbxProjectRoot = dbxProjectRoot
+        self.__workspaceBaseDir = workspaceBaseDir
         self.__dbxApi = dbxApi
 
     def get(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
@@ -40,7 +40,7 @@ class RunsGetter:
         return notebookRuns
 
     def __filterRun(self, run: dict, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
-        regEx = packageMetadata.getNotebookPathRegEx(self.__dbxProjectRoot, notebookPath)
+        regEx = packageMetadata.getNotebookPathRegEx(self.__workspaceBaseDir, notebookPath)
 
         return (
             re.match(regEx, run['task']['notebook_task']['notebook_path'])

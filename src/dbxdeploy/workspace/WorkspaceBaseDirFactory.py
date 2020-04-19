@@ -1,10 +1,10 @@
 from pathlib import PurePosixPath
 from pygit2 import Repository, GitError # pylint: disable = no-name-in-module
 
-class ProjectRootPathFactory:
+class WorkspaceBaseDirFactory:
 
-    def __init__(self, projectRootPathTemplate: str):
-        self.__projectRootPathTemplate = projectRootPathTemplate
+    def __init__(self, workspaceBaseDirTemplate: str):
+        self.__workspaceBaseDirTemplate = workspaceBaseDirTemplate
 
     def create(self):
         try:
@@ -15,4 +15,4 @@ class ProjectRootPathFactory:
 
             currentGitBranch = 'git_repo_missing'
 
-        return PurePosixPath(self.__projectRootPathTemplate.replace('{currentBranch}', currentGitBranch))
+        return PurePosixPath(self.__workspaceBaseDirTemplate.replace('{currentBranch}', currentGitBranch))

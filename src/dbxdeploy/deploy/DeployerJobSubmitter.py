@@ -12,7 +12,7 @@ class DeployerJobSubmitter:
 
     def __init__(
         self,
-        projectBasePath: Path,
+        projectBaseDir: Path,
         packageMetadataLoader: PackageMetadataLoader,
         notebookKiller: NotebookKiller,
         notebooksDeployer: NotebooksDeployer,
@@ -20,7 +20,7 @@ class DeployerJobSubmitter:
         jobSubmitter: JobSubmitter,
         notebooksLocator: NotebooksLocator,
     ):
-        self.__projectBasePath = projectBasePath
+        self.__projectBaseDir = projectBaseDir
         self.__packageMetadataLoader = packageMetadataLoader
         self.__notebookKiller = notebookKiller
         self.__notebooksDeployer = notebooksDeployer
@@ -29,7 +29,7 @@ class DeployerJobSubmitter:
         self.__notebooksLocator = notebooksLocator
 
     async def deployAndSubmitJob(self, notebookPath: PurePosixPath):
-        packageMetadata = self.__packageMetadataLoader.load(self.__projectBasePath)
+        packageMetadata = self.__packageMetadataLoader.load(self.__projectBaseDir)
 
         def deployRoot(packageMetadata: PackageMetadata):
             notebooks = self.__notebooksLocator.locate()

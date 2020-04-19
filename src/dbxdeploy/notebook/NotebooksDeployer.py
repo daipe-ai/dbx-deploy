@@ -11,14 +11,14 @@ class NotebooksDeployer:
 
     def __init__(
         self,
-        dbxProjectRoot: PurePosixPath,
+        workspaceBaseDir: PurePosixPath,
         whlBaseDir: str,
         logger: Logger,
         dbcCreator: DbcCreator,
         dbcUploader: DbcUploader,
         currentDirectoryUpdater: CurrentDirectoryUpdater,
     ):
-        self.__dbxProjectRoot = dbxProjectRoot
+        self.__workspaceBaseDir = workspaceBaseDir
         self.__whlBaseDir = PurePosixPath(whlBaseDir)
         self.__logger = logger
         self.__dbcCreator = dbcCreator
@@ -28,19 +28,19 @@ class NotebooksDeployer:
     def deployRoot(self, packageMetadata: PackageMetadata, notebooks: List[Notebook]):
         whlFilePath = packageMetadata.getWhlUploadPathForRelease(self.__whlBaseDir)
 
-        self.__logger.info('All packages released, updating {}'.format(self.__dbxProjectRoot))
-        self.__currentDirectoryUpdater.update(notebooks, self.__dbxProjectRoot, whlFilePath)
+        self.__logger.info('All packages released, updating {}'.format(self.__workspaceBaseDir))
+        self.__currentDirectoryUpdater.update(notebooks, self.__workspaceBaseDir, whlFilePath)
 
     def deployRelease(self, packageMetadata: PackageMetadata, notebooks: List[Notebook]):
         self.__logger.info('Building notebooks package (DBC)')
         dbcContent = self.__dbcCreator.create(notebooks, packageMetadata.getWhlUploadPathForRelease(self.__whlBaseDir))
 
-        releasePath = packageMetadata.getWorkspaceReleasePath(self.__dbxProjectRoot)
+        releasePath = packageMetadata.getWorkspaceReleasePath(self.__workspaceBaseDir)
         self.__logger.info('Uploading notebooks package to {}'.format(releasePath))
         self.__dbcUploader.upload(dbcContent, releasePath)
 
     def deployCurrent(self, packageMetadata: PackageMetadata, notebooks: List[Notebook]):
-        currentReleasePath = self.__dbxProjectRoot.joinpath('_current')
+        currentReleasePath = self.__workspaceBaseDir.joinpath('_current')
         whlFilePath = packageMetadata.getWhlUploadPathForRelease(self.__whlBaseDir)
 
         self.__logger.info('All packages released, updating {}'.format(currentReleasePath))

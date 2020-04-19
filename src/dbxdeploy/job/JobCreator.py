@@ -8,17 +8,17 @@ class JobCreator:
     def __init__(
         self,
         clusterId: str,
-        dbxProjectRoot: PurePosixPath,
+        workspaceBaseDir: PurePosixPath,
         logger: Logger,
         dbxApi: DatabricksAPI
     ):
         self.__clusterId = clusterId
-        self.__dbxProjectRoot = dbxProjectRoot
+        self.__workspaceBaseDir = workspaceBaseDir
         self.__logger = logger
         self.__dbxApi = dbxApi
 
     def create(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
-        notebookReleasePath = packageMetadata.getNotebookReleasePath(self.__dbxProjectRoot, notebookPath)
+        notebookReleasePath = packageMetadata.getNotebookReleasePath(self.__workspaceBaseDir, notebookPath)
 
         self.__logger.info('Creating job for {}'.format(str(notebookReleasePath)))
 

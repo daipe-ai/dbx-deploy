@@ -19,7 +19,7 @@ class CurrentDirectoryUpdater:
 
     def __init__(
         self,
-        dbxProjectRoot: PurePosixPath,
+        workspaceBaseDir: PurePosixPath,
         logger: Logger,
         dbxApi: DatabricksAPI,
         workspaceExporter: WorkspaceExporter,
@@ -27,7 +27,7 @@ class CurrentDirectoryUpdater:
         workspaceImporter: WorkspaceImporter,
         databricksNotebookConverter: DatabricksNotebookConverter,
     ):
-        self.__dbxProjectRoot = dbxProjectRoot
+        self.__workspaceBaseDir = workspaceBaseDir
         self.__logger = logger
         self.__dbxApi = dbxApi
         self.__workspaceExporter = workspaceExporter
@@ -48,7 +48,7 @@ class CurrentDirectoryUpdater:
         newNotebooks = set(map(lambda notebook: str(notebook.databricksRelativePath), notebooks))
 
         for notebookToDelete in existingNotebooks - newNotebooks:
-            fullNotebookPath = self.__dbxProjectRoot.joinpath(notebookToDelete)
+            fullNotebookPath = self.__workspaceBaseDir.joinpath(notebookToDelete)
             self.__logger.warning('Removing deleted/missing notebook {}'.format(fullNotebookPath))
             self.__dbxApi.workspace.delete(str(fullNotebookPath))
 

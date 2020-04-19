@@ -6,8 +6,8 @@ from dbxdeploy.string.RandomStringGenerator import RandomStringGenerator
 
 class PackageMetadataLoader:
 
-    def load(self, projectBasePath: Path) -> PackageMetadata:
-        pyprojectPath = projectBasePath.joinpath('pyproject.toml')
+    def load(self, projectBaseDir: Path) -> PackageMetadata:
+        pyprojectPath = projectBaseDir.joinpath('pyproject.toml')
 
         with pyprojectPath.open('r') as t:
             lock = tomlkit.parse(t.read())

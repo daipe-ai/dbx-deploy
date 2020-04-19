@@ -8,13 +8,13 @@ class WhlDeployer:
 
     def __init__(
         self,
-        projectBasePath: Path,
+        projectBaseDir: Path,
         dbfsBasePath: str,
         logger: Logger,
         whlBuilder: WhlBuilder,
         whlUploader: WhlUploader
     ):
-        self.__projectBasePath = projectBasePath
+        self.__projectBaseDir = projectBaseDir
         self.__dbfsBasePath = PurePosixPath(dbfsBasePath)
         self.__logger = logger
         self.__whlBuilder = whlBuilder
@@ -23,9 +23,9 @@ class WhlDeployer:
     def deploy(self, packageMetadata: PackageMetadata):
         self.__logger.info('Building app package (WHL)')
 
-        self.__whlBuilder.build(self.__projectBasePath)
+        self.__whlBuilder.build(self.__projectBaseDir)
 
-        whlFilePath = self.__projectBasePath.joinpath(Path('dist')).joinpath(packageMetadata.getWhlFileName())
+        whlFilePath = self.__projectBaseDir.joinpath(Path('dist')).joinpath(packageMetadata.getWhlFileName())
 
         with whlFilePath.open('rb') as file:
             content = file.read()

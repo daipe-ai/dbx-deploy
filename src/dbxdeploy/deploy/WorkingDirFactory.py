@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-class WorkingDirectoryPathFactory:
+class WorkingDirFactory:
 
     def create(self):
         return Path(os.getcwd())

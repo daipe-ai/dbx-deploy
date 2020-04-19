@@ -6,11 +6,11 @@ class NotebooksLocator:
 
     def __init__(
         self,
-        projectBasePath: Path,
+        projectBaseDir: Path,
         pathsPatterns: list,
         consumerPathsPatterns: list,
     ):
-        self.__projectBasePath = projectBasePath
+        self.__projectBaseDir = projectBaseDir
         self.__pathsPatterns = pathsPatterns
         self.__consumerPathsPatterns = consumerPathsPatterns
 
@@ -24,11 +24,11 @@ class NotebooksLocator:
         def createNotebook(path: Path):
             return Notebook(
                 path,
-                path.relative_to(self.__projectBasePath),
-                path.relative_to(self.__projectBasePath).relative_to('src').with_suffix('').as_posix(),
+                path.relative_to(self.__projectBaseDir),
+                path.relative_to(self.__projectBaseDir).relative_to('src').with_suffix('').as_posix(),
             )
 
-        basePath = self.__projectBasePath.joinpath('src')  # type: Path
+        basePath = self.__projectBaseDir.joinpath('src')  # type: Path
 
         filesGrabbed = []
 
