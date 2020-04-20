@@ -1,9 +1,9 @@
-import json
 from argparse import Namespace
 from logging import Logger
 from pathlib import PurePosixPath, Path
 from zipfile import ZipInfo, ZipFile
 from consolebundle.ConsoleCommand import ConsoleCommand
+from dbxdeploy.dbc.DbcNotebookConverter import DbcNotebookConverter
 from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.notebook.loader import loadNotebook
@@ -21,6 +21,7 @@ class WorkspaceExportCommand(ConsoleCommand):
         workspaceExporter: WorkspaceExporter,
         dbcFilesHandler: DbcFilesHandler,
         databricksNotebookConverter: DatabricksNotebookConverter,
+        dbcNotebookConverter: DbcNotebookConverter,
     ):
         self.__workspaceBaseDir = workspaceBaseDir
         self.__localBaseDir = projectBaseDir.joinpath(relativeBaseDirPath)
@@ -28,6 +29,7 @@ class WorkspaceExportCommand(ConsoleCommand):
         self.__workspaceExporter = workspaceExporter
         self.__dbcFilesHandler = dbcFilesHandler
         self.__databricksNotebookConverter = databricksNotebookConverter
+        self.__dbcNotebookConverter = dbcNotebookConverter
 
     def getCommand(self) -> str:
         return 'dbx:workspace:export'
@@ -63,7 +65,5 @@ class WorkspaceExportCommand(ConsoleCommand):
             localFilePath.parent.mkdir(parents=True)
 
         with localFilePath.open('wb') as f:
-            zippedFileContent = zipFile.read(file.orig_filename).decode('utf-8')
-            pyContent = self.__databricksNotebookConverter.fromDbcNotebook(json.loads(zippedFileContent))
-
-            f.write(pyContent.encode('utf-8'))
+            pyContent = self.__dbcNotebookConverter.convert(zipFile, file)
+            f.write(pyContent)

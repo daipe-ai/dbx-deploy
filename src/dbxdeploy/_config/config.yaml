@@ -90,6 +90,8 @@ services:
       - '@dbxdeploy.deploy.workingDir'
       - '@consolebundle.logger'
 
+  dbxdeploy.dbc.DbcNotebookConverter:
+
   dbxdeploy.dbc.DbcUploader:
     arguments:
       - '@dbxdeploy.databricksApi'
