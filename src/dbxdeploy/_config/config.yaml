@@ -14,6 +14,8 @@ parameters:
     target:
       workspaceBaseDir: '%dbxdeploy.databricks.projectRoot%'
       whlBaseDir: '%dbxdeploy.databricks.whlBaseDir%'
+    export:
+      forceEndFileNewline: True # @deprecated, set to False in 0.10.0
     databricks: # @deprecated, to be removed in 0.10.0
       projectRoot: '/{currentBranch}'
       whlBaseDir: 'dbfs:/FileStore/jars'
@@ -99,6 +101,8 @@ services:
   dbxdeploy.dbc.PathsPreparer:
 
   dbxdeploy.dbc.CommandsConverter:
+    arguments:
+      - '%dbxdeploy.export.forceEndFileNewline%'
 
   dbxdeploy.dbc.CommandConverter:
     arguments:

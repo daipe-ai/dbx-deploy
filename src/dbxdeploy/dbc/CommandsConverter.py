@@ -4,8 +4,10 @@ class CommandsConverter:
 
     def __init__(
         self,
+        forceEndFileNewLine: bool,
         commandConverter: CommandConverter,
     ):
+        self.__forceEndFileNewLine = forceEndFileNewLine
         self.__commandConverter = commandConverter
 
     def convert(self, commands: list, firstLine: str, cellSeparator: str) -> str:
@@ -17,7 +19,7 @@ class CommandsConverter:
 
         output = f'\n\n{cellSeparator}\n\n'.join(commands)
 
-        if output[-1:] != '\n':
+        if self.__forceEndFileNewLine is True and output[-1:] != '\n':
             output += '\n'
 
         return firstLine + '\n' + output
