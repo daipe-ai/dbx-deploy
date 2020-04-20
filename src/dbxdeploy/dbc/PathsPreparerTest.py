@@ -1,5 +1,5 @@
 import unittest
-from pathlib import Path
+from pathlib import PurePosixPath
 from dbxdeploy.dbc.PathsPreparer import PathsPreparer
 
 class PathsPreparerTest(unittest.TestCase):
@@ -9,19 +9,20 @@ class PathsPreparerTest(unittest.TestCase):
 
     def test_basic(self):
         paths = [
-            Path('DataSenticsLib/Ahoj/notebook_spark2.ipynb'),
-            Path('DataSenticsLib/Example/notebook_spark.ipynb'),
-            Path('DataSenticsLib/Example/notebook_spark3.ipynb'),
-            Path('DataSenticsLib/Example/SubExample/notebook_pandas.ipynb')
+            PurePosixPath('DataSenticsLib/Ahoj/notebook_spark2.ipynb'),
+            PurePosixPath('DataSenticsLib/Example/notebook_spark.ipynb'),
+            PurePosixPath('DataSenticsLib/Example/notebook_spark3.ipynb'),
+            PurePosixPath('DataSenticsLib/Example/SubExample/notebook_pandas.ipynb')
         ]
 
-        uniquePaths = sorted(self.__pathsPreparer.prepare(paths))
+        uniquePaths = sorted(self.__pathsPreparer.prepare(paths, 'root_ignored_path'))
 
         self.assertListEqual([
-            'DataSenticsLib',
-            'DataSenticsLib/Ahoj',
-            'DataSenticsLib/Example',
-            'DataSenticsLib/Example/SubExample',
+            'root_ignored_path',
+            'root_ignored_path/DataSenticsLib',
+            'root_ignored_path/DataSenticsLib/Ahoj',
+            'root_ignored_path/DataSenticsLib/Example',
+            'root_ignored_path/DataSenticsLib/Example/SubExample',
         ], uniquePaths)
 
 if __name__ == '__main__':

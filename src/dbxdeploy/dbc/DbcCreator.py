@@ -24,19 +24,19 @@ class DbcCreator:
         self.__databricksNotebookConverter = databricksNotebookConverter
 
     def create(self, notebooks: List[Notebook], whlFilename: PurePosixPath) -> bytes:
-        notebookRelativePaths = list(map(lambda notebook: notebook.relativePath, notebooks))
+        databricksRelativePaths = list(map(lambda notebook: notebook.databricksRelativePath, notebooks))
+        rootIgnoredPathName = 'root_ignored_path'
 
         inMemoryOutput = BytesIO()
 
         zipFile = zipfile.ZipFile(inMemoryOutput, 'w', zipfile.ZIP_DEFLATED)
 
         # directories must be created first, otherwise DataBricks is not able to process that zip/dbc file
-        for dirPath in self.__pathsPreparer.prepare(notebookRelativePaths):
+        for dirPath in self.__pathsPreparer.prepare(databricksRelativePaths, rootIgnoredPathName):
             zipFile.writestr(dirPath + '/', '')
 
         for notebook in notebooks:
             source = loadNotebook(notebook.path)
-            zipPath = '/'.join(notebook.relativePath.parts[0:-1]) + '/' + notebook.relativePath.stem + '.python'
 
             try:
                 self.__databricksNotebookConverter.validateSource(source)
@@ -45,7 +45,8 @@ class DbcCreator:
                 continue
 
             notebookSource = self.__databricksNotebookConverter.toDbcNotebook(notebook.path.stem, source, whlFilename)
-            zipFile.writestr(zipPath, notebookSource)
+            zipPath = PurePosixPath(rootIgnoredPathName).joinpath(notebook.databricksRelativePath).with_suffix('.python')
+            zipFile.writestr(str(zipPath), notebookSource)
 
         zipFile.close()
         inMemoryOutput.seek(0)

@@ -16,13 +16,14 @@ class WorkspaceExportCommand(ConsoleCommand):
         self,
         workspaceBaseDir: PurePosixPath,
         projectBaseDir: Path,
+        relativeBaseDirPath: str,
         logger: Logger,
         workspaceExporter: WorkspaceExporter,
         dbcFilesHandler: DbcFilesHandler,
         databricksNotebookConverter: DatabricksNotebookConverter,
     ):
         self.__workspaceBaseDir = workspaceBaseDir
-        self.__projectSrcPath = projectBaseDir.joinpath('src')
+        self.__localBaseDir = projectBaseDir.joinpath(relativeBaseDirPath)
         self.__logger = logger
         self.__workspaceExporter = workspaceExporter
         self.__dbcFilesHandler = dbcFilesHandler
@@ -35,7 +36,7 @@ class WorkspaceExportCommand(ConsoleCommand):
         return 'Export notebooks from Databricks workspace to local project'
 
     def run(self, inputArgs: Namespace):
-        self.__logger.info(f'Exporting {self.__workspaceBaseDir} to {self.__projectSrcPath}')
+        self.__logger.info(f'Exporting {self.__workspaceBaseDir} to {self.__localBaseDir}')
 
         dbcContent = self.__workspaceExporter.export(self.__workspaceBaseDir)
         self.__dbcFilesHandler.handle(dbcContent, self.__readFile)
@@ -47,7 +48,7 @@ class WorkspaceExportCommand(ConsoleCommand):
             return
 
         filePathWithoutRootdir = file.orig_filename[file.orig_filename.index('/') + 1:file.orig_filename.rindex('.')] + '.py'
-        localFilePath = self.__projectSrcPath.joinpath(filePathWithoutRootdir)
+        localFilePath = self.__localBaseDir.joinpath(filePathWithoutRootdir)
 
         if localFilePath.exists():
             localFileSource = loadNotebook(localFilePath)

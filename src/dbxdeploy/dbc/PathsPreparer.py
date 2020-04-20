@@ -1,10 +1,13 @@
-from pathlib import Path
+from pathlib import PurePosixPath
 from typing import List
 
 class PathsPreparer:
 
-    def prepare(self, notebookPaths: List[Path]):
-        paths = list(map(lambda notebookPath: notebookPath.parts[0:-1], notebookPaths))
+    def prepare(self, databricksRelativePaths: List[PurePosixPath], rootIgnoredPathName: str):
+        def createNotebookPath(databricksRelativePath: PurePosixPath) -> tuple:
+            return (rootIgnoredPathName, ) + databricksRelativePath.parts[0:-1]
+
+        paths = list(map(createNotebookPath, databricksRelativePaths))
         paths = list(set(paths))
 
         for path in paths:

@@ -8,6 +8,7 @@ parameters:
       devBranch: 'master'
     source:
       notebooks:
+        baseDir: 'src'
         patterns: '%dbxdeploy.notebooks.paths%'
         consumersPatterns: '%dbxdeploy.notebooks.consumerPaths%'
     target:
@@ -184,6 +185,7 @@ services:
     arguments:
       - '@dbxdeploy.target.workspaceBaseDir'
       - '@dbxdeploy.deploy.workingDir'
+      - '%dbxdeploy.source.notebooks.baseDir%'
       - '@consolebundle.logger'
     tags:
       - 'console.command'
@@ -195,6 +197,10 @@ services:
       - '@dbxdeploy.deploy.workingDir'
       - '%dbxdeploy.source.notebooks.patterns%'
       - '%dbxdeploy.source.notebooks.consumersPatterns%'
+
+  dbxdeploy.notebook.RelativePathResolver:
+    arguments:
+      - '%dbxdeploy.source.notebooks.baseDir%'
 
   dbxdeploy.notebook.converter.JinjaTemplateLoader:
 
