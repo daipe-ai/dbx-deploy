@@ -1,14 +1,14 @@
 import unittest
 from dbxdeploy.containerInit import initContainer
-from dbxdeploy.dbc.NotebookConverter import NotebookConverter
+from dbxdeploy.dbc.CommandsConverter import CommandsConverter
 from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
 
-class NotebookConverterTest(unittest.TestCase):
+class CommandsConverterTest(unittest.TestCase):
 
     def setUp(self):
         container = initContainer('test')
 
-        self.__notebookConverter = container.get(NotebookConverter) # type: NotebookConverter
+        self.__commandsConverter = container.get(CommandsConverter) # type: CommandsConverter
 
     def test_basic(self):
         commands = [
@@ -18,7 +18,7 @@ class NotebookConverterTest(unittest.TestCase):
             {'command': '', 'position': 1.66, 'commandTitle': ''}
         ]
 
-        result = self.__notebookConverter.convert(
+        result = self.__commandsConverter.convert(
             commands,
             DatabricksNotebookConverter.firstLine,
             DatabricksNotebookConverter.cellSeparator,

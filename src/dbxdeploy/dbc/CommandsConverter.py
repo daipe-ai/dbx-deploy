@@ -1,6 +1,6 @@
 from dbxdeploy.dbc.CommandConverter import CommandConverter
 
-class NotebookConverter:
+class CommandsConverter:
 
     def __init__(
         self,

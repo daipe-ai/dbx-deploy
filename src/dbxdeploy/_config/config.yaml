@@ -98,7 +98,7 @@ services:
 
   dbxdeploy.dbc.PathsPreparer:
 
-  dbxdeploy.dbc.NotebookConverter:
+  dbxdeploy.dbc.CommandsConverter:
 
   dbxdeploy.dbc.CommandConverter:
     arguments:

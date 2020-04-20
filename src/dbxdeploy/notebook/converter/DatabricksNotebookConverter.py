@@ -1,6 +1,6 @@
 import re
 from pathlib import PurePosixPath
-from dbxdeploy.dbc.NotebookConverter import NotebookConverter
+from dbxdeploy.dbc.CommandsConverter import CommandsConverter
 from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
 from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
@@ -13,12 +13,12 @@ class DatabricksNotebookConverter:
 
     def __init__(
         self,
-        notebookConverter: NotebookConverter,
+        commandsConverter: CommandsConverter,
         cellsExtractor: CellsExtractor,
         jinjaTemplateLoader: JinjaTemplateLoader,
         dbcScriptRenderer: DbcScriptRenderer,
     ):
-        self.__notebookConverter = notebookConverter
+        self.__commandsConverter = commandsConverter
         self.__cellsExtractor = cellsExtractor
         self.__jinjaTemplateLoader = jinjaTemplateLoader
         self.__dbcScriptRenderer = dbcScriptRenderer
@@ -28,7 +28,7 @@ class DatabricksNotebookConverter:
             raise UnexpectedSourceException()
 
     def fromDbcNotebook(self, content: dict) -> str:
-        return self.__notebookConverter.convert(content['commands'], self.firstLine, self.cellSeparator)
+        return self.__commandsConverter.convert(content['commands'], self.firstLine, self.cellSeparator)
 
     def toDbcNotebook(self, notebookName: str, source: str, whlFilename: PurePosixPath) -> str:
         cells = self.__cellsExtractor.extract(source, r'#[\s]+COMMAND[\s]+[\-]+\n+')
