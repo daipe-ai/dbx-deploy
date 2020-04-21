@@ -9,11 +9,11 @@ class CommandConverter:
         self.__whlBaseDir = whlBaseDir
 
     def convert(self, command: dict):
-        if command['command'][0:5] == '%run ' or command['command'][0:4] == '%md ':
-            return '# MAGIC ' + command['command']
+        magicCommand = self.__detectMagicCommand(command['command'])
 
-        if command['commandTitle']:
-            return '# DBTITLE 1,' + command['commandTitle'] + '\n' + command['command']
+        if magicCommand in ['%run', '%md', '%sql', '%sh', '%python', '%scala', '%r']:
+            commandCode = '# MAGIC ' + command['command'].replace('\n', '\n# MAGIC ')
+            return self.__processTitle(commandCode, command)
 
         regExp = (
             '^' + re.escape('dbutils.library.install(\'' + self.__whlBaseDir) +
@@ -21,6 +21,22 @@ class CommandConverter:
         )
 
         if re.match(regExp, command['command']):
-            return '# MAGIC %installMasterPackageWhl'
+            return self.__processTitle('# MAGIC %installMasterPackageWhl', command)
 
-        return command['command']
+        return self.__processTitle(command['command'], command)
+
+    def __detectMagicCommand(self, commandCode: str):
+        matches = re.match(r'^(%[a-zA-Z]+)[\s]', commandCode)
+
+        if not matches:
+            return None
+
+        return matches.group(1)
+
+    def __processTitle(self, commandCode: str, origCommand: dict):
+        if not origCommand['commandTitle']:
+            return commandCode
+
+        showCommandTitleString = '1' if origCommand['showCommandTitle'] is True else '0'
+
+        return f'# DBTITLE {showCommandTitleString},{origCommand["commandTitle"]}\n{commandCode}'
