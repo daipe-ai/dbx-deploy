@@ -15,10 +15,9 @@ class CurrentAndReleaseDeployer:
     def deploy(self, packageMetadata: PackageMetadata):
         notebooks = self.__notebooksLocator.locate()
 
-        self.__notebooksDeployer.deployRoot(packageMetadata, notebooks)
+        self.__notebooksDeployer.deploy(packageMetadata, notebooks)
 
     def release(self, packageMetadata: PackageMetadata):
         notebooks = self.__notebooksLocator.locate()
 
-        self.__notebooksDeployer.deployRelease(packageMetadata, notebooks)
-        self.__notebooksDeployer.deployCurrent(packageMetadata, notebooks)
+        self.__notebooksDeployer.release(packageMetadata, notebooks)

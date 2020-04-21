@@ -33,7 +33,7 @@ class DeployerJobSubmitter:
 
         def deployRoot(packageMetadata: PackageMetadata):
             notebooks = self.__notebooksLocator.locate()
-            self.__notebooksDeployer.deployRoot(packageMetadata, notebooks)
+            self.__notebooksDeployer.deploy(packageMetadata, notebooks)
 
         loop = asyncio.get_event_loop()
 

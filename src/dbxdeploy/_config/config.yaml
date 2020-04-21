@@ -113,6 +113,7 @@ services:
       - '@dbxdeploy.target.workspaceBaseDir'
       - '%dbxdeploy.target.whlBaseDir%'
       - '@consolebundle.logger'
+      - '@dbxdeploy.databricksApi'
 
   dbxdeploy.job.JobsDeleter:
     arguments:
