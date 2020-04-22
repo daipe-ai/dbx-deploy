@@ -1,12 +1,12 @@
-from pygit2 import Repository # pylint: disable = no-name-in-module
+from dbxdeploy.git.CurrentRepositoryFactory import CurrentRepositoryFactory
 
 class CurrentBranchResolver:
 
     def __init__(
         self,
-        repositoryBaseDir: str,
+        currentRepositoryFactory: CurrentRepositoryFactory,
     ):
-        self.__repositoryBaseDir = repositoryBaseDir
+        self.__currentRepositoryFactory = currentRepositoryFactory
 
     def resolve(self) -> str:
-        return Repository(self.__repositoryBaseDir).head.shorthand
+        return self.__currentRepositoryFactory.create().head.shorthand
