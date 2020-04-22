@@ -5,6 +5,7 @@ from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
 from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
+from dbxdeploy.package.PackageInstaller import PackageInstaller
 
 class DatabricksNotebookConverter:
 
@@ -17,11 +18,13 @@ class DatabricksNotebookConverter:
         cellsExtractor: CellsExtractor,
         jinjaTemplateLoader: JinjaTemplateLoader,
         dbcScriptRenderer: DbcScriptRenderer,
+        packageInstaller: PackageInstaller,
     ):
         self.__commandsConverter = commandsConverter
         self.__cellsExtractor = cellsExtractor
         self.__jinjaTemplateLoader = jinjaTemplateLoader
         self.__dbcScriptRenderer = dbcScriptRenderer
+        self.__packageInstaller = packageInstaller
 
     def validateSource(self, source: str):
         if re.match(r'^' + self.firstLine + '[\r\n]', source) is None:
@@ -35,7 +38,7 @@ class DatabricksNotebookConverter:
 
         def cleanupCell(cell: dict):
             if cell['source'] == '# MAGIC %installMasterPackageWhl':
-                cell['source'] = self.__getPackageInstallCommand(packageFilename)
+                cell['source'] = self.__packageInstaller.getPackageInstallCommand(packageFilename)
 
             cell['source'] = re.sub(r'^' + self.firstLine + '[\r\n]+', '', cell['source'])
             cell['source'] = re.sub(r'^# MAGIC ', '', cell['source'])
@@ -49,7 +52,4 @@ class DatabricksNotebookConverter:
         return self.__dbcScriptRenderer.render(notebookName, template, cells)
 
     def toWorkspaceImportNotebook(self, source: str, packageFilename: PurePosixPath) -> str:
-        return source.replace('# MAGIC %installMasterPackageWhl', self.__getPackageInstallCommand(packageFilename))
-
-    def __getPackageInstallCommand(self, packageFilename: PurePosixPath):
-        return 'dbutils.library.install(\'{}\')'.format(packageFilename)
+        return source.replace('# MAGIC %installMasterPackageWhl', self.__packageInstaller.getPackageInstallCommand(packageFilename))

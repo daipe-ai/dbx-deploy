@@ -1,12 +1,13 @@
 import re
+from dbxdeploy.package.PackageInstaller import PackageInstaller
 
 class CommandConverter:
 
     def __init__(
         self,
-        packageBaseDir: str,
+        packageInstaller: PackageInstaller,
     ):
-        self.__packageBaseDir = packageBaseDir
+        self.__packageInstaller = packageInstaller
 
     def convert(self, command: dict):
         magicCommand = self.__detectMagicCommand(command['command'])
@@ -15,12 +16,7 @@ class CommandConverter:
             commandCode = '# MAGIC ' + command['command'].replace('\n', '\n# MAGIC ')
             return self.__processTitle(commandCode, command)
 
-        regExp = (
-            '^' + re.escape('dbutils.library.install(\'' + self.__packageBaseDir) +
-            '/[^/]+/[\\d]{4}-[\\d]{2}-[\\d]{2}_[\\d]{2}-[\\d]{2}-[\\d]{2}_[\\w]+/[^-]+-[\\d.]+-py3-none-any.whl\'\\)$'
-        )
-
-        if re.match(regExp, command['command']):
+        if self.__packageInstaller.isPackageInstallCommand(command['command']):
             return self.__processTitle('# MAGIC %installMasterPackageWhl', command)
 
         return self.__processTitle(command['command'], command)

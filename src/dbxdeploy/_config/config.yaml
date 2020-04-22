@@ -87,6 +87,10 @@ services:
       - '%dbxdeploy.target.packageBaseDir%'
       - '@consolebundle.logger'
 
+  dbxdeploy.package.PackageInstaller:
+    arguments:
+      - '%dbxdeploy.target.packageBaseDir%'
+
   dbxdeploy.whl.RequirementsLineConverter:
 
   dbxdeploy.dbc.DbcCreator:
@@ -107,8 +111,6 @@ services:
       - '%dbxdeploy.export.forceEndFileNewline%'
 
   dbxdeploy.dbc.CommandConverter:
-    arguments:
-      - '%dbxdeploy.target.packageBaseDir%'
 
   dbxdeploy.notebook.NotebooksDeployer:
     arguments:

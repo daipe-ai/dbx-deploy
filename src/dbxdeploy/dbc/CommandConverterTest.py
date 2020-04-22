@@ -1,10 +1,13 @@
 import unittest
+from dbxdeploy.containerInit import initContainer
 from dbxdeploy.dbc.CommandConverter import CommandConverter
 
 class CommandConverterTest(unittest.TestCase):
 
     def setUp(self):
-        self.__commandConverter = CommandConverter('dbfs:/FileStore/jars')
+        container = initContainer('test')
+
+        self.__commandConverter = container.get(CommandConverter)
 
     def test_pythonCode(self):
         self.__testCommand(
