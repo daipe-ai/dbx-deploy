@@ -5,7 +5,7 @@ from tomlkit.toml_document import TOMLDocument
 from pathlib import Path
 from dbxdeploy.whl.RequirementsLineConverter import RequirementsLineConverter
 
-class WhlBuilder:
+class PackageBuilder:
 
     def __init__(
         self,

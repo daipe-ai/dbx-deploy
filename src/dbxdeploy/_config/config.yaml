@@ -13,7 +13,8 @@ parameters:
         consumersPatterns: '%dbxdeploy.notebooks.consumerPaths%'
     target:
       workspaceBaseDir: '%dbxdeploy.databricks.projectRoot%'
-      whlBaseDir: '%dbxdeploy.databricks.whlBaseDir%'
+      whlBaseDir: '%dbxdeploy.databricks.whlBaseDir%' # @deprecated, to be removed in 0.10.0
+      packageBaseDir: '%dbxdeploy.target.whlBaseDir%'
     export:
       forceEndFileNewline: True # @deprecated, set to False in 0.10.0
     databricks: # @deprecated, to be removed in 0.10.0
@@ -27,6 +28,12 @@ services:
   dbxdeploy.cluster.ClusterRestarter:
     arguments:
       - '%dbxdeploy.databricks.clusterId%'
+      - '@consolebundle.logger'
+      - '@dbxdeploy.databricksApi'
+
+  dbxdeploy.dbfs.DbfsFileUploader:
+    arguments:
+      - 'Uploading WHL package to {}'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricksApi'
 
@@ -72,20 +79,15 @@ services:
 
   dbxdeploy.package.PackageMetadataLoader:
 
-  dbxdeploy.whl.WhlBuilder:
+  dbxdeploy.package.PackageBuilder:
 
-  dbxdeploy.whl.RequirementsLineConverter:
-
-  dbxdeploy.whl.WhlUploader:
-    arguments:
-      - '@consolebundle.logger'
-      - '@dbxdeploy.databricksApi'
-
-  dbxdeploy.whl.WhlDeployer:
+  dbxdeploy.package.PackageDeployer:
     arguments:
       - '@dbxdeploy.deploy.workingDir'
-      - '%dbxdeploy.target.whlBaseDir%'
+      - '%dbxdeploy.target.packageBaseDir%'
       - '@consolebundle.logger'
+
+  dbxdeploy.whl.RequirementsLineConverter:
 
   dbxdeploy.dbc.DbcCreator:
     arguments:
@@ -106,12 +108,12 @@ services:
 
   dbxdeploy.dbc.CommandConverter:
     arguments:
-      - '%dbxdeploy.target.whlBaseDir%'
+      - '%dbxdeploy.target.packageBaseDir%'
 
   dbxdeploy.notebook.NotebooksDeployer:
     arguments:
       - '@dbxdeploy.target.workspaceBaseDir'
-      - '%dbxdeploy.target.whlBaseDir%'
+      - '%dbxdeploy.target.packageBaseDir%'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricksApi'
 

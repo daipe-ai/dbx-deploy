@@ -40,11 +40,11 @@ class CurrentDirectoryUpdater:
         self.__databricksNotebookConverter = databricksNotebookConverter
         self.__currentBranchResolver = currentBranchResolver
 
-    def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, whlFilePath: PurePosixPath):
+    def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, packagePath: PurePosixPath):
         if self.__shouldRemoveMissingNotebooks():
             self.__removeMissingNotebooks(currentReleasePath, notebooks)
 
-        self.__updateNotebooks(currentReleasePath, notebooks, whlFilePath)
+        self.__updateNotebooks(currentReleasePath, notebooks, packagePath)
 
     def __removeMissingNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook]):
         existingNotebooksFullPaths = self.__resolveExistingNotebooksPaths(currentReleasePath)
@@ -57,7 +57,7 @@ class CurrentDirectoryUpdater:
             self.__logger.warning('Removing deleted/missing notebook {}'.format(fullNotebookPath))
             self.__dbxApi.workspace.delete(str(fullNotebookPath))
 
-    def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], whlFilePath: PurePosixPath):
+    def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], packagePath: PurePosixPath):
         for notebook in notebooks:
             targetPath = currentReleasePath.joinpath(notebook.databricksRelativePath)
             source = loadNotebook(notebook.path)
@@ -68,7 +68,7 @@ class CurrentDirectoryUpdater:
                 self.__logger.debug(f'Skipping unrecognized file {notebook.relativePath}')
                 continue
 
-            script = self.__databricksNotebookConverter.toWorkspaceImportNotebook(source, whlFilePath)
+            script = self.__databricksNotebookConverter.toWorkspaceImportNotebook(source, packagePath)
 
             self.__logger.info('Updating {}'.format(targetPath))
             self.__workspaceImporter.overwriteScript(script, targetPath)

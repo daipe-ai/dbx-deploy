@@ -2,7 +2,7 @@ from dbxdeploy.job.NotebookKiller import NotebookKiller
 from dbxdeploy.notebook.NotebooksLocator import NotebooksLocator
 from dbxdeploy.package.PackageMetadata import PackageMetadata
 from dbxdeploy.package.PackageMetadataLoader import PackageMetadataLoader
-from dbxdeploy.whl.WhlDeployer import WhlDeployer
+from dbxdeploy.package.PackageDeployer import PackageDeployer
 from dbxdeploy.notebook.NotebooksDeployer import NotebooksDeployer
 from dbxdeploy.job.JobSubmitter import JobSubmitter
 from pathlib import Path, PurePosixPath
@@ -16,7 +16,7 @@ class DeployerJobSubmitter:
         packageMetadataLoader: PackageMetadataLoader,
         notebookKiller: NotebookKiller,
         notebooksDeployer: NotebooksDeployer,
-        whlDeployer: WhlDeployer,
+        packageDeployer: PackageDeployer,
         jobSubmitter: JobSubmitter,
         notebooksLocator: NotebooksLocator,
     ):
@@ -24,7 +24,7 @@ class DeployerJobSubmitter:
         self.__packageMetadataLoader = packageMetadataLoader
         self.__notebookKiller = notebookKiller
         self.__notebooksDeployer = notebooksDeployer
-        self.__whlDeployer = whlDeployer
+        self.__packageDeployer = packageDeployer
         self.__jobSubmitter = jobSubmitter
         self.__notebooksLocator = notebooksLocator
 
@@ -38,11 +38,11 @@ class DeployerJobSubmitter:
         loop = asyncio.get_event_loop()
 
         notebookKillerFuture = loop.run_in_executor(None, self.__notebookKiller.killIfRunning, notebookPath, packageMetadata)
-        whlDeployFuture = loop.run_in_executor(None, self.__whlDeployer.deploy, packageMetadata)
+        packageDeployFuture = loop.run_in_executor(None, self.__packageDeployer.deploy, packageMetadata)
         dbcDeployFuture = loop.run_in_executor(None, deployRoot, packageMetadata)
 
         await notebookKillerFuture
-        await whlDeployFuture
+        await packageDeployFuture
         await dbcDeployFuture
 
         self.__jobSubmitter.submit(notebookPath, packageMetadata)

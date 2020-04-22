@@ -8,7 +8,7 @@ from dbxdeploy.job.JobsDeleter import JobsDeleter
 from dbxdeploy.notebook.Notebook import Notebook
 from dbxdeploy.notebook.NotebooksLocator import NotebooksLocator
 from dbxdeploy.package.PackageMetadataLoader import PackageMetadataLoader
-from dbxdeploy.whl.WhlDeployer import WhlDeployer
+from dbxdeploy.package.PackageDeployer import PackageDeployer
 import asyncio
 
 class Releaser:
@@ -20,7 +20,7 @@ class Releaser:
         logger: Logger,
         packageMetadataLoader: PackageMetadataLoader,
         currentAndReleaseDeployer: CurrentAndReleaseDeployer,
-        whlDeployer: WhlDeployer,
+        packageDeployer: PackageDeployer,
         clusterRestarter: ClusterRestarter,
         jobsDeleter: JobsDeleter,
         jobsCreatorAndRunner: JobsCreatorAndRunner,
@@ -31,7 +31,7 @@ class Releaser:
         self.__logger = logger
         self.__packageMetadataLoader = packageMetadataLoader
         self.__currentAndReleaseDeployer = currentAndReleaseDeployer
-        self.__whlDeployer = whlDeployer
+        self.__packageDeployer = packageDeployer
         self.__clusterRestarter = clusterRestarter
         self.__jobsDeleter = jobsDeleter
         self.__jobsCreatorAndRunner = jobsCreatorAndRunner
@@ -42,10 +42,10 @@ class Releaser:
 
         loop = asyncio.get_event_loop()
 
-        whlDeployFuture = loop.run_in_executor(None, self.__whlDeployer.deploy, packageMetadata)
+        packageDeployFuture = loop.run_in_executor(None, self.__packageDeployer.deploy, packageMetadata)
         dbcDeployFuture = loop.run_in_executor(None, self.__currentAndReleaseDeployer.release, packageMetadata)
 
-        await whlDeployFuture
+        await packageDeployFuture
         await dbcDeployFuture
 
         self.__logger.info('--')

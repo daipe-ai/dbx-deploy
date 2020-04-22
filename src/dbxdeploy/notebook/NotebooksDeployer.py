@@ -14,7 +14,7 @@ class NotebooksDeployer:
     def __init__(
         self,
         workspaceBaseDir: PurePosixPath,
-        whlBaseDir: str,
+        packageBaseDir: str,
         logger: Logger,
         dbxApi: DatabricksAPI,
         dbcCreator: DbcCreator,
@@ -22,7 +22,7 @@ class NotebooksDeployer:
         currentDirectoryUpdater: CurrentDirectoryUpdater,
     ):
         self.__workspaceBaseDir = workspaceBaseDir
-        self.__whlBaseDir = PurePosixPath(whlBaseDir)
+        self.__packageBaseDir = PurePosixPath(packageBaseDir)
         self.__logger = logger
         self.__dbxApi = dbxApi
         self.__dbcCreator = dbcCreator
@@ -30,14 +30,14 @@ class NotebooksDeployer:
         self.__currentDirectoryUpdater = currentDirectoryUpdater
 
     def deploy(self, packageMetadata: PackageMetadata, notebooks: List[Notebook]):
-        whlFilePath = packageMetadata.getWhlUploadPathForRelease(self.__whlBaseDir)
+        packagePath = packageMetadata.getPackageUploadPathForRelease(self.__packageBaseDir)
 
         self.__logger.info('All packages released, updating {}'.format(self.__workspaceBaseDir))
-        self.__currentDirectoryUpdater.update(notebooks, self.__workspaceBaseDir, whlFilePath)
+        self.__currentDirectoryUpdater.update(notebooks, self.__workspaceBaseDir, packagePath)
 
     def release(self, packageMetadata: PackageMetadata, notebooks: List[Notebook]):
         self.__logger.info('Building notebooks package (DBC)')
-        dbcContent = self.__dbcCreator.create(notebooks, packageMetadata.getWhlUploadPathForRelease(self.__whlBaseDir))
+        dbcContent = self.__dbcCreator.create(notebooks, packageMetadata.getPackageUploadPathForRelease(self.__packageBaseDir))
 
         _currentPath = self.__workspaceBaseDir.joinpath('_current') # pylint: disable = invalid-name
         releasePath = packageMetadata.getWorkspaceReleasePath(self.__workspaceBaseDir)

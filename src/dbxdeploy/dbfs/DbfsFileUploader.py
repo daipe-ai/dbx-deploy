@@ -3,20 +3,22 @@ from logging import Logger
 from pathlib import PurePosixPath
 from databricks_api import DatabricksAPI
 
-class WhlUploader:
+class DbfsFileUploader:
 
     def __init__(
         self,
+        logMessageTemplate: str,
         logger: Logger,
         dbxApi: DatabricksAPI
     ):
+        self.__logMessageTemplate = logMessageTemplate
         self.__logger = logger
         self.__dbxApi = dbxApi
 
-    def upload(self, whlContent: bytes, filePath: PurePosixPath):
-        contentToUpload = b64encode(whlContent).decode()
+    def upload(self, content: bytes, filePath: PurePosixPath):
+        contentToUpload = b64encode(content).decode()
 
-        self.__logger.info('Uploading app package to {}'.format(filePath))
+        self.__logger.info(self.__logMessageTemplate.format(filePath))
 
         self.__dbxApi.dbfs.put(
             str(filePath),

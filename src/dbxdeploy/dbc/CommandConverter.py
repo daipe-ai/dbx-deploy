@@ -4,9 +4,9 @@ class CommandConverter:
 
     def __init__(
         self,
-        whlBaseDir: str,
+        packageBaseDir: str,
     ):
-        self.__whlBaseDir = whlBaseDir
+        self.__packageBaseDir = packageBaseDir
 
     def convert(self, command: dict):
         magicCommand = self.__detectMagicCommand(command['command'])
@@ -16,7 +16,7 @@ class CommandConverter:
             return self.__processTitle(commandCode, command)
 
         regExp = (
-            '^' + re.escape('dbutils.library.install(\'' + self.__whlBaseDir) +
+            '^' + re.escape('dbutils.library.install(\'' + self.__packageBaseDir) +
             '/[^/]+/[\\d]{4}-[\\d]{2}-[\\d]{2}_[\\d]{2}-[\\d]{2}-[\\d]{2}_[\\w]+/[^-]+-[\\d.]+-py3-none-any.whl\'\\)$'
         )
 
