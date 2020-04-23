@@ -207,6 +207,7 @@ services:
   dbxdeploy.notebook.NotebooksLocator:
     arguments:
       - '@dbxdeploy.deploy.workingDir'
+      - '%dbxdeploy.source.notebooks.baseDir%'
       - '%dbxdeploy.source.notebooks.patterns%'
       - '%dbxdeploy.source.notebooks.consumersPatterns%'
 

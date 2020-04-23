@@ -8,11 +8,13 @@ class NotebooksLocator:
     def __init__(
         self,
         projectBaseDir: Path,
+        relativeBaseDir: str,
         pathsPatterns: list,
         consumerPathsPatterns: list,
         relativePathResolver: RelativePathResolver,
     ):
         self.__projectBaseDir = projectBaseDir
+        self.__relativeBaseDir = relativeBaseDir
         self.__pathsPatterns = pathsPatterns
         self.__consumerPathsPatterns = consumerPathsPatterns
         self.__relativePathResolver = relativePathResolver
@@ -33,11 +35,11 @@ class NotebooksLocator:
                 self.__relativePathResolver.resolve(purePosixPath)
             )
 
-        basePath = self.__projectBaseDir.joinpath('src')  # type: Path
+        baseDir = self.__projectBaseDir.joinpath(self.__relativeBaseDir)
 
         filesGrabbed = []
 
         for pathPattern in pathsPatterns:
-            filesGrabbed.extend(basePath.glob(pathPattern))
+            filesGrabbed.extend(baseDir.glob(pathPattern))
 
         return list(map(createNotebook, filesGrabbed)) # pylint: disable = cell-var-from-loop
