@@ -16,7 +16,7 @@ class WorkspaceExportCommand(ConsoleCommand):
         self,
         workspaceBaseDir: PurePosixPath,
         projectBaseDir: Path,
-        relativeBaseDirPath: str,
+        relativeBaseDir: str,
         logger: Logger,
         workspaceExporter: WorkspaceExporter,
         dbcFilesHandler: DbcFilesHandler,
@@ -24,7 +24,7 @@ class WorkspaceExportCommand(ConsoleCommand):
         dbcNotebookConverter: DbcNotebookConverter,
     ):
         self.__workspaceBaseDir = workspaceBaseDir
-        self.__localBaseDir = projectBaseDir.joinpath(relativeBaseDirPath)
+        self.__localBaseDir = projectBaseDir.joinpath(relativeBaseDir)
         self.__logger = logger
         self.__workspaceExporter = workspaceExporter
         self.__dbcFilesHandler = dbcFilesHandler
