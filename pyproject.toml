@@ -3,7 +3,7 @@ name = "dbx-deploy"
 version = "0.9.11"
 description = "Databrics Deployment Tool"
 readme = "README.md"
-repository = "https://github.com/DataSentics/dbx-deploy"
+repository = "https://github.com/bricksflow/dbx-deploy"
 
 license = "MIT"
 
