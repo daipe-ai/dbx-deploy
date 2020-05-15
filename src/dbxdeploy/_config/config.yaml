@@ -8,20 +8,13 @@ parameters:
     source:
       notebooks:
         baseDir: 'src'
-        patterns: '%dbxdeploy.notebooks.paths%'
-        consumersPatterns: '%dbxdeploy.notebooks.consumerPaths%'
+        patterns: ['**/*.py']
+        consumersPatterns: ['**/*.consumer.py']
     target:
-      workspaceBaseDir: '%dbxdeploy.databricks.projectRoot%'
-      whlBaseDir: '%dbxdeploy.databricks.whlBaseDir%' # @deprecated, to be removed in 0.10.0
-      packageBaseDir: '%dbxdeploy.target.whlBaseDir%'
+      workspaceBaseDir: '/{currentBranch}'
+      packageBaseDir: 'dbfs:/FileStore/jars'
     export:
-      forceEndFileNewline: True # @deprecated, set to False in 0.10.0
-    databricks: # @deprecated, to be removed in 0.10.0
-      projectRoot: '/{currentBranch}'
-      whlBaseDir: 'dbfs:/FileStore/jars'
-    notebooks: # @deprecated, to be removed in 0.10.0
-      paths: ['**/*.py']
-      consumerPaths: ['**/*.consumer.py']
+      forceEndFileNewline: False
 
 services:
   dbxdeploy.cluster.ClusterRestarter:
@@ -166,9 +159,8 @@ services:
     class: databricks_api.databricks.DatabricksAPI
     autowire: False
     arguments:
-      -
-        host: '%dbxdeploy.databricks.host%'
-        token: '%dbxdeploy.databricks.token%'
+      host: '%dbxdeploy.databricks.host%'
+      token: '%dbxdeploy.databricks.token%'
 
   dbxdeploy.notebook.CurrentDirectoryUpdater:
     arguments:

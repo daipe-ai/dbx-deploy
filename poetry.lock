@@ -139,11 +139,12 @@ description = "Console Bundle for the Pyfony Framework"
 name = "console-bundle"
 optional = false
 python-versions = ">=3.7.3,<3.8.0"
-version = "0.2.1"
+version = "0.2.5"
 
 [package.dependencies]
 colorlog = ">=4.0.0,<4.1.0"
 pyfony-bundles = ">=0.2.0,<0.3.0"
+python-dotenv = ">=0.13.0,<0.14.0"
 
 [[package]]
 category = "main"
@@ -237,7 +238,7 @@ description = "Dependency Injection Container Library"
 name = "injecta"
 optional = false
 python-versions = ">=3.7.3,<3.8.0"
-version = "0.6.2"
+version = "0.8.1"
 
 [package.dependencies]
 PyYAML = ">=5.1.0,<5.2.0"
@@ -375,7 +376,7 @@ description = "Logger bundle for the Pyfony framework"
 name = "logger-bundle"
 optional = false
 python-versions = ">=3.7.3,<3.8.0"
-version = "0.5.2"
+version = "0.5.3"
 
 [package.dependencies]
 colorlog = ">=4.0.0,<4.1.0"
@@ -567,23 +568,23 @@ description = "Dependency Injection powered framework"
 name = "pyfony"
 optional = false
 python-versions = ">=3.7.3,<3.8.0"
-version = "0.4.2"
+version = "0.5.0"
 
 [package.dependencies]
-console-bundle = ">=0.2.0,<0.3.0"
-injecta = ">=0.6.2,<0.7.0"
-logger-bundle = ">=0.5.0,<0.6.0"
+console-bundle = ">=0.2.5,<0.3.0"
+injecta = ">=0.8.1,<0.9.0"
+logger-bundle = ">=0.5.3,<0.6.0"
 
 [[package]]
 category = "main"
-description = "Pyfony Framwork bundles base package"
+description = "Pyfony Framework bundles base package"
 name = "pyfony-bundles"
 optional = false
 python-versions = ">=3.7.3,<3.8.0"
-version = "0.2.0"
+version = "0.2.2"
 
 [package.dependencies]
-injecta = ">=0.6.0,<0.7.0"
+injecta = ">=0.6.0,<0.9.0"
 python-box = ">=3.4.0,<3.5.0"
 tomlkit = ">=0.5.0,<0.6.0"
 
@@ -675,6 +676,17 @@ version = "3.4.6"
 
 [package.extras]
 testing = ["pytest", "coverage (>=3.6)", "pytest-cov"]
+
+[[package]]
+category = "main"
+description = "Add .env support to your django/flask apps in development and deployments"
+name = "python-dotenv"
+optional = false
+python-versions = "*"
+version = "0.13.0"
+
+[package.extras]
+cli = ["click (>=5.0)"]
 
 [[package]]
 category = "main"
@@ -825,7 +837,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools"]
 
 [metadata]
-content-hash = "eb70dd837392e55556b8a4aa13150e1cb1ffc73cd8fc1da0ec2c2b5adbce8eaa"
+content-hash = "f69c386bd9c5d7cdacbc3381e3138988500097c002fd743e2893c8b830f64758"
 python-versions = "~3.7.3"
 
 [metadata.files]
@@ -908,8 +920,8 @@ configparser = [
     {file = "configparser-4.0.2.tar.gz", hash = "sha256:c7d282687a5308319bf3d2e7706e575c635b0a470342641c93bea0ea3b5331df"},
 ]
 console-bundle = [
-    {file = "console-bundle-0.2.1.tar.gz", hash = "sha256:e6396164f5083a85ab6a788726ca6f2141a01ac53d6893020d749d21a429d0d5"},
-    {file = "console_bundle-0.2.1-py3-none-any.whl", hash = "sha256:db1c73f45a9b7832e9007ec9579a93341f21ece58ddfea7a9e4f6e98f7b1f6a2"},
+    {file = "console-bundle-0.2.5.tar.gz", hash = "sha256:0280bc61cbcc4338e29a65b22dee9b37546627839745cd51c062c31d99f46944"},
+    {file = "console_bundle-0.2.5-py3-none-any.whl", hash = "sha256:f2029bbe346001a759b9774ce30455f6d3a80c36c500c8392400194fe12858f7"},
 ]
 databricks-api = [
     {file = "databricks_api-0.3.0-py2.py3-none-any.whl", hash = "sha256:8f637288d05b3d214ea1636bb31d6423c751d85fdccd25fd0d0c86657e7c0abc"},
@@ -944,8 +956,8 @@ importlib-metadata = [
     {file = "importlib_metadata-1.5.0.tar.gz", hash = "sha256:06f5b3a99029c7134207dd882428a66992a9de2bef7c2b699b5641f9886c3302"},
 ]
 injecta = [
-    {file = "injecta-0.6.2-py3-none-any.whl", hash = "sha256:610c54ef06d8b2d9fae3c80e3b8f77f1537e32b051d0a6ac63282721547bc4f0"},
-    {file = "injecta-0.6.2.tar.gz", hash = "sha256:42868234958b9a27ab51f04cdfc3ab82b651e937670004a9641d54ec7ea1292a"},
+    {file = "injecta-0.8.1-py3-none-any.whl", hash = "sha256:3f96c0b10f91107cd18846089f8e936ce0c02fc944fc577ec1433d8310001516"},
+    {file = "injecta-0.8.1.tar.gz", hash = "sha256:ef7981b71a6cfc85acd1bb69eb5ff4505b7f52140243aa1c6faa2694d1c74b85"},
 ]
 ipython = [
     {file = "ipython-7.12.0-py3-none-any.whl", hash = "sha256:f6689108b1734501d3b59c84427259fd5ac5141afe2e846cfa8598eb811886c9"},
@@ -999,8 +1011,8 @@ lazy-object-proxy = [
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-win_amd64.whl", hash = "sha256:59f79fef100b09564bc2df42ea2d8d21a64fdcda64979c0fa3db7bdaabaf6239"},
 ]
 logger-bundle = [
-    {file = "logger-bundle-0.5.2.tar.gz", hash = "sha256:c94cf42e314c32e3d6e147c46f09fccc180dacd16a02593811c17d12d88d4494"},
-    {file = "logger_bundle-0.5.2-py3-none-any.whl", hash = "sha256:6b74256412ee5caa87337b57aa0c763bb238cd164c0d250ffd43e9df19128c9a"},
+    {file = "logger-bundle-0.5.3.tar.gz", hash = "sha256:7f68aaf7eeec7ea7c4c2ae61d89990b4e218a533364b3132cc44012ede145f1c"},
+    {file = "logger_bundle-0.5.3-py3-none-any.whl", hash = "sha256:1021f1d6bd2afd2775782ba807e4f443054f2433afa9ccb648cd6e7d0a37b244"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
@@ -1091,12 +1103,12 @@ pycparser = [
     {file = "pycparser-2.19.tar.gz", hash = "sha256:a988718abfad80b6b157acce7bf130a30876d27603738ac39f140993246b25b3"},
 ]
 pyfony = [
-    {file = "pyfony-0.4.2-py3-none-any.whl", hash = "sha256:4bb4e30e56e4e2043d7e5d294c6b126161c9a57c33a3fbbeddedb7956dce48e5"},
-    {file = "pyfony-0.4.2.tar.gz", hash = "sha256:10175279002a8b9c4847879952398465b3c5a6aca417a677be15e1c91d62d14d"},
+    {file = "pyfony-0.5.0-py3-none-any.whl", hash = "sha256:900fe83db4db554900fdfacf79532cdee1e75d2898814d84b4ad534ac2331734"},
+    {file = "pyfony-0.5.0.tar.gz", hash = "sha256:53e6d4f5e03d9815a9c89acf77abb16e356181d03be5b8352710847165260f57"},
 ]
 pyfony-bundles = [
-    {file = "pyfony-bundles-0.2.0.tar.gz", hash = "sha256:72840289ba6ca50292158a73a90065c300e5b95a2e53ca1a7ad553708f51c70d"},
-    {file = "pyfony_bundles-0.2.0-py3-none-any.whl", hash = "sha256:342d6225becf6d59537174a7db2091259a0dc2c89a3c8fc9301b9258e7050d70"},
+    {file = "pyfony-bundles-0.2.2.tar.gz", hash = "sha256:3d0c6be33002df1fad7015319ead1e718a41d8bfe8d2387167daf284f7fe40bf"},
+    {file = "pyfony_bundles-0.2.2-py3-none-any.whl", hash = "sha256:d5c88bddd14a2773c767ea681e27f661a0712d70555c54731cb16eff64cfdde9"},
 ]
 pygit2 = [
     {file = "pygit2-0.28.2-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:f1d99e6f67438950d44f70e12469088239288f458fa8b660da6f9f1c7138ef22"},
@@ -1145,6 +1157,10 @@ pytest = [
 python-box = [
     {file = "python-box-3.4.6.tar.gz", hash = "sha256:694a7555e3ff9fbbce734bbaef3aad92b8e4ed0659d3ed04d56b6a0a0eff26a9"},
     {file = "python_box-3.4.6-py2.py3-none-any.whl", hash = "sha256:a71d3dc9dbaa34c8597d3517c89a8041bd62fa875f23c0f3dad55e1958e3ce10"},
+]
+python-dotenv = [
+    {file = "python-dotenv-0.13.0.tar.gz", hash = "sha256:3b9909bc96b0edc6b01586e1eed05e71174ef4e04c71da5786370cebea53ad74"},
+    {file = "python_dotenv-0.13.0-py2.py3-none-any.whl", hash = "sha256:25c0ff1a3e12f4bde8d592cc254ab075cfe734fc5dd989036716fd17ee7e5ec7"},
 ]
 pywin32 = [
     {file = "pywin32-227-cp27-cp27m-win32.whl", hash = "sha256:371fcc39416d736401f0274dd64c2302728c9e034808e37381b5e1b22be4a6b0"},
