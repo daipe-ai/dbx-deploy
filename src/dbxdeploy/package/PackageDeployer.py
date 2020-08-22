@@ -29,7 +29,13 @@ class PackageDeployer:
 
         with packagePath.open('rb') as file:
             content = file.read()
-            self.__packageUploader.upload(content, packageMetadata.getPackageUploadPathForRelease(self.__dbfsBasePath))
-            self.__packageUploader.upload(content, packageMetadata.getPackageUploadPathForCurrent(self.__dbfsBasePath))
+
+            whlReleasePath = packageMetadata.getPackageUploadPathForRelease(self.__dbfsBasePath)
+            self.__logger.info(f'Uploading WHL package to {whlReleasePath}')
+            self.__packageUploader.upload(content, whlReleasePath)
+
+            whlCurrentPath = packageMetadata.getPackageUploadPathForCurrent(self.__dbfsBasePath)
+            self.__logger.info(f'Uploading WHL package to {whlCurrentPath}')
+            self.__packageUploader.upload(content, whlCurrentPath)
 
         self.__logger.info('App package uploaded')
