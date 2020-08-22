@@ -27,6 +27,13 @@ services:
     arguments:
       - '@dbxdeploy.databricksApi'
 
+  dbxdeploy.dbfs.DbfsUploadCommand:
+    arguments:
+      - '@consolebundle.logger'
+      - '@dbxdeploy.databricks.dbfsApi'
+    tags:
+      - 'console.command'
+
   dbxdeploy.deploy.WorkingDirFactory:
 
   dbxdeploy.deploy.workingDir:
@@ -159,6 +166,18 @@ services:
     arguments:
       host: '%dbxdeploy.databricks.host%'
       token: '%dbxdeploy.databricks.token%'
+
+  dbxdeploy.databricks.client:
+    class: databricks_cli.sdk.ApiClient
+    autowire: False
+    arguments:
+      host: '%dbxdeploy.databricks.host%'
+      token: '%dbxdeploy.databricks.token%'
+
+  dbxdeploy.databricks.dbfsApi:
+    class: databricks_cli.dbfs.api.DbfsApi
+    arguments:
+      - '@dbxdeploy.databricks.client'
 
   dbxdeploy.notebook.CurrentDirectoryUpdater:
     arguments:

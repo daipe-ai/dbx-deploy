@@ -32,10 +32,10 @@ class PackageDeployer:
 
             whlReleasePath = packageMetadata.getPackageUploadPathForRelease(self.__dbfsBasePath)
             self.__logger.info(f'Uploading WHL package to {whlReleasePath}')
-            self.__packageUploader.upload(content, whlReleasePath)
+            self.__packageUploader.upload(content, whlReleasePath, overwrite=True)
 
             whlCurrentPath = packageMetadata.getPackageUploadPathForCurrent(self.__dbfsBasePath)
             self.__logger.info(f'Uploading WHL package to {whlCurrentPath}')
-            self.__packageUploader.upload(content, whlCurrentPath)
+            self.__packageUploader.upload(content, whlCurrentPath, overwrite=True)
 
         self.__logger.info('App package uploaded')

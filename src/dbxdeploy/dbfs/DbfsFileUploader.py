@@ -10,11 +10,11 @@ class DbfsFileUploader:
     ):
         self.__dbxApi = dbxApi
 
-    def upload(self, content: bytes, filePath: PurePosixPath):
+    def upload(self, content: bytes, filePath: PurePosixPath, overwrite: bool = False):
         contentToUpload = b64encode(content).decode()
 
         self.__dbxApi.dbfs.put(
             str(filePath),
             contents=contentToUpload,
-            overwrite=True
+            overwrite=overwrite
         )
