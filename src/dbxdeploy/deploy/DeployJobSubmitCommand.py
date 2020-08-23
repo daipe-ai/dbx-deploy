@@ -25,7 +25,7 @@ class DeployJobSubmitCommand(ConsoleCommand):
         self.__relativePathResolver = relativePathResolver
 
     def configure(self, argumentParser: ArgumentParser):
-        argumentParser.add_argument(dest='notebookPath', help='Jupyter notebook path relative to project root')
+        argumentParser.add_argument(dest='notebookPath', help='Databricks notebook path relative to project root')
 
     def getCommand(self) -> str:
         return 'dbx:deploy-submit-job'
