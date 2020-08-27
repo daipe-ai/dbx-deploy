@@ -70,6 +70,12 @@ services:
     tags:
       - 'console.command'
 
+  dbxdeploy.deploy.MasterPackageDeployer:
+    arguments:
+      - '@dbxdeploy.deploy.workingDir'
+    tags:
+      - 'console.command'
+
   dbxdeploy.git.CurrentBranchResolver:
 
   dbxdeploy.git.CurrentRepositoryFactory:
