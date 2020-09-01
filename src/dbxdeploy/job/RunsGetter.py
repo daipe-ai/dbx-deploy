@@ -42,6 +42,9 @@ class RunsGetter:
     def __filterRun(self, run: dict, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
         regEx = packageMetadata.getNotebookPathRegEx(self.__workspaceBaseDir, notebookPath)
 
+        if 'notebook_task' not in run['task']:
+            return False
+
         return (
             re.match(regEx, run['task']['notebook_task']['notebook_path'])
             and run['cluster_spec']['existing_cluster_id'] == self.__clusterId
