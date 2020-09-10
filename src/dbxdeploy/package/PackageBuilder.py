@@ -1,42 +1,42 @@
 import subprocess
+from typing import List
 import tomlkit
 from tomlkit import table
 from tomlkit.toml_document import TOMLDocument
+from tomlkit.items import Table
 from pathlib import Path
-from dbxdeploy.whl.RequirementsLineConverter import RequirementsLineConverter
+from dbxdeploy.package.Lock2PyprojectConverter import Lock2PyprojectConverter
 
 class PackageBuilder:
 
     def __init__(
         self,
-        requirementsLineConverter: RequirementsLineConverter,
+        lock2PyprojectConverter: Lock2PyprojectConverter,
     ):
-        self.__requirementsLineConverter = requirementsLineConverter
+        self.__lock2PyprojectConverter = lock2PyprojectConverter
 
     def build(self, basePath: Path):
         basePath.joinpath('dist').mkdir(exist_ok=True)
-        requirementsPath = basePath.joinpath('dist/requirements.txt')
 
+        lockfilePath = basePath.joinpath('poetry.lock')
         pyprojectOrigPath = basePath.joinpath('pyproject.toml')
         pyprojectNewPath = basePath.joinpath('pyproject.toml.new')
 
-        subprocess.run(f'poetry export -f requirements.txt -o {requirementsPath} --without-hashes', check=True, cwd=str(basePath), shell=True)
-
-        requirements = self.__readRequirements(requirementsPath)
-        tomlDoc = self.__generatePyprojectNew(pyprojectOrigPath, requirements)
+        mainDependencies = self.__loadMainDependencies(lockfilePath)
+        tomlDoc = self.__generatePyprojectNew(pyprojectOrigPath, mainDependencies)
 
         with pyprojectNewPath.open('w') as t:
             t.write(tomlDoc.as_string())
 
         self.__buildWheel(pyprojectOrigPath, pyprojectNewPath, basePath)
 
-    def __readRequirements(self, requirementsPath: Path):
-        with requirementsPath.open('r') as f:
-            lines = f.readlines()
+    def __loadMainDependencies(self, lockfilePath: Path) -> List[Table]:
+        with lockfilePath.open('r') as f:
+            config = tomlkit.parse(f.read())
 
-            return list(map(self.__requirementsLineConverter.parse, lines))
+            return [package for package in config['package'] if package['category'] == 'main' and package['name']]
 
-    def __generatePyprojectNew(self, pyprojectOrigPath: Path, requirements: list) -> TOMLDocument:
+    def __generatePyprojectNew(self, pyprojectOrigPath: Path, mainDependencies: List[Table]) -> TOMLDocument:
         with pyprojectOrigPath.open('r') as t:
             tomlDoc = tomlkit.parse(t.read())
 
@@ -48,10 +48,12 @@ class PackageBuilder:
             newDependencies = table()
             newDependencies.add('python', dependencies['python'])
 
-            for requirement in requirements:
-                newDependencies.add(*requirement)
+            for mainDependency in mainDependencies:
+                packageName, packageDefinition = self.__lock2PyprojectConverter.convert(mainDependency)
+                newDependencies.add(packageName, packageDefinition)
 
             tomlDoc['tool']['poetry']['dependencies'] = newDependencies
+            del tomlDoc['tool']['poetry']['dev-dependencies']
 
         return tomlDoc
 

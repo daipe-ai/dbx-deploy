@@ -102,7 +102,7 @@ services:
     arguments:
       - '%dbxdeploy.target.packageBaseDir%'
 
-  dbxdeploy.whl.RequirementsLineConverter:
+  dbxdeploy.package.Lock2PyprojectConverter:
 
   dbxdeploy.dbc.DbcCreator:
     arguments:
