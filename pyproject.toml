@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "dbx-deploy"
 version = "0.11.0"
-description = "Databrics Deployment Tool"
+description = "Databricks Deployment Tool"
 readme = "README.md"
 repository = "https://github.com/bricksflow/dbx-deploy"
 
@@ -28,7 +28,7 @@ python = "~3.7.3"
 databricks-api = "0.3.*"
 dbx-notebook-exporter = "0.4.*"
 nbconvert = "5.6.*"
-pygit2 = "0.28.*"
+pygit2 = "1.3.*"
 python-box = "3.4.*"
 tomlkit = "0.5.*"
 pyfony-bundles = "0.2.*"

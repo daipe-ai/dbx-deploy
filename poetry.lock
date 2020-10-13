@@ -68,6 +68,14 @@ webencodings = "*"
 
 [[package]]
 category = "main"
+description = "A decorator for caching properties in classes."
+name = "cached-property"
+optional = false
+python-versions = "*"
+version = "1.5.2"
+
+[[package]]
+category = "main"
 description = "Python package for providing Mozilla's CA Bundle."
 name = "certifi"
 optional = false
@@ -594,11 +602,11 @@ description = "Python bindings for libgit2."
 name = "pygit2"
 optional = false
 python-versions = "*"
-version = "0.28.2"
+version = "1.3.0"
 
 [package.dependencies]
-cffi = "*"
-six = "*"
+cached-property = "*"
+cffi = ">=1.4.0"
 
 [[package]]
 category = "main"
@@ -837,7 +845,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools"]
 
 [metadata]
-content-hash = "f69c386bd9c5d7cdacbc3381e3138988500097c002fd743e2893c8b830f64758"
+content-hash = "90dbdfb047692ae30b28058233e9f2289c602bb603c1789992b58e9a67d1e711"
 python-versions = "~3.7.3"
 
 [metadata.files]
@@ -863,7 +871,12 @@ backcall = [
 ]
 bleach = [
     {file = "bleach-3.1.0-py2.py3-none-any.whl", hash = "sha256:213336e49e102af26d9cde77dd2d0397afabc5a6bf2fed985dc35b5d1e285a16"},
+    {file = "bleach-3.1.0-py3.8.egg", hash = "sha256:4ca3ec10244c9f11ec129b054912e8bc9ecefc2e0b6bf0dab273f0e72cf381e4"},
     {file = "bleach-3.1.0.tar.gz", hash = "sha256:3fdf7f77adcf649c9911387df51254b813185e32b2c6619f690b593a617e19fa"},
+]
+cached-property = [
+    {file = "cached-property-1.5.2.tar.gz", hash = "sha256:9fa5755838eecbb2d234c3aa390bd80fbd3ac6b6869109bfc1b499f7bd89a130"},
+    {file = "cached_property-1.5.2-py2.py3-none-any.whl", hash = "sha256:df4f613cf7ad9a588cc381aaf4a512d26265ecebd5eb9e1ba12f1319eb85a6a0"},
 ]
 certifi = [
     {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},
@@ -1042,6 +1055,11 @@ markupsafe = [
     {file = "MarkupSafe-1.1.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:ba59edeaa2fc6114428f1637ffff42da1e311e29382d81b339c1817d37ec93c6"},
     {file = "MarkupSafe-1.1.1-cp37-cp37m-win32.whl", hash = "sha256:b00c1de48212e4cc9603895652c5c410df699856a2853135b3967591e4beebc2"},
     {file = "MarkupSafe-1.1.1-cp37-cp37m-win_amd64.whl", hash = "sha256:9bf40443012702a1d2070043cb6291650a0841ece432556f784f004937f0f32c"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:6788b695d50a51edb699cb55e35487e430fa21f1ed838122d722e0ff0ac5ba15"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:cdb132fc825c38e1aeec2c8aa9338310d29d337bebbd7baa06889d09a60a1fa2"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:13d3144e1e340870b25e7b10b98d779608c02016d5184cfb9927a9f10c689f42"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-win32.whl", hash = "sha256:596510de112c685489095da617b5bcbbac7dd6384aeebeda4df6025d0256a81b"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-win_amd64.whl", hash = "sha256:e8313f01ba26fbbe36c7be1966a7b7424942f670f38e666995b88d012765b9be"},
     {file = "MarkupSafe-1.1.1.tar.gz", hash = "sha256:29872e92839765e546828bb7754a68c418d927cd064fd4708fab9fe9c8bb116b"},
 ]
 mccabe = [
@@ -1111,29 +1129,19 @@ pyfony-bundles = [
     {file = "pyfony_bundles-0.2.2-py3-none-any.whl", hash = "sha256:d5c88bddd14a2773c767ea681e27f661a0712d70555c54731cb16eff64cfdde9"},
 ]
 pygit2 = [
-    {file = "pygit2-0.28.2-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:f1d99e6f67438950d44f70e12469088239288f458fa8b660da6f9f1c7138ef22"},
-    {file = "pygit2-0.28.2-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:4abf6feea2cdda63503abc552ed281d1dac622d51d44076135d76a1e7de36512"},
-    {file = "pygit2-0.28.2-cp27-cp27m-win32.whl", hash = "sha256:478ef2f8d5e9f8a230f8c76d2ebfdf8324764d537224d2ad947e1b3d5b5ef52f"},
-    {file = "pygit2-0.28.2-cp27-cp27m-win_amd64.whl", hash = "sha256:90450f825b5d5e0f32b1daa4997435b1a434cd361d31a5f675db3954efb02a53"},
-    {file = "pygit2-0.28.2-cp27-cp27mu-manylinux1_i686.whl", hash = "sha256:be5a472cbd400099be4cc4c14d6f291d9d64edcc06a70239deae6a81c536e389"},
-    {file = "pygit2-0.28.2-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:6f44ee84fbe9b0b69f018dbe187d01a1949ab33f2cb5844d87a1929ccbd2b310"},
-    {file = "pygit2-0.28.2-cp34-cp34m-manylinux1_i686.whl", hash = "sha256:e2b3643e8f91b47180f9d98312eb057c55b78386d120a1a6e8c9604980efedc5"},
-    {file = "pygit2-0.28.2-cp34-cp34m-manylinux1_x86_64.whl", hash = "sha256:cdfe326c51c2b431dd9e4f5992a7d26e36d46091cab2b11b3d34f2fbb10bed34"},
-    {file = "pygit2-0.28.2-cp34-cp34m-win32.whl", hash = "sha256:ceaedf1c8ea2dab34bab0b08d233d7b4397a11674a560f07bd8155b824774028"},
-    {file = "pygit2-0.28.2-cp34-cp34m-win_amd64.whl", hash = "sha256:646844b9178fa710da311b75fae2ffe5c51f18da375b9e93a0b3191324b1eac8"},
-    {file = "pygit2-0.28.2-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:77b6c288e020f323e3345310b5a99bc12d68d719765c2dc588fd456780d95d9e"},
-    {file = "pygit2-0.28.2-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:d3a1b98208c42035fff54ed435f5ea9f0be9064f0307dbb58a3f006440fd8088"},
-    {file = "pygit2-0.28.2-cp35-cp35m-win32.whl", hash = "sha256:a75ca9eba1fb5f8a10bca7294ec22f0b30e0f62b25a6eccd993405ca5ceeb84b"},
-    {file = "pygit2-0.28.2-cp35-cp35m-win_amd64.whl", hash = "sha256:d389e1aa81fffc55262a686d9f1dfd5ea245d441fdc37b9c7e177603aecfb712"},
-    {file = "pygit2-0.28.2-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:7d8a0abfc85c79d6bcd5707046616a93d33b819e1043cfb9a08509ca40336934"},
-    {file = "pygit2-0.28.2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:d4c84cd7c5a3d71757933d190018f5fc131aeb392d304ba9c505e9e95473f935"},
-    {file = "pygit2-0.28.2-cp36-cp36m-win32.whl", hash = "sha256:ee54ebba24ac5d628da6d3f79086a8046d8b0038f08a8e84df934db316f3eab0"},
-    {file = "pygit2-0.28.2-cp36-cp36m-win_amd64.whl", hash = "sha256:6482ee9acc572768338b7364ed0df17c3ac10c5cc3a1c60492b5d025e2fcaec2"},
-    {file = "pygit2-0.28.2-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:1d3612aec07e351e801b95ad02584e7964a011aee3d3e0c77f6ce44941bd82c8"},
-    {file = "pygit2-0.28.2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:754fcbc7fa5e2766e2c10f14a8fe605eafee3e6f700cc63093cdee6f02469d15"},
-    {file = "pygit2-0.28.2-cp37-cp37m-win32.whl", hash = "sha256:eff55e52cbfc0d298197dcc3bb55fadd9d43bf31cd47211c249d04c496672911"},
-    {file = "pygit2-0.28.2-cp37-cp37m-win_amd64.whl", hash = "sha256:a75e55ab3e67430474938e5286dbb2597976715c0bfcb1747e89be6d6092f8aa"},
-    {file = "pygit2-0.28.2.tar.gz", hash = "sha256:4d8c3fbbf2e5793a9984681a94e6ac2f1bc91a92cbac762dbdfbea296b917f86"},
+    {file = "pygit2-1.3.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:64d033b76b7e489cf968e9a7cf5d9b9928ca7b3d41c1285b9c098b663e7c12ec"},
+    {file = "pygit2-1.3.0-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:d1615a0e91a0de4fdc7e6e076604e66efa41eefc93fb051448ad6345e640fec0"},
+    {file = "pygit2-1.3.0-cp36-cp36m-win32.whl", hash = "sha256:cfb5b690c87f53a55d34b1a9999175c9f4084cfb7a246a5c90b2680ab952d771"},
+    {file = "pygit2-1.3.0-cp36-cp36m-win_amd64.whl", hash = "sha256:5afd0965eb2f17f310b7ed7fc392db14dee9f087229a5780436cc16699df0a18"},
+    {file = "pygit2-1.3.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:78c77b15ac5bb3734db1eda3cb4f1a106e5b866a419f4873f0c0d8163b448298"},
+    {file = "pygit2-1.3.0-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:2c6ba5654c983ccfa1729230357a19cb2b4b6b2c3013f0659bef9f60525cb515"},
+    {file = "pygit2-1.3.0-cp37-cp37m-win32.whl", hash = "sha256:7eedb40feebaab2f9f15497e42f5348d583d22ffa7935df84a296d777324ca8c"},
+    {file = "pygit2-1.3.0-cp37-cp37m-win_amd64.whl", hash = "sha256:7cffdf836c39276e0fbeadb8256488f2be6273beb096bda15f256f0ce5466370"},
+    {file = "pygit2-1.3.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:95d3222771809687ddc210ba32b1ed80327f13f0c6f1eaa4ae276c99ff2a5566"},
+    {file = "pygit2-1.3.0-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:d344ea8684f4c16608713a3e8664b3862090729cfcab5839f9a18c6d224f9a6b"},
+    {file = "pygit2-1.3.0-cp38-cp38-win32.whl", hash = "sha256:ae6e7d267add6ff7d727d78030a1075e18bef6a77cf15115e143b108755e7082"},
+    {file = "pygit2-1.3.0-cp38-cp38-win_amd64.whl", hash = "sha256:283ea4d162f31ced6e27d42f58d532cec51764551ace4ef6b7810035ff1403e8"},
+    {file = "pygit2-1.3.0.tar.gz", hash = "sha256:0be93f6a8d7cbf0cc79ae2f0afb1993fc055fc0018c27e2bd01ba143e51d4452"},
 ]
 pygments = [
     {file = "Pygments-2.5.2-py2.py3-none-any.whl", hash = "sha256:2a3fe295e54a20164a9df49c75fa58526d3be48e14aceba6d6b1e8ac0bfd6f1b"},
