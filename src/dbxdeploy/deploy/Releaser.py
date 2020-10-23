@@ -1,6 +1,6 @@
 # pylint: disable = too-many-instance-attributes
 from logging import Logger
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from dbxdeploy.cluster.ClusterRestarter import ClusterRestarter
 from dbxdeploy.deploy.CurrentAndReleaseDeployer import CurrentAndReleaseDeployer
 from dbxdeploy.job.JobsCreatorAndRunner import JobsCreatorAndRunner
@@ -10,14 +10,15 @@ from dbxdeploy.notebook.NotebooksLocator import NotebooksLocator
 from dbxdeploy.package.PackageMetadataLoader import PackageMetadataLoader
 from dbxdeploy.package.PackageDeployer import PackageDeployer
 import asyncio
+from dbxdeploy.deploy.TargetPathsResolver import TargetPathsResolver
 
 class Releaser:
 
     def __init__(
         self,
         projectBaseDir: Path,
-        workspaceBaseDir: PurePosixPath,
         logger: Logger,
+        targetPathsResolver: TargetPathsResolver,
         packageMetadataLoader: PackageMetadataLoader,
         currentAndReleaseDeployer: CurrentAndReleaseDeployer,
         packageDeployer: PackageDeployer,
@@ -27,8 +28,8 @@ class Releaser:
         notebooksLocator: NotebooksLocator,
     ):
         self.__projectBaseDir = projectBaseDir
-        self.__workspaceBaseDir = workspaceBaseDir
         self.__logger = logger
+        self.__targetPathsResolver = targetPathsResolver
         self.__packageMetadataLoader = packageMetadataLoader
         self.__currentAndReleaseDeployer = currentAndReleaseDeployer
         self.__packageDeployer = packageDeployer
@@ -56,7 +57,7 @@ class Releaser:
             self.__clusterRestarter.restart()
 
             def createJobNotebookPath(consumerNotebook: Notebook):
-                return str(packageMetadata.getNotebookReleasePath(self.__workspaceBaseDir, consumerNotebook.databricksRelativePath))
+                return str(self.__targetPathsResolver.getWorkspaceReleasePath(packageMetadata) / consumerNotebook.databricksRelativePath)
 
             consumerNotebooksReleasePaths = set(map(createJobNotebookPath, consumerNotebooks))
 

@@ -15,24 +15,24 @@ class PackageMetadata:
         self.__dateTime = dateTime
         self.__randomString = randomString
 
+    @property
+    def packageName(self):
+        return self.__packageName
+
+    @property
+    def packageVersion(self):
+        return self.__packageVersion
+
+    @property
+    def dateTime(self):
+        return self.__dateTime
+
+    @property
+    def randomString(self):
+        return self.__randomString
+
     def getPackageFilename(self):
         return '{}-{}-py3-none-any.whl'.format(self.__getPackageName(), self.__packageVersion)
-
-    def getPackageUploadPathForRelease(self, targetBasePath: str):
-        versionDirName = self.__packageName + '/' + self.__dateTime.strftime('%Y-%m-%d_%H-%M-%S') + '_' + self.__randomString
-
-        return targetBasePath + '/' + versionDirName + '/' + self.getPackageFilename()
-
-    def getPackageUploadPathForCurrent(self, targetBasePath: str):
-        return targetBasePath + '/' + self.__packageName + '/_current' + '/' + self.getPackageFilename()
-
-    def getWorkspaceReleasePath(self, workspaceBaseDir: PurePosixPath) -> PurePosixPath:
-        releaseDirName = self.__dateTime.strftime('%Y-%m-%d_%H:%M:%S') + '_' + self.__randomString
-
-        return workspaceBaseDir.joinpath(releaseDirName)
-
-    def getNotebookReleasePath(self, workspaceBaseDir: PurePosixPath, notebookPath: PurePosixPath) -> PurePosixPath:
-        return self.getWorkspaceReleasePath(workspaceBaseDir).joinpath(notebookPath)
 
     def getNotebookPathRegEx(self, workspaceBaseDir: PurePosixPath, notebookPath: PurePosixPath) -> str:
         return '^' + str(workspaceBaseDir) + '/([^/]+)/' + str(notebookPath) + '$'

@@ -12,8 +12,16 @@ parameters:
         consumersPatterns: ['**/*.consumer.py']
     target:
       storage: 'dbfs' # dbfs or s3
-      workspaceBaseDir: '/{currentBranch}'
-      packageBaseDir: 'dbfs:/FileStore/jars'
+      workspaceBaseDir: '/{currentBranch}' # @deprecated, use dbxdeploy.target.workspace.baseDir instead
+      workspace:
+        baseDir: '%dbxdeploy.target.workspaceBaseDir%'
+        releasePath: '%dbxdeploy.target.workspace.baseDir%/{currentTime}_{randomString}'
+        currentPath: '%dbxdeploy.target.workspace.baseDir%/_current'
+      packageBaseDir: 'dbfs:/FileStore/jars' # @deprecated, use dbxdeploy.target.workspace.baseDir instead
+      package:
+        baseDir: '%dbxdeploy.target.packageBaseDir%'
+        releasePath: '%dbxdeploy.target.package.baseDir%/{packageName}/{currentTime}_{randomString}/{packageFilename}'
+        currentPath: '%dbxdeploy.target.package.baseDir%/{packageName}/_current/{packageFilename}'
       s3:
         awsAccessKeyId:
         awsSecretAccessKey:
@@ -69,7 +77,6 @@ services:
   dbxdeploy.deploy.Releaser:
     arguments:
       - '@dbxdeploy.deploy.workingDir'
-      - '@dbxdeploy.target.workspaceBaseDir'
       - '@consolebundle.logger'
 
   dbxdeploy.deploy.ReleaseCommand:
@@ -88,6 +95,13 @@ services:
     tags:
       - 'console.command'
 
+  dbxdeploy.deploy.TargetPathsResolver:
+    arguments:
+      - '%dbxdeploy.target.package.releasePath%'
+      - '%dbxdeploy.target.package.currentPath%'
+      - '%dbxdeploy.target.workspace.releasePath%'
+      - '%dbxdeploy.target.workspace.currentPath%'
+
   dbxdeploy.git.CurrentBranchResolver:
 
   dbxdeploy.git.CurrentRepositoryFactory:
@@ -101,13 +115,12 @@ services:
   dbxdeploy.package.PackageDeployer:
     arguments:
       - '@dbxdeploy.deploy.workingDir'
-      - '%dbxdeploy.target.packageBaseDir%'
       - '@consolebundle.logger'
       - !tagged_aliased ['dbxdeploy.package.uploader', '%dbxdeploy.target.storage%']
 
   dbxdeploy.package.PackageInstaller:
     arguments:
-      - '%dbxdeploy.target.packageBaseDir%'
+      - '%dbxdeploy.target.package.baseDir%'
 
   dbxdeploy.package.Lock2PyprojectConverter:
 
@@ -133,7 +146,6 @@ services:
   dbxdeploy.notebook.NotebooksDeployer:
     arguments:
       - '@dbxdeploy.target.workspaceBaseDir'
-      - '%dbxdeploy.target.packageBaseDir%'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricksApi'
 
@@ -151,7 +163,6 @@ services:
   dbxdeploy.job.JobCreator:
     arguments:
       - '%dbxdeploy.databricks.clusterId%'
-      - '@dbxdeploy.target.workspaceBaseDir'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricksApi'
 
@@ -207,7 +218,7 @@ services:
 
   dbxdeploy.workspace.WorkspaceBaseDirFactory:
     arguments:
-      - '%dbxdeploy.target.workspaceBaseDir%'
+      - '%dbxdeploy.target.workspace.baseDir%'
 
   dbxdeploy.target.workspaceBaseDir:
     class: pathlib.PurePosixPath

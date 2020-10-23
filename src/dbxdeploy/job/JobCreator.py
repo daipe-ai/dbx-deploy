@@ -2,23 +2,24 @@ from pathlib import PurePosixPath
 from dbxdeploy.package.PackageMetadata import PackageMetadata
 from databricks_api import DatabricksAPI
 from logging import Logger
+from dbxdeploy.deploy.TargetPathsResolver import TargetPathsResolver
 
 class JobCreator:
 
     def __init__(
         self,
         clusterId: str,
-        workspaceBaseDir: PurePosixPath,
         logger: Logger,
-        dbxApi: DatabricksAPI
+        dbxApi: DatabricksAPI,
+        targetPathsResolver: TargetPathsResolver,
     ):
         self.__clusterId = clusterId
-        self.__workspaceBaseDir = workspaceBaseDir
         self.__logger = logger
         self.__dbxApi = dbxApi
+        self.__targetPathsResolver = targetPathsResolver
 
     def create(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
-        notebookReleasePath = packageMetadata.getNotebookReleasePath(self.__workspaceBaseDir, notebookPath)
+        notebookReleasePath = self.__targetPathsResolver.getWorkspaceReleasePath(packageMetadata) / notebookPath
 
         self.__logger.info('Creating job for {}'.format(str(notebookReleasePath)))
 

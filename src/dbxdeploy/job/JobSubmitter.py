@@ -24,7 +24,7 @@ class JobSubmitter:
     def submit(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
         notebookReleasePath = self.__workspaceBaseDir.joinpath(notebookPath)
 
-        self.__logger.info('Submitting job for {} to cluster {}'.format(notebookReleasePath, self.__clusterId))
+        self.__logger.info(f'Submitting job for {notebookReleasePath} to cluster {self.__clusterId}')
 
         submitedRun = self.__dbxApi.jobs.submit_run(
             run_name=packageMetadata.getJobRunName(),
@@ -34,7 +34,7 @@ class JobSubmitter:
             )
         )
 
-        self.__logger.info('job {} created'.format(str(submitedRun['run_id'])))
+        self.__logger.info(f'Job {str(submitedRun["run_id"])} created')
 
         run = self.__dbxApi.jobs.get_run(
             run_id=submitedRun['run_id']
@@ -43,7 +43,7 @@ class JobSubmitter:
         self.__openJobInDatabricks(run['run_page_url'])
 
     def __openJobInDatabricks(self, runUrl: str):
-        self.__logger.info('Opening {}'.format(runUrl))
+        self.__logger.info(f'Opening {runUrl}')
 
         arguments = [self.__browserConfig.path]
 
