@@ -23,7 +23,7 @@ class DbcCreator:
         self.__pathsPreparer = pathsPreparer
         self.__databricksNotebookConverter = databricksNotebookConverter
 
-    def create(self, notebooks: List[Notebook], packageFilename: PurePosixPath) -> bytes:
+    def create(self, notebooks: List[Notebook], packageFilePath: str) -> bytes:
         databricksRelativePaths = list(map(lambda notebook: notebook.databricksRelativePath, notebooks))
         rootIgnoredPathName = 'root_ignored_path'
 
@@ -44,7 +44,7 @@ class DbcCreator:
                 self.__logger.debug(f'Skipping unrecognized file {notebook.relativePath}')
                 continue
 
-            notebookSource = self.__databricksNotebookConverter.toDbcNotebook(notebook.path.stem, source, packageFilename)
+            notebookSource = self.__databricksNotebookConverter.toDbcNotebook(notebook.path.stem, source, packageFilePath)
             zipPath = PurePosixPath(rootIgnoredPathName).joinpath(notebook.databricksRelativePath).with_suffix('.python')
             zipFile.writestr(str(zipPath), notebookSource)
 

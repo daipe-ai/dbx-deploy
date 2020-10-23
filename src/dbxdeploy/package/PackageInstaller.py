@@ -1,5 +1,4 @@
 import re
-from pathlib import PurePosixPath
 
 class PackageInstaller:
 
@@ -9,8 +8,8 @@ class PackageInstaller:
     ):
         self.__packageBaseDir = packageBaseDir
 
-    def getPackageInstallCommand(self, packageFilename: PurePosixPath):
-        return 'dbutils.library.install(\'{}\')'.format(packageFilename)
+    def getPackageInstallCommand(self, packageFilePath: str):
+        return 'dbutils.library.install(\'{}\')'.format(packageFilePath)
 
     def isPackageInstallCommand(self, commandCode: str):
         regExp = (

@@ -1,5 +1,4 @@
 import re
-from pathlib import PurePosixPath
 from dbxdeploy.dbc.CommandsConverter import CommandsConverter
 from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
@@ -33,12 +32,12 @@ class DatabricksNotebookConverter:
     def fromDbcNotebook(self, content: dict) -> str:
         return self.__commandsConverter.convert(content['commands'], self.firstLine, self.cellSeparator)
 
-    def toDbcNotebook(self, notebookName: str, source: str, packageFilename: PurePosixPath) -> str:
+    def toDbcNotebook(self, notebookName: str, source: str, packageFilePath: str) -> str:
         cells = self.__cellsExtractor.extract(source, r'#[\s]+COMMAND[\s]+[\-]+\n+')
 
         def cleanupCell(cell: dict):
             if cell['source'] == '# MAGIC %installMasterPackageWhl':
-                cell['source'] = self.__packageInstaller.getPackageInstallCommand(packageFilename)
+                cell['source'] = self.__packageInstaller.getPackageInstallCommand(packageFilePath)
 
             cell['source'] = re.sub(r'^' + self.firstLine + '[\r\n]+', '', cell['source'])
             cell['source'] = re.sub(r'^# MAGIC ', '', cell['source'])
@@ -51,5 +50,5 @@ class DatabricksNotebookConverter:
 
         return self.__dbcScriptRenderer.render(notebookName, template, cells)
 
-    def toWorkspaceImportNotebook(self, source: str, packageFilename: PurePosixPath) -> str:
-        return source.replace('# MAGIC %installMasterPackageWhl', self.__packageInstaller.getPackageInstallCommand(packageFilename))
+    def toWorkspaceImportNotebook(self, source: str, packageFilePath: str) -> str:
+        return source.replace('# MAGIC %installMasterPackageWhl', self.__packageInstaller.getPackageInstallCommand(packageFilePath))

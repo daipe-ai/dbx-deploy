@@ -40,7 +40,7 @@ class CurrentDirectoryUpdater:
         self.__databricksNotebookConverter = databricksNotebookConverter
         self.__currentBranchResolver = currentBranchResolver
 
-    def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, packagePath: PurePosixPath):
+    def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, packagePath: str):
         if self.__shouldRemoveMissingNotebooks():
             self.__removeMissingNotebooks(currentReleasePath, notebooks)
 
@@ -57,7 +57,7 @@ class CurrentDirectoryUpdater:
             self.__logger.warning('Removing deleted/missing notebook {}'.format(fullNotebookPath))
             self.__dbxApi.workspace.delete(str(fullNotebookPath))
 
-    def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], packagePath: PurePosixPath):
+    def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], packagePath: str):
         for notebook in notebooks:
             targetPath = currentReleasePath.joinpath(notebook.databricksRelativePath)
             source = loadNotebook(notebook.path)

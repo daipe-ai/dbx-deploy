@@ -1,8 +1,8 @@
 from base64 import b64encode
-from pathlib import PurePosixPath
 from databricks_api import DatabricksAPI
+from dbxdeploy.package.PackageUploaderInterface import PackageUploaderInterface
 
-class DbfsFileUploader:
+class DbfsFileUploader(PackageUploaderInterface):
 
     def __init__(
         self,
@@ -10,11 +10,11 @@ class DbfsFileUploader:
     ):
         self.__dbxApi = dbxApi
 
-    def upload(self, content: bytes, filePath: PurePosixPath, overwrite: bool = False):
+    def upload(self, content: bytes, filePath: str, overwrite: bool = False):
         contentToUpload = b64encode(content).decode()
 
         self.__dbxApi.dbfs.put(
-            str(filePath),
+            filePath,
             contents=contentToUpload,
             overwrite=overwrite
         )

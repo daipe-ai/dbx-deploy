@@ -22,7 +22,7 @@ class NotebooksDeployer:
         currentDirectoryUpdater: CurrentDirectoryUpdater,
     ):
         self.__workspaceBaseDir = workspaceBaseDir
-        self.__packageBaseDir = PurePosixPath(packageBaseDir)
+        self.__packageBaseDir = packageBaseDir
         self.__logger = logger
         self.__dbxApi = dbxApi
         self.__dbcCreator = dbcCreator

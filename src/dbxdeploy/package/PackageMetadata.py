@@ -18,13 +18,13 @@ class PackageMetadata:
     def getPackageFilename(self):
         return '{}-{}-py3-none-any.whl'.format(self.__getPackageName(), self.__packageVersion)
 
-    def getPackageUploadPathForRelease(self, dbfsBasePath: PurePosixPath) -> PurePosixPath:
+    def getPackageUploadPathForRelease(self, targetBasePath: str):
         versionDirName = self.__packageName + '/' + self.__dateTime.strftime('%Y-%m-%d_%H-%M-%S') + '_' + self.__randomString
 
-        return dbfsBasePath.joinpath(versionDirName).joinpath(self.getPackageFilename())
+        return targetBasePath + '/' + versionDirName + '/' + self.getPackageFilename()
 
-    def getPackageUploadPathForCurrent(self, dbfsBasePath: PurePosixPath) -> PurePosixPath:
-        return dbfsBasePath.joinpath(self.__packageName + '/_current').joinpath(self.getPackageFilename())
+    def getPackageUploadPathForCurrent(self, targetBasePath: str):
+        return targetBasePath + '/' + self.__packageName + '/_current' + '/' + self.getPackageFilename()
 
     def getWorkspaceReleasePath(self, workspaceBaseDir: PurePosixPath) -> PurePosixPath:
         releaseDirName = self.__dateTime.strftime('%Y-%m-%d_%H:%M:%S') + '_' + self.__randomString

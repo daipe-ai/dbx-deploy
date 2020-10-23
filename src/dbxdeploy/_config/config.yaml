@@ -11,8 +11,12 @@ parameters:
         patterns: ['**/*.py']
         consumersPatterns: ['**/*.consumer.py']
     target:
+      storage: 'dbfs' # dbfs or s3
       workspaceBaseDir: '/{currentBranch}'
       packageBaseDir: 'dbfs:/FileStore/jars'
+      s3:
+        awsAccessKeyId:
+        awsSecretAccessKey:
     export:
       forceEndFileNewline: False
 
@@ -26,6 +30,8 @@ services:
   dbxdeploy.dbfs.DbfsFileUploader:
     arguments:
       - '@dbxdeploy.databricksApi'
+    tags:
+      - {name: 'dbxdeploy.package.uploader', alias: 'dbfs'}
 
   dbxdeploy.dbfs.DbfsUploadCommand:
     arguments:
@@ -97,6 +103,7 @@ services:
       - '@dbxdeploy.deploy.workingDir'
       - '%dbxdeploy.target.packageBaseDir%'
       - '@consolebundle.logger'
+      - !tagged_aliased ['dbxdeploy.package.uploader', '%dbxdeploy.target.storage%']
 
   dbxdeploy.package.PackageInstaller:
     arguments:
@@ -243,3 +250,10 @@ services:
   dbxdeploy.notebook.converter.CellsExtractor:
 
   dbxdeploy.notebook.converter.DatabricksNotebookConverter:
+
+  dbxdeploy.s3.S3FileUploader:
+    arguments:
+      - '%dbxdeploy.target.s3.awsAccessKeyId%'
+      - '%dbxdeploy.target.s3.awsSecretAccessKey%'
+    tags:
+      - {name: 'dbxdeploy.package.uploader', alias: 's3'}

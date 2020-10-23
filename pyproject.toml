@@ -33,6 +33,8 @@ python-box = "3.4.*"
 tomlkit = "0.5.*"
 pyfony-bundles = "0.2.*"
 console-bundle = "0.2.*"
+boto3 = "^1.16.0"
+injecta = "^0.8.12"
 
 [tool.poetry.dev-dependencies]
 pylint = "2.4.*"
