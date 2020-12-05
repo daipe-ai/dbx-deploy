@@ -39,8 +39,10 @@ class TargetPathsResolver:
             'packageFilename': packageMetadata.getPackageFilename(),
             'currentTime': packageMetadata.dateTime.strftime('%Y-%m-%d_%H-%M-%S'),
             'randomString': packageMetadata.randomString,
-            'currentBranch': self.__currentBranchResolver.resolve(),
         }
+
+        if '{currentBranch}' in packagePath:
+            replacements['currentBranch'] = self.__currentBranchResolver.resolve()
 
         return packagePath.format(**replacements)
 
@@ -48,7 +50,9 @@ class TargetPathsResolver:
         replacements = {
             'currentTime': packageMetadata.dateTime.strftime('%Y-%m-%d_%H:%M:%S'),
             'randomString': packageMetadata.randomString,
-            'currentBranch': self.__currentBranchResolver.resolve(),
         }
+
+        if '{currentBranch}' in str(workspacePath):
+            replacements['currentBranch'] = self.__currentBranchResolver.resolve()
 
         return PurePosixPath(str(workspacePath).format(**replacements))
