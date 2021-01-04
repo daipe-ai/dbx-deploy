@@ -1,13 +1,13 @@
 import unittest
-from dbxdeploy.containerInit import initContainer
+from pyfonycore.bootstrap import bootstrappedContainer
 from dbxdeploy.dbc.CommandConverter import CommandConverter
 
 class CommandConverterTest(unittest.TestCase):
 
     def setUp(self):
-        container = initContainer('test')
+        container = bootstrappedContainer.init('test')
 
-        self.__commandConverter = container.get(CommandConverter)
+        self.__commandConverter = container.get(CommandConverter) # type: CommandConverter
 
     def test_pythonCode(self):
         self.__testCommand(

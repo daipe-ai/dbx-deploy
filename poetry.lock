@@ -164,7 +164,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2)", "pytest-flake8"
 
 [[package]]
 name = "console-bundle"
-version = "0.2.5"
+version = "0.3.0"
 description = "Console Bundle for the Pyfony Framework"
 category = "main"
 optional = false
@@ -172,7 +172,8 @@ python-versions = ">=3.7.3,<3.8.0"
 
 [package.dependencies]
 colorlog = ">=4.0.0,<4.1.0"
-pyfony-bundles = ">=0.2.0,<0.3.0"
+pyfony-bundles = ">=0.3.0,<0.4.0"
+pyfony-core = ">=0.7.0,<0.8.0"
 python-dotenv = ">=0.13.0,<0.14.0"
 
 [[package]]
@@ -247,22 +248,23 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "importlib-metadata"
-version = "1.5.0"
+version = "3.4.0"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+python-versions = ">=3.6"
 
 [package.dependencies]
+typing-extensions = {version = ">=3.6.4", markers = "python_version < \"3.8\""}
 zipp = ">=0.5"
 
 [package.extras]
-docs = ["sphinx", "rst.linker"]
-testing = ["packaging", "importlib-resources"]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
 
 [[package]]
 name = "injecta"
-version = "0.8.12"
+version = "0.9.0"
 description = "Dependency Injection Container Library"
 category = "main"
 optional = false
@@ -400,18 +402,6 @@ description = "A fast and thorough lazy object proxy."
 category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-
-[[package]]
-name = "logger-bundle"
-version = "0.5.3"
-description = "Logger bundle for the Pyfony framework"
-category = "dev"
-optional = false
-python-versions = ">=3.7.3,<3.8.0"
-
-[package.dependencies]
-colorlog = ">=4.0.0,<4.1.0"
-pyfony-bundles = ">=0.2.0,<0.3.0"
 
 [[package]]
 name = "markupsafe"
@@ -590,30 +580,30 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
-name = "pyfony"
-version = "0.5.0"
-description = "Dependency Injection powered framework"
-category = "dev"
-optional = false
-python-versions = ">=3.7.3,<3.8.0"
-
-[package.dependencies]
-console-bundle = ">=0.2.5,<0.3.0"
-injecta = ">=0.8.1,<0.9.0"
-logger-bundle = ">=0.5.3,<0.6.0"
-
-[[package]]
 name = "pyfony-bundles"
-version = "0.2.2"
+version = "0.3.1"
 description = "Pyfony Framework bundles base package"
 category = "main"
 optional = false
 python-versions = ">=3.7.3,<3.8.0"
 
 [package.dependencies]
-injecta = ">=0.6.0,<0.9.0"
+importlib-metadata = ">=3.3.0"
+injecta = ">=0.9.0,<0.10.0"
 python-box = ">=3.4.0,<3.5.0"
 tomlkit = ">=0.5.0,<0.6.0"
+
+[[package]]
+name = "pyfony-core"
+version = "0.7.0"
+description = "Pyfony core"
+category = "main"
+optional = false
+python-versions = ">=3.7.3,<3.8.0"
+
+[package.dependencies]
+injecta = ">=0.9.0,<0.10.0"
+pyfony-bundles = ">=0.3.0,<0.4.0"
 
 [[package]]
 name = "pygit2"
@@ -831,6 +821,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "typing-extensions"
+version = "3.7.4.3"
+description = "Backported and Experimental Type Hints for Python 3.5+"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "urllib3"
 version = "1.25.8"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -882,7 +880,7 @@ testing = ["jaraco.itertools"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.7.3"
-content-hash = "e7890f5d377b7168d1bd817f2aa3928f7ef36b4bcfbe4595ddd74aaaedfacbdb"
+content-hash = "8f9ae14d45ef118cf12832369bc3bd65c667dc501cac0e8aae1a0d5b10a2a6cb"
 
 [metadata.files]
 appnope = [
@@ -977,8 +975,7 @@ configparser = [
     {file = "configparser-4.0.2.tar.gz", hash = "sha256:c7d282687a5308319bf3d2e7706e575c635b0a470342641c93bea0ea3b5331df"},
 ]
 console-bundle = [
-    {file = "console-bundle-0.2.5.tar.gz", hash = "sha256:0280bc61cbcc4338e29a65b22dee9b37546627839745cd51c062c31d99f46944"},
-    {file = "console_bundle-0.2.5-py3-none-any.whl", hash = "sha256:f2029bbe346001a759b9774ce30455f6d3a80c36c500c8392400194fe12858f7"},
+    {file = "console_bundle-0.3.0-py3-none-any.whl", hash = "sha256:da9531bd472810953e09c06f06e96cab612e0a9bce0867efd454d0d4706406a2"},
 ]
 databricks-api = [
     {file = "databricks_api-0.3.0-py2.py3-none-any.whl", hash = "sha256:8f637288d05b3d214ea1636bb31d6423c751d85fdccd25fd0d0c86657e7c0abc"},
@@ -1009,11 +1006,11 @@ idna = [
     {file = "idna-2.8.tar.gz", hash = "sha256:c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-1.5.0-py2.py3-none-any.whl", hash = "sha256:b97607a1a18a5100839aec1dc26a1ea17ee0d93b20b0f008d80a5a050afb200b"},
-    {file = "importlib_metadata-1.5.0.tar.gz", hash = "sha256:06f5b3a99029c7134207dd882428a66992a9de2bef7c2b699b5641f9886c3302"},
+    {file = "importlib_metadata-3.4.0-py3-none-any.whl", hash = "sha256:ace61d5fc652dc280e7b6b4ff732a9c2d40db2c0f92bc6cb74e07b73d53a1771"},
+    {file = "importlib_metadata-3.4.0.tar.gz", hash = "sha256:fa5daa4477a7414ae34e95942e4dd07f62adf589143c875c133c1e53c4eff38d"},
 ]
 injecta = [
-    {file = "injecta-0.8.12-py3-none-any.whl", hash = "sha256:e2f79e4201576cc79baa84f4683da84b8ae52586ee2ea0c0d882145f719fa825"},
+    {file = "injecta-0.9.0-py3-none-any.whl", hash = "sha256:99b29b4327b68e487009ecf504f5718108ed2369912a68ca4f3b564d41d46bcb"},
 ]
 ipython = [
     {file = "ipython-7.12.0-py3-none-any.whl", hash = "sha256:f6689108b1734501d3b59c84427259fd5ac5141afe2e846cfa8598eb811886c9"},
@@ -1069,10 +1066,6 @@ lazy-object-proxy = [
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:a6ae12d08c0bf9909ce12385803a543bfe99b95fe01e752536a60af2b7797c62"},
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-win32.whl", hash = "sha256:5541cada25cd173702dbd99f8e22434105456314462326f06dba3e180f203dfd"},
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-win_amd64.whl", hash = "sha256:59f79fef100b09564bc2df42ea2d8d21a64fdcda64979c0fa3db7bdaabaf6239"},
-]
-logger-bundle = [
-    {file = "logger-bundle-0.5.3.tar.gz", hash = "sha256:7f68aaf7eeec7ea7c4c2ae61d89990b4e218a533364b3132cc44012ede145f1c"},
-    {file = "logger_bundle-0.5.3-py3-none-any.whl", hash = "sha256:1021f1d6bd2afd2775782ba807e4f443054f2433afa9ccb648cd6e7d0a37b244"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
@@ -1167,13 +1160,12 @@ py = [
 pycparser = [
     {file = "pycparser-2.19.tar.gz", hash = "sha256:a988718abfad80b6b157acce7bf130a30876d27603738ac39f140993246b25b3"},
 ]
-pyfony = [
-    {file = "pyfony-0.5.0-py3-none-any.whl", hash = "sha256:900fe83db4db554900fdfacf79532cdee1e75d2898814d84b4ad534ac2331734"},
-    {file = "pyfony-0.5.0.tar.gz", hash = "sha256:53e6d4f5e03d9815a9c89acf77abb16e356181d03be5b8352710847165260f57"},
-]
 pyfony-bundles = [
-    {file = "pyfony-bundles-0.2.2.tar.gz", hash = "sha256:3d0c6be33002df1fad7015319ead1e718a41d8bfe8d2387167daf284f7fe40bf"},
-    {file = "pyfony_bundles-0.2.2-py3-none-any.whl", hash = "sha256:d5c88bddd14a2773c767ea681e27f661a0712d70555c54731cb16eff64cfdde9"},
+    {file = "pyfony_bundles-0.3.1-py3-none-any.whl", hash = "sha256:e7e92bec1de451de13dacdd684f999fd1ffbfc7e7375bec1717c08ed249a7de1"},
+]
+pyfony-core = [
+    {file = "pyfony-core-0.7.0.tar.gz", hash = "sha256:868e17fa3e1721e72690a755b11ede33beaa18943eb7d3439998fb60573285c7"},
+    {file = "pyfony_core-0.7.0-py3-none-any.whl", hash = "sha256:62a5391bd02d241d9aba5b78a32ce3d99a5adc10ea626b26aa8998be071ca17e"},
 ]
 pygit2 = [
     {file = "pygit2-1.3.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:64d033b76b7e489cf968e9a7cf5d9b9928ca7b3d41c1285b9c098b663e7c12ec"},
@@ -1308,6 +1300,11 @@ typed-ast = [
     {file = "typed_ast-1.4.1-cp39-cp39-win32.whl", hash = "sha256:b52ccf7cfe4ce2a1064b18594381bccf4179c2ecf7f513134ec2f993dd4ab395"},
     {file = "typed_ast-1.4.1-cp39-cp39-win_amd64.whl", hash = "sha256:3742b32cf1c6ef124d57f95be609c473d7ec4c14d0090e5a5e05a15269fb4d0c"},
     {file = "typed_ast-1.4.1.tar.gz", hash = "sha256:8c8aaad94455178e3187ab22c8b01a3837f8ee50e09cf31f1ba129eb293ec30b"},
+]
+typing-extensions = [
+    {file = "typing_extensions-3.7.4.3-py2-none-any.whl", hash = "sha256:dafc7639cde7f1b6e1acc0f457842a83e722ccca8eef5270af2d74792619a89f"},
+    {file = "typing_extensions-3.7.4.3-py3-none-any.whl", hash = "sha256:7cb407020f00f7bfc3cb3e7881628838e69d8f3fcab2f64742a5e76b2f841918"},
+    {file = "typing_extensions-3.7.4.3.tar.gz", hash = "sha256:99d4073b617d30288f569d3f13d2bd7548c3a7e4c8de87db09a9d29bb3a4a60c"},
 ]
 urllib3 = [
     {file = "urllib3-1.25.8-py2.py3-none-any.whl", hash = "sha256:2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc"},

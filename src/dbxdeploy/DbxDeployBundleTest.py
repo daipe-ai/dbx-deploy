@@ -1,11 +1,11 @@
 import unittest
 from injecta.testing.servicesTester import testServices
-from dbxdeploy.containerInit import initContainer
+from pyfonycore.bootstrap import bootstrappedContainer
 
 class DbxDeployBundleTest(unittest.TestCase):
 
     def test_init(self):
-        container = initContainer('test')
+        container = bootstrappedContainer.init('test')
 
         testServices(container)
 

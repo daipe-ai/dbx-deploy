@@ -1,5 +1,5 @@
 import unittest
-from dbxdeploy.containerInit import initContainer
+from pyfonycore.bootstrap import bootstrappedContainer
 from dbxdeploy.dbc.CommandConverter import CommandConverter
 from dbxdeploy.dbc.CommandsConverter import CommandsConverter
 from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
@@ -7,7 +7,7 @@ from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksN
 class CommandsConverterTest(unittest.TestCase):
 
     def setUp(self):
-        container = initContainer('test')
+        container = bootstrappedContainer.init('test')
         self.__commandConverter = container.get(CommandConverter) # type: CommandConverter
 
     def test_forcedEndFileNewLine(self):

@@ -31,15 +31,18 @@ nbconvert = "5.6.*"
 pygit2 = "1.3.*"
 python-box = "3.4.*"
 tomlkit = "0.5.*"
-pyfony-bundles = "0.2.*"
-console-bundle = "0.2.*"
+pyfony-bundles = "^0.3.0"
+console-bundle = "^0.3.0"
 boto3 = "^1.16.0"
-injecta = "^0.8.12"
+pyfony-core = "^0.7.0"
 
 [tool.poetry.dev-dependencies]
 pylint = "2.4.*"
 pytest = "5.2.*"
-pyfony = "^0.5.0"
 
-[app]
-container-init = ["dbxdeploy.containerInit", "initContainer"]
+[tool.poetry.plugins."pyfony.bundle"]
+create = "dbxdeploy.DbxDeployBundle:DbxDeployBundle"
+
+[pyfony.bootstrap]
+containerInit = "pyfonycore.container.containerInit:initWithCurrentBundle"
+rootModuleName = "dbxdeploy"

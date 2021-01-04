@@ -88,8 +88,6 @@ services:
       - 'console.command'
 
   dbxdeploy.deploy.MasterPackageBuilder:
-    arguments:
-      - '@dbxdeploy.deploy.workingDir'
     tags:
       - 'console.command'
 
@@ -106,9 +104,15 @@ services:
     arguments:
       - '@dbxdeploy.deploy.workingDir'
 
+  dbxdeploy.package.BootstrapConfigAppender:
+
+  dbxdeploy.package.LockedPyprojectCreator:
+
   dbxdeploy.package.PackageMetadataLoader:
 
   dbxdeploy.package.PackageBuilder:
+    arguments:
+      - '@dbxdeploy.deploy.workingDir'
 
   dbxdeploy.package.PackageDeployer:
     arguments:

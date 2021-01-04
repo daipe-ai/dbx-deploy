@@ -24,9 +24,7 @@ class PackageDeployer:
     def deploy(self, packageMetadata: PackageMetadata):
         self.__logger.info('Building master package (WHL)')
 
-        self.__packageBuilder.build(self.__projectBaseDir)
-
-        packagePath = self.__projectBaseDir.joinpath(Path('dist')).joinpath(packageMetadata.getPackageFilename())
+        packagePath = self.__packageBuilder.build(self.__projectBaseDir, packageMetadata.getPackageFilename())
 
         with packagePath.open('rb') as file:
             content = file.read()

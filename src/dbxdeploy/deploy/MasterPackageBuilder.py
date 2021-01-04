@@ -1,16 +1,16 @@
-from pathlib import Path
 from argparse import Namespace
+from pathlib import Path
 from dbxdeploy.package.PackageBuilder import PackageBuilder
 from consolebundle.ConsoleCommand import ConsoleCommand
-
+from dbxdeploy.package.PackageMetadataLoader import PackageMetadataLoader
 
 class MasterPackageBuilder(ConsoleCommand):
     def __init__(
         self,
-        projectBaseDir: Path,
+        packageMetadataLoader: PackageMetadataLoader,
         packageBuilder: PackageBuilder,
     ):
-        self.__projectBaseDir = projectBaseDir
+        self.__packageMetadataLoader = packageMetadataLoader
         self.__packageBuilder = packageBuilder
 
     def getCommand(self) -> str:
@@ -20,4 +20,7 @@ class MasterPackageBuilder(ConsoleCommand):
         return "Build the master package"
 
     def run(self, inputArgs: Namespace):
-        self.__packageBuilder.build(self.__projectBaseDir)
+        projectBaseDir = Path.cwd()
+        packageMetadata = self.__packageMetadataLoader.load(projectBaseDir)
+
+        self.__packageBuilder.build(projectBaseDir, packageMetadata.getPackageFilename())
