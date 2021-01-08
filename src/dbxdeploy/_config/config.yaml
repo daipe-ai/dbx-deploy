@@ -12,14 +12,12 @@ parameters:
         consumersPatterns: ['**/*.consumer.py']
     target:
       storage: 'dbfs' # dbfs or s3
-      workspaceBaseDir: '/{currentBranch}' # @deprecated, use dbxdeploy.target.workspace.baseDir instead
       workspace:
-        baseDir: '%dbxdeploy.target.workspaceBaseDir%'
+        baseDir: '/{currentBranch}'
         releasePath: '%dbxdeploy.target.workspace.baseDir%/{currentTime}_{randomString}'
         currentPath: '%dbxdeploy.target.workspace.baseDir%/_current'
-      packageBaseDir: 'dbfs:/FileStore/jars' # @deprecated, use dbxdeploy.target.workspace.baseDir instead
       package:
-        baseDir: '%dbxdeploy.target.packageBaseDir%'
+        baseDir: 'dbfs:/FileStore/jars'
         releasePath: '%dbxdeploy.target.package.baseDir%/{packageName}/{currentTime}_{randomString}/{packageFilename}'
         currentPath: '%dbxdeploy.target.package.baseDir%/{packageName}/_current/{packageFilename}'
       s3:
@@ -145,7 +143,7 @@ services:
 
   dbxdeploy.notebook.NotebooksDeployer:
     arguments:
-      - '@dbxdeploy.target.workspaceBaseDir'
+      - '@dbxdeploy.target.workspace.baseDir'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricksApi'
 
@@ -174,7 +172,7 @@ services:
   dbxdeploy.job.JobSubmitter:
     arguments:
       - '%dbxdeploy.databricks.clusterId%'
-      - '@dbxdeploy.target.workspaceBaseDir'
+      - '@dbxdeploy.target.workspace.baseDir'
       - '%dbxdeploy.browser%'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricksApi'
@@ -182,7 +180,7 @@ services:
   dbxdeploy.job.RunsGetter:
     arguments:
       - '%dbxdeploy.databricks.clusterId%'
-      - '@dbxdeploy.target.workspaceBaseDir'
+      - '@dbxdeploy.target.workspace.baseDir'
       - '@dbxdeploy.databricksApi'
 
   dbxdeploy.job.NotebookKiller:
@@ -211,7 +209,7 @@ services:
 
   dbxdeploy.notebook.CurrentDirectoryUpdater:
     arguments:
-      - '@dbxdeploy.target.workspaceBaseDir'
+      - '@dbxdeploy.target.workspace.baseDir'
       - '%dbxdeploy.git.devBranch%'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricksApi'
@@ -220,7 +218,7 @@ services:
     arguments:
       - '%dbxdeploy.target.workspace.baseDir%'
 
-  dbxdeploy.target.workspaceBaseDir:
+  dbxdeploy.target.workspace.baseDir:
     class: pathlib.PurePosixPath
     factory: ['@dbxdeploy.workspace.WorkspaceBaseDirFactory', 'create']
 
@@ -234,7 +232,7 @@ services:
 
   dbxdeploy.workspace.WorkspaceExportCommand:
     arguments:
-      - '@dbxdeploy.target.workspaceBaseDir'
+      - '@dbxdeploy.target.workspace.baseDir'
       - '@dbxdeploy.deploy.workingDir'
       - '%dbxdeploy.source.notebooks.baseDir%'
       - '@consolebundle.logger'
