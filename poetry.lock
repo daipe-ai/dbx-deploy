@@ -164,17 +164,17 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2)", "pytest-flake8"
 
 [[package]]
 name = "console-bundle"
-version = "0.3.0"
+version = "0.3.1"
 description = "Console Bundle for the Pyfony Framework"
 category = "main"
 optional = false
-python-versions = ">=3.7.3,<3.8.0"
+python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
-colorlog = ">=4.0.0,<4.1.0"
-pyfony-bundles = ">=0.3.0,<0.4.0"
-pyfony-core = ">=0.7.0,<0.8.0"
-python-dotenv = ">=0.13.0,<0.14.0"
+colorlog = ">=4.0,<5.0"
+pyfony-bundles = ">=0.3.2,<0.4.0"
+pyfony-core = ">=0.7.1,<0.8.0"
+python-dotenv = ">=0.13.0,<1.0.0"
 
 [[package]]
 name = "databricks-api"
@@ -581,29 +581,29 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "pyfony-bundles"
-version = "0.3.1"
+version = "0.3.2"
 description = "Pyfony Framework bundles base package"
 category = "main"
 optional = false
-python-versions = ">=3.7.3,<3.8.0"
+python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
-importlib-metadata = ">=3.3.0"
+importlib-metadata = ">=3.3,<4.0"
 injecta = ">=0.9.0,<0.10.0"
-python-box = ">=3.4.0,<3.5.0"
-tomlkit = ">=0.5.0,<0.6.0"
+python-box = ">=3.4,<4.0"
+tomlkit = ">=0.5.8,<1.0.0"
 
 [[package]]
 name = "pyfony-core"
-version = "0.7.0"
+version = "0.7.1"
 description = "Pyfony core"
 category = "main"
 optional = false
-python-versions = ">=3.7.3,<3.8.0"
+python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
 injecta = ">=0.9.0,<0.10.0"
-pyfony-bundles = ">=0.3.0,<0.4.0"
+pyfony-bundles = ">=0.3.2,<0.4.0"
 
 [[package]]
 name = "pygit2"
@@ -879,8 +879,8 @@ testing = ["jaraco.itertools"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = "~3.7.3"
-content-hash = "8f9ae14d45ef118cf12832369bc3bd65c667dc501cac0e8aae1a0d5b10a2a6cb"
+python-versions = "^3.7"
+content-hash = "13ac96b8e575b9568d35fee0b288b624db42778f248f0cda212c7643a43aab8f"
 
 [metadata.files]
 appnope = [
@@ -975,7 +975,7 @@ configparser = [
     {file = "configparser-4.0.2.tar.gz", hash = "sha256:c7d282687a5308319bf3d2e7706e575c635b0a470342641c93bea0ea3b5331df"},
 ]
 console-bundle = [
-    {file = "console_bundle-0.3.0-py3-none-any.whl", hash = "sha256:da9531bd472810953e09c06f06e96cab612e0a9bce0867efd454d0d4706406a2"},
+    {file = "console_bundle-0.3.1-py3-none-any.whl", hash = "sha256:37a253d55903fc4ee1ffe811b3d3a8d1f647caa29f3debed4a18cf75a72b3e97"},
 ]
 databricks-api = [
     {file = "databricks_api-0.3.0-py2.py3-none-any.whl", hash = "sha256:8f637288d05b3d214ea1636bb31d6423c751d85fdccd25fd0d0c86657e7c0abc"},
@@ -1161,11 +1161,10 @@ pycparser = [
     {file = "pycparser-2.19.tar.gz", hash = "sha256:a988718abfad80b6b157acce7bf130a30876d27603738ac39f140993246b25b3"},
 ]
 pyfony-bundles = [
-    {file = "pyfony_bundles-0.3.1-py3-none-any.whl", hash = "sha256:e7e92bec1de451de13dacdd684f999fd1ffbfc7e7375bec1717c08ed249a7de1"},
+    {file = "pyfony_bundles-0.3.2-py3-none-any.whl", hash = "sha256:212a0a2bb7d9ba0faf0f56c283da4da7113d507d196ecde00913281511a11ef2"},
 ]
 pyfony-core = [
-    {file = "pyfony-core-0.7.0.tar.gz", hash = "sha256:868e17fa3e1721e72690a755b11ede33beaa18943eb7d3439998fb60573285c7"},
-    {file = "pyfony_core-0.7.0-py3-none-any.whl", hash = "sha256:62a5391bd02d241d9aba5b78a32ce3d99a5adc10ea626b26aa8998be071ca17e"},
+    {file = "pyfony_core-0.7.1-py3-none-any.whl", hash = "sha256:05138ab80e70c93ea42aae41684a5f6f001486fbc6ca5fc2ca4f44cedab9decc"},
 ]
 pygit2 = [
     {file = "pygit2-1.3.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:64d033b76b7e489cf968e9a7cf5d9b9928ca7b3d41c1285b9c098b663e7c12ec"},
