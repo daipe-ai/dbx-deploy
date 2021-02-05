@@ -59,6 +59,10 @@ services:
       - '@dbxdeploy.deploy.workingDir'
 
   dbxdeploy.deploy.DeployCommand:
+    arguments:
+      - '%dbxdeploy.databricks.host%'
+      - '%dbxdeploy.target.workspace.baseDir%'
+      - '@consolebundle.logger'
     tags:
       - 'console.command'
 
@@ -78,6 +82,10 @@ services:
       - '@consolebundle.logger'
 
   dbxdeploy.deploy.ReleaseCommand:
+    arguments:
+      - '%dbxdeploy.databricks.host%'
+      - '%dbxdeploy.target.workspace.baseDir%'
+      - '@consolebundle.logger'
     tags:
       - 'console.command'
 
