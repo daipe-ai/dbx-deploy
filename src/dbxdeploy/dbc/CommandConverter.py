@@ -10,14 +10,15 @@ class CommandConverter:
         self.__packageInstaller = packageInstaller
 
     def convert(self, command: dict):
-        magicCommand = self.__detectMagicCommand(command['command'])
-
-        if magicCommand in ['%run', '%md', '%sql', '%sh', '%python', '%scala', '%r']:
-            commandCode = '# MAGIC ' + command['command'].replace('\n', '\n# MAGIC ')
-            return self.__processTitle(commandCode, command)
-
         if self.__packageInstaller.isPackageInstallCommand(command['command']):
             return self.__processTitle('# MAGIC %installMasterPackageWhl', command)
+
+        magicCommand = self.__detectMagicCommand(command['command'])
+
+        if magicCommand:
+            commandCode = '# MAGIC ' + command['command'].replace('\n', '\n# MAGIC ')
+
+            return self.__processTitle(commandCode, command)
 
         return self.__processTitle(command['command'], command)
 
