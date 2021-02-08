@@ -1,5 +1,6 @@
 import re
 from dbxdeploy.dbc.CommandsConverter import CommandsConverter
+from dbxdeploy.notebook.converter import emptyLinesRemover
 from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
 from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
@@ -41,6 +42,7 @@ class DatabricksNotebookConverter:
 
             cell['source'] = re.sub(r'^' + self.firstLine + '[\r\n]+', '', cell['source'])
             cell['source'] = re.sub(r'^# MAGIC ', '', cell['source'])
+            cell['source'] = emptyLinesRemover.remove(cell['source'])
 
             return cell
 
@@ -51,4 +53,7 @@ class DatabricksNotebookConverter:
         return self.__dbcScriptRenderer.render(notebookName, template, cells)
 
     def toWorkspaceImportNotebook(self, source: str, packageFilePath: str) -> str:
-        return source.replace('# MAGIC %installMasterPackageWhl', self.__packageInstaller.getPackageInstallCommand(packageFilePath))
+        source = emptyLinesRemover.remove(source)
+        source = source.replace('# MAGIC %installMasterPackageWhl', self.__packageInstaller.getPackageInstallCommand(packageFilePath))
+
+        return source
