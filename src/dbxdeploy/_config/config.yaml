@@ -1,5 +1,7 @@
 parameters:
   dbxdeploy:
+    poetry:
+      path: '~/.poetry/bin/poetry'
     browser:
       path: 'c:/Program Files (x86)/Google/Chrome/Application/chrome.exe'
       arguments: ['-d', '{runUrl}']
@@ -7,7 +9,7 @@ parameters:
       devBranch: 'master'
     source:
       notebooks:
-        baseDir: 'src'
+        baseDir: 'src/%bricksflow.rootModule.name%'
         patterns: ['**/*.py']
         consumersPatterns: ['**/*.consumer.py']
     target:
@@ -18,8 +20,11 @@ parameters:
         currentPath: '%dbxdeploy.target.workspace.baseDir%/_current'
       package:
         baseDir: 'dbfs:/FileStore/jars'
+        deployPath: '%dbxdeploy.target.package.baseDir%/{packageName}/{currentTime}_{randomString}/{packageFilename}'
         releasePath: '%dbxdeploy.target.package.baseDir%/{packageName}/{currentTime}_{randomString}/{packageFilename}'
-        currentPath: '%dbxdeploy.target.package.baseDir%/{packageName}/_current/{packageFilename}'
+        dependenciesDeployPath: '%dbxdeploy.target.package.baseDir%/{packageName}/dependencies/{packageFilename}'
+        dependenciesReleasePath: '%dbxdeploy.target.package.releasePath%'
+        offlineInstall: False
       s3:
         awsAccessKeyId:
         awsSecretAccessKey:
@@ -101,10 +106,16 @@ services:
 
   dbxdeploy.deploy.TargetPathsResolver:
     arguments:
+      - '%dbxdeploy.target.package.deployPath%'
       - '%dbxdeploy.target.package.releasePath%'
-      - '%dbxdeploy.target.package.currentPath%'
+      - '%dbxdeploy.target.package.dependenciesDeployPath%'
+      - '%dbxdeploy.target.package.dependenciesReleasePath%'
       - '%dbxdeploy.target.workspace.releasePath%'
       - '%dbxdeploy.target.workspace.currentPath%'
+
+  dbxdeploy.deploy.LocalPathsResolver:
+    arguments:
+      - '@dbxdeploy.deploy.workingDir'
 
   dbxdeploy.git.CurrentBranchResolver:
 
@@ -118,21 +129,28 @@ services:
 
   dbxdeploy.package.PackageMetadataLoader:
 
+  dbxdeploy.package.PackageDependencyLoader:
+
   dbxdeploy.package.PackageBuilder:
     arguments:
       - '@dbxdeploy.deploy.workingDir'
+      - '%dbxdeploy.target.package.offlineInstall%'
 
   dbxdeploy.package.PackageDeployer:
     arguments:
       - '@dbxdeploy.deploy.workingDir'
+      - '%dbxdeploy.target.package.offlineInstall%'
       - '@consolebundle.logger'
       - !tagged_aliased ['dbxdeploy.package.uploader', '%dbxdeploy.target.storage%']
 
   dbxdeploy.package.PackageInstaller:
     arguments:
       - '%dbxdeploy.target.package.baseDir%'
+      - '%dbxdeploy.target.package.offlineInstall%'
 
-  dbxdeploy.package.Lock2PyprojectConverter:
+  dbxdeploy.package.RequirementsCreator:
+
+  dbxdeploy.package.RequirementsLineConverter:
 
   dbxdeploy.dbc.DbcCreator:
     arguments:
@@ -278,3 +296,7 @@ services:
       - '%dbxdeploy.target.s3.awsSecretAccessKey%'
     tags:
       - {name: 'dbxdeploy.package.uploader', alias: 's3'}
+
+  dbxdeploy.poetry.PoetryPathResolver:
+    arguments:
+      - '%dbxdeploy.poetry.path%'

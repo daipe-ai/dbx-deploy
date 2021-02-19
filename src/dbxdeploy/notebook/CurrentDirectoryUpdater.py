@@ -40,11 +40,11 @@ class CurrentDirectoryUpdater:
         self.__databricksNotebookConverter = databricksNotebookConverter
         self.__currentBranchResolver = currentBranchResolver
 
-    def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, packagePath: str):
+    def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, packagePath: str, dependenciesDirPath: str):
         if self.__shouldRemoveMissingNotebooks():
             self.__removeMissingNotebooks(currentReleasePath, notebooks)
 
-        self.__updateNotebooks(currentReleasePath, notebooks, packagePath)
+        self.__updateNotebooks(currentReleasePath, notebooks, packagePath, dependenciesDirPath)
 
     def __removeMissingNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook]):
         existingNotebooksFullPaths = self.__resolveExistingNotebooksPaths(currentReleasePath)
@@ -57,7 +57,7 @@ class CurrentDirectoryUpdater:
             self.__logger.warning('Removing deleted/missing notebook {}'.format(fullNotebookPath))
             self.__dbxApi.workspace.delete(str(fullNotebookPath))
 
-    def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], packagePath: str):
+    def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], packagePath: str, dependenciesDirPath: str):
         for notebook in notebooks:
             targetPath = currentReleasePath.joinpath(notebook.databricksRelativePath)
             source = loadNotebook(notebook.path)
@@ -68,7 +68,7 @@ class CurrentDirectoryUpdater:
                 self.__logger.debug(f'Skipping unrecognized file {notebook.relativePath}')
                 continue
 
-            script = self.__databricksNotebookConverter.toWorkspaceImportNotebook(source, packagePath)
+            script = self.__databricksNotebookConverter.toWorkspaceImportNotebook(source, packagePath, dependenciesDirPath)
 
             self.__logger.info('Updating {}'.format(targetPath))
             self.__workspaceImporter.overwriteScript(script, targetPath)

@@ -23,4 +23,4 @@ class MasterPackageBuilder(ConsoleCommand):
         projectBaseDir = Path.cwd()
         packageMetadata = self.__packageMetadataLoader.load(projectBaseDir)
 
-        self.__packageBuilder.build(projectBaseDir, packageMetadata.getPackageFilename())
+        self.__packageBuilder.build(projectBaseDir, packageMetadata)

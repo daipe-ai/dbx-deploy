@@ -31,14 +31,18 @@ class NotebooksDeployer:
         self.__targetPathsResolver = targetPathsResolver
 
     def deploy(self, packageMetadata: PackageMetadata, notebooks: List[Notebook]):
-        packagePath = self.__targetPathsResolver.getPackageUploadPathForRelease(packageMetadata)
+        packagePath = self.__targetPathsResolver.getPackageUploadPathForDeploy(packageMetadata)
+        dependenciesDir = self.__targetPathsResolver.getDependenciesUploadDirForDeploy(packageMetadata)
 
         self.__logger.info(f'All packages released, updating {self.__workspaceBaseDir}')
-        self.__currentDirectoryUpdater.update(notebooks, self.__workspaceBaseDir, packagePath)
+        self.__currentDirectoryUpdater.update(notebooks, self.__workspaceBaseDir, packagePath, dependenciesDir)
 
     def release(self, packageMetadata: PackageMetadata, notebooks: List[Notebook]):
+        packagePath = self.__targetPathsResolver.getPackageUploadPathForRelease(packageMetadata)
+        dependenciesDir = self.__targetPathsResolver.getDependenciesUploadDirForRelease(packageMetadata)
+
         self.__logger.info('Building notebooks package (DBC)')
-        dbcContent = self.__dbcCreator.create(notebooks, self.__targetPathsResolver.getPackageUploadPathForRelease(packageMetadata))
+        dbcContent = self.__dbcCreator.create(notebooks, packagePath, dependenciesDir)
 
         _currentPath = self.__targetPathsResolver.getWorkspaceCurrentPath(packageMetadata) # pylint: disable = invalid-name
         releasePath = self.__targetPathsResolver.getWorkspaceReleasePath(packageMetadata)
