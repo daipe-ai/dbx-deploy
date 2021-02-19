@@ -33,12 +33,12 @@ class DatabricksNotebookConverter:
     def fromDbcNotebook(self, content: dict) -> str:
         return self.__commandsConverter.convert(content['commands'], self.firstLine, self.cellSeparator)
 
-    def toDbcNotebook(self, notebookName: str, source: str, packageFilePath: str) -> str:
+    def toDbcNotebook(self, notebookName: str, source: str, packageFilePath: str, dependenciesDirPath: str) -> str:
         cells = self.__cellsExtractor.extract(source, r'#[\s]+COMMAND[\s]+[\-]+\n+')
 
         def cleanupCell(cell: dict):
             if cell['source'] == '# MAGIC %installMasterPackageWhl':
-                cell['source'] = self.__packageInstaller.getPackageInstallCommand(packageFilePath)
+                cell['source'] = self.__packageInstaller.getPackageInstallCommand(packageFilePath, dependenciesDirPath)
 
             cell['source'] = re.sub(r'^' + self.firstLine + '[\r\n]+', '', cell['source'])
             cell['source'] = re.sub(r'^# MAGIC ', '', cell['source'])
@@ -52,8 +52,8 @@ class DatabricksNotebookConverter:
 
         return self.__dbcScriptRenderer.render(notebookName, template, cells)
 
-    def toWorkspaceImportNotebook(self, source: str, packageFilePath: str) -> str:
+    def toWorkspaceImportNotebook(self, source: str, packageFilePath: str, dependenciesDirPath: str) -> str:
         source = emptyLinesRemover.remove(source)
-        source = source.replace('# MAGIC %installMasterPackageWhl', self.__packageInstaller.getPackageInstallCommand(packageFilePath))
+        source = source.replace('# MAGIC %installMasterPackageWhl', self.__packageInstaller.getPackageInstallCommand(packageFilePath, dependenciesDirPath))
 
         return source

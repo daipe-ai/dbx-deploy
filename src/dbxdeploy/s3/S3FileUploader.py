@@ -12,26 +12,19 @@ class S3FileUploader(PackageUploaderInterface):
     ):
         self.__awsAccessKeyId = awsAccessKeyId
         self.__awsSecretAccessKey = awsSecretAccessKey
-
-    def upload(self, content: bytes, filePath: str, overwrite: bool = False):
-        s3Client = boto3.client(
+        self.__s3Client = boto3.client(
             service_name='s3',
             aws_access_key_id=self.__awsAccessKeyId,
             aws_secret_access_key=self.__awsSecretAccessKey
         )
 
-        parsedS3Path = urlparse(filePath, allow_fragments=False)
+    def upload(self, content: bytes, filePath: str, overwrite: bool = False):
+        bucket, key = self.__parseS3Path(filePath)
 
-        if parsedS3Path.scheme != 's3':
-            raise Exception('File path must start with s3://')
-
-        bucket = parsedS3Path.netloc
-        key = parsedS3Path.path.lstrip('/')
-
-        if not overwrite and self.__fileExists(s3Client, bucket, key):
+        if not overwrite and self.__fileExists(bucket, key):
             raise Exception(f'File {filePath} already exist')
 
-        response = s3Client.put_object(
+        response = self.__s3Client.put_object(
             Bucket=bucket,
             Key=key,
             Body=content
@@ -42,9 +35,14 @@ class S3FileUploader(PackageUploaderInterface):
         if statusCode != 200:
             raise Exception(f'S3 API call failed, status code: {statusCode}')
 
-    def __fileExists(self, s3Client, bucket, key):
+    def exists(self, filePath: str):
+        bucket, key = self.__parseS3Path(filePath)
+
+        return self.__fileExists(bucket, key)
+
+    def __fileExists(self, bucket, key):
         try:
-            s3Client.head_object(Bucket=bucket, Key=key)
+            self.__s3Client.head_object(Bucket=bucket, Key=key)
         except ClientError as e:
             if e.response['Error']['Code'] != '404':
                 raise
@@ -52,3 +50,14 @@ class S3FileUploader(PackageUploaderInterface):
             return False
 
         return True
+
+    def __parseS3Path(self, filePath: str):
+        parsedS3Path = urlparse(filePath, allow_fragments=False)
+
+        if parsedS3Path.scheme != 's3':
+            raise Exception('File path must start with s3://')
+
+        bucket = parsedS3Path.netloc
+        key = parsedS3Path.path.lstrip('/')
+
+        return (bucket, key)

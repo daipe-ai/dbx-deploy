@@ -4,3 +4,6 @@ parameters:
       host: 'https://dbc-123.cloud.databricks.com'
       token: 'abcd123456'
       clusterId: '0416-084917-doles835'
+    source:
+      notebooks:
+        baseDir: 'src/foobar'
