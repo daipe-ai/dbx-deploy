@@ -37,6 +37,13 @@ class NotebooksDeployer:
         self.__logger.info(f'All packages released, updating {self.__workspaceBaseDir}')
         self.__currentDirectoryUpdater.update(notebooks, self.__workspaceBaseDir, packagePath, dependenciesDir)
 
+    def deployOnlyMasterPackageNotebook(self, packageMetadata: PackageMetadata, notebook: Notebook):
+        packagePath = self.__targetPathsResolver.getPackageUploadPathForDeploy(packageMetadata)
+        dependenciesDir = self.__targetPathsResolver.getDependenciesUploadDirForDeploy(packageMetadata)
+
+        self.__logger.info(f'All packages released, updating {self.__workspaceBaseDir}')
+        self.__currentDirectoryUpdater.updateOnlyMasterPackageNotebook(notebook, self.__workspaceBaseDir, packagePath, dependenciesDir)
+
     def release(self, packageMetadata: PackageMetadata, notebooks: List[Notebook]):
         packagePath = self.__targetPathsResolver.getPackageUploadPathForRelease(packageMetadata)
         dependenciesDir = self.__targetPathsResolver.getDependenciesUploadDirForRelease(packageMetadata)
