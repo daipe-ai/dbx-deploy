@@ -21,3 +21,8 @@ class CurrentAndReleaseDeployer:
         notebooks = self.__notebooksLocator.locate()
 
         self.__notebooksDeployer.release(packageMetadata, notebooks)
+
+    def deployOnlyMasterPackageNotebook(self, packageMetadata: PackageMetadata):
+        masterPackageNotebook = self.__notebooksLocator.locateMasterPackageNotebook()
+
+        self.__notebooksDeployer.deployOnlyMasterPackageNotebook(packageMetadata, masterPackageNotebook)

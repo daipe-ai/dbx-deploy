@@ -46,6 +46,9 @@ class CurrentDirectoryUpdater:
 
         self.__updateNotebooks(currentReleasePath, notebooks, packagePath, dependenciesDirPath)
 
+    def updateOnlyMasterPackageNotebook(self, notebook: Notebook, currentReleasePath: PurePosixPath, packagePath: str, dependenciesDirPath: str):
+        self.__updateNotebooks(currentReleasePath, [notebook], packagePath, dependenciesDirPath)
+
     def __removeMissingNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook]):
         existingNotebooksFullPaths = self.__resolveExistingNotebooksPaths(currentReleasePath)
 

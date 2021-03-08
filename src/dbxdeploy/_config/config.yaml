@@ -12,6 +12,7 @@ parameters:
         baseDir: 'src/%bricksflow.rootModule.name%'
         patterns: ['**/*.py']
         consumersPatterns: ['**/*.consumer.py']
+        masterPackageNotebookPath: '%dbxdeploy.source.notebooks.baseDir%/app/install_master_package.py'
     target:
       storage: 'dbfs' # dbfs or s3
       workspace:
@@ -277,6 +278,7 @@ services:
       - '%dbxdeploy.source.notebooks.baseDir%'
       - '%dbxdeploy.source.notebooks.patterns%'
       - '%dbxdeploy.source.notebooks.consumersPatterns%'
+      - '%dbxdeploy.source.notebooks.masterPackageNotebookPath%'
 
   dbxdeploy.notebook.RelativePathResolver:
     arguments:
