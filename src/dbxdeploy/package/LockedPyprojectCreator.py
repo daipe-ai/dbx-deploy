@@ -28,7 +28,7 @@ class LockedPyprojectCreator:
         return toml_doc
 
     def __load_main_dependencies(self, base_path: Path) -> list:
-        requirements = self.__requirements_creator.export_to_string(base_path).splitlines()
+        requirements = self.__requirements_creator.export_to_string(base_path, only_dependencies=True).splitlines()
 
         return list(map(self.__requirements_line_converter.parse, requirements))
 
