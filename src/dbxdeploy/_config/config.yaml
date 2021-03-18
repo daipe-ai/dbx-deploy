@@ -148,6 +148,10 @@ services:
       - '%dbxdeploy.target.package.base_dir%'
       - '%dbxdeploy.target.package.offline_install%'
 
+  dbxdeploy.package.PackageIndexResolver:
+    arguments:
+      - '@dbxdeploy.deploy.working_dir'
+
   dbxdeploy.package.RequirementsCreator:
 
   dbxdeploy.package.RequirementsLineConverter:

@@ -36,13 +36,13 @@ class CommandConverterTest(unittest.TestCase):
 
     def test_install_master_package_whl(self):
         self.__test_command(
-            "%pip install /dbfs/FileStore/jars/myproject/2020-03-21_08-56-14_fhpxgwblvi/myproject-1.0-py3-none-any.whl",
+            "# %install_master_package_whl\nimport IPython, os\nIPython.get_ipython().run_line_magic('pip', f'install /dbfs/FileStore/jars/myproject/2020-03-21_08-56-14_fhpxgwblvi/myproject-1.0-py3-none-any.whl')",
             "# MAGIC %install_master_package_whl",
         )
 
     def test_install_master_package_whl_with_title(self):
         self.__test_command(
-            "%pip install /dbfs/FileStore/jars/myproject/2020-03-21_08-56-14_fhpxgwblvi/myproject-1.0-py3-none-any.whl",
+            "# %install_master_package_whl\nimport IPython, os\nIPython.get_ipython().run_line_magic('pip', f'install /dbfs/FileStore/jars/myproject/2020-03-21_08-56-14_fhpxgwblvi/myproject-1.0-py3-none-any.whl')",
             "# DBTITLE 0,My Command Title\n# MAGIC %install_master_package_whl",
             showCommandTitle=False,
             commandTitle="My Command Title",
