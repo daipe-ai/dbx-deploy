@@ -14,7 +14,7 @@ parameters:
         consumersPatterns: ['**/*.consumer.py']
         masterPackageNotebookPath: '%dbxdeploy.source.notebooks.baseDir%/app/install_master_package.py'
     target:
-      storage: 'dbfs' # dbfs or s3
+      storage: 'dbfs'
       workspace:
         baseDir: '/{currentBranch}'
         releasePath: '%dbxdeploy.target.workspace.baseDir%/{currentTime}_{randomString}'
@@ -26,9 +26,6 @@ parameters:
         dependenciesDeployPath: '%dbxdeploy.target.package.baseDir%/{packageName}/dependencies/{packageFilename}'
         dependenciesReleasePath: '%dbxdeploy.target.package.releasePath%'
         offlineInstall: False
-      s3:
-        awsAccessKeyId:
-        awsSecretAccessKey:
     export:
       forceEndFileNewline: False
 
@@ -291,13 +288,6 @@ services:
   dbxdeploy.notebook.converter.CellsExtractor:
 
   dbxdeploy.notebook.converter.DatabricksNotebookConverter:
-
-  dbxdeploy.s3.S3FileUploader:
-    arguments:
-      - '%dbxdeploy.target.s3.awsAccessKeyId%'
-      - '%dbxdeploy.target.s3.awsSecretAccessKey%'
-    tags:
-      - {name: 'dbxdeploy.package.uploader', alias: 's3'}
 
   dbxdeploy.poetry.PoetryPathResolver:
     arguments:
