@@ -2,7 +2,8 @@ import io
 import os
 import subprocess
 
-def runAndReadOutput(command: str, cwd: str = os.getcwd(), shell=False):
+
+def run_and_read_output(command: str, cwd: str = os.getcwd(), shell=False):
     proc = subprocess.Popen(command, cwd=cwd, stdout=subprocess.PIPE, shell=shell)
     output = io.TextIOWrapper(proc.stdout, encoding="utf-8").read().rstrip()
 
@@ -11,7 +12,8 @@ def runAndReadOutput(command: str, cwd: str = os.getcwd(), shell=False):
 
     return output
 
-def runShellCommand(command: str, cwd: str = os.getcwd(), shell=False):
+
+def run_shell_command(command: str, cwd: str = os.getcwd(), shell=False):
     proc = subprocess.Popen(command, cwd=cwd, shell=shell)
     proc.communicate()
 

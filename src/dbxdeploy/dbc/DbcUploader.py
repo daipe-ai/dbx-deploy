@@ -3,26 +3,23 @@ from pathlib import PurePosixPath
 from databricks_api import DatabricksAPI
 from requests.exceptions import HTTPError
 
+
 class DbcUploader:
+    def __init__(self, dbx_api: DatabricksAPI):
+        self.__dbx_api = dbx_api
 
-    def __init__(
-        self,
-        dbxApi: DatabricksAPI
-    ):
-        self.__dbxApi = dbxApi
-
-    def upload(self, dbcContent: bytes, releasePath: PurePosixPath):
-        contentToUpload = b64encode(dbcContent).decode()
+    def upload(self, dbc_content: bytes, release_path: PurePosixPath):
+        content_to_upload = b64encode(dbc_content).decode()
 
         try:
-            self.__performUpload(contentToUpload, releasePath)
+            self.__perform_upload(content_to_upload, release_path)
         except HTTPError:
-            self.__dbxApi.workspace.mkdirs(str(releasePath.parent))
-            self.__performUpload(contentToUpload, releasePath)
+            self.__dbx_api.workspace.mkdirs(str(release_path.parent))
+            self.__perform_upload(content_to_upload, release_path)
 
-    def __performUpload(self, contentToUpload, releasePath: PurePosixPath):
-        self.__dbxApi.workspace.import_workspace(
-            str(releasePath),
-            format='DBC',
-            content=contentToUpload,
+    def __perform_upload(self, content_to_upload, release_path: PurePosixPath):
+        self.__dbx_api.workspace.import_workspace(
+            str(release_path),
+            format="DBC",
+            content=content_to_upload,
         )

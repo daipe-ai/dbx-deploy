@@ -1,110 +1,113 @@
-# pylint: disable = too-many-instance-attributes
 import re
 from logging import Logger
 from typing import List
 from zipfile import ZipInfo, ZipFile
 from databricks_api import DatabricksAPI
 from pathlib import PurePosixPath
-from pygit2 import GitError # pylint: disable = no-name-in-module
+from pygit2 import GitError
 from dbxdeploy.git.CurrentBranchResolver import CurrentBranchResolver
 from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
-from dbxdeploy.notebook.loader import loadNotebook
+from dbxdeploy.notebook.loader import load_notebook
 from dbxdeploy.workspace.DbcFilesHandler import DbcFilesHandler
 from dbxdeploy.workspace.WorkspaceExportException import WorkspaceExportException
 from dbxdeploy.workspace.WorkspaceImporter import WorkspaceImporter
 from dbxdeploy.workspace.WorkspaceExporter import WorkspaceExporter
 from dbxdeploy.notebook.Notebook import Notebook
 
-class CurrentDirectoryUpdater:
 
+class CurrentDirectoryUpdater:
     def __init__(
         self,
-        workspaceBaseDir: PurePosixPath,
-        gitDevBranch: str,
+        workspace_base_dir: PurePosixPath,
+        git_dev_branch: str,
         logger: Logger,
-        dbxApi: DatabricksAPI,
-        workspaceExporter: WorkspaceExporter,
-        dbcFilesHandler: DbcFilesHandler,
-        workspaceImporter: WorkspaceImporter,
-        databricksNotebookConverter: DatabricksNotebookConverter,
-        currentBranchResolver: CurrentBranchResolver,
+        dbx_api: DatabricksAPI,
+        workspace_exporter: WorkspaceExporter,
+        dbc_files_handler: DbcFilesHandler,
+        workspace_importer: WorkspaceImporter,
+        databricks_notebook_converter: DatabricksNotebookConverter,
+        current_branch_resolver: CurrentBranchResolver,
     ):
-        self.__workspaceBaseDir = workspaceBaseDir
-        self.__gitDevBranch = gitDevBranch
+        self.__workspace_base_dir = workspace_base_dir
+        self.__git_dev_branch = git_dev_branch
         self.__logger = logger
-        self.__dbxApi = dbxApi
-        self.__workspaceExporter = workspaceExporter
-        self.__dbcFilesHandler = dbcFilesHandler
-        self.__workspaceImporter = workspaceImporter
-        self.__databricksNotebookConverter = databricksNotebookConverter
-        self.__currentBranchResolver = currentBranchResolver
+        self.__dbx_api = dbx_api
+        self.__workspace_exporter = workspace_exporter
+        self.__dbc_files_handler = dbc_files_handler
+        self.__workspace_importer = workspace_importer
+        self.__databricks_notebook_converter = databricks_notebook_converter
+        self.__current_branch_resolver = current_branch_resolver
 
-    def update(self, notebooks: List[Notebook], currentReleasePath: PurePosixPath, packagePath: str, dependenciesDirPath: str):
-        if self.__shouldRemoveMissingNotebooks():
-            self.__removeMissingNotebooks(currentReleasePath, notebooks)
+    def update(self, notebooks: List[Notebook], current_release_path: PurePosixPath, package_path: str, dependencies_dir_path: str):
+        if self.__should_remove_missing_notebooks():
+            self.__remove_missing_notebooks(current_release_path, notebooks)
 
-        self.__updateNotebooks(currentReleasePath, notebooks, packagePath, dependenciesDirPath)
+        self.__update_notebooks(current_release_path, notebooks, package_path, dependencies_dir_path)
 
-    def updateOnlyMasterPackageNotebook(self, notebook: Notebook, currentReleasePath: PurePosixPath, packagePath: str, dependenciesDirPath: str):
-        self.__updateNotebooks(currentReleasePath, [notebook], packagePath, dependenciesDirPath)
+    def update_only_master_package_notebook(
+        self, notebook: Notebook, current_release_path: PurePosixPath, package_path: str, dependencies_dir_path: str
+    ):
+        self.__update_notebooks(current_release_path, [notebook], package_path, dependencies_dir_path)
 
-    def __removeMissingNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook]):
-        existingNotebooksFullPaths = self.__resolveExistingNotebooksPaths(currentReleasePath)
+    def __remove_missing_notebooks(self, current_release_path: PurePosixPath, notebooks: List[Notebook]):
+        existing_notebooks_full_paths = self.__resolve_existing_notebooks_paths(current_release_path)
 
-        existingNotebooks = set(map(lambda path: re.sub(r'\.python$', '', path), existingNotebooksFullPaths))
-        newNotebooks = set(map(lambda notebook: str(notebook.databricksRelativePath), notebooks))
+        existing_notebooks = set(map(lambda path: re.sub(r"\.python$", "", path), existing_notebooks_full_paths))
+        new_notebooks = set(map(lambda notebook: str(notebook.databricks_relative_path), notebooks))
 
-        for notebookToDelete in existingNotebooks - newNotebooks:
-            fullNotebookPath = self.__workspaceBaseDir.joinpath(notebookToDelete)
-            self.__logger.warning('Removing deleted/missing notebook {}'.format(fullNotebookPath))
-            self.__dbxApi.workspace.delete(str(fullNotebookPath))
+        for notebook_to_delete in existing_notebooks - new_notebooks:
+            full_notebook_path = self.__workspace_base_dir.joinpath(notebook_to_delete)
+            self.__logger.warning("Removing deleted/missing notebook {}".format(full_notebook_path))
+            self.__dbx_api.workspace.delete(str(full_notebook_path))
 
-    def __updateNotebooks(self, currentReleasePath: PurePosixPath, notebooks: List[Notebook], packagePath: str, dependenciesDirPath: str):
+    def __update_notebooks(
+        self, current_release_path: PurePosixPath, notebooks: List[Notebook], package_path: str, dependencies_dir_path: str
+    ):
         for notebook in notebooks:
-            targetPath = currentReleasePath.joinpath(notebook.databricksRelativePath)
-            source = loadNotebook(notebook.path)
+            target_path = current_release_path.joinpath(notebook.databricks_relative_path)
+            source = load_notebook(notebook.path)
 
             try:
-                self.__databricksNotebookConverter.validateSource(source)
+                self.__databricks_notebook_converter.validate_source(source)
             except UnexpectedSourceException:
-                self.__logger.debug(f'Skipping unrecognized file {notebook.relativePath}')
+                self.__logger.debug(f"Skipping unrecognized file {notebook.relative_path}")
                 continue
 
-            script = self.__databricksNotebookConverter.toWorkspaceImportNotebook(source, packagePath, dependenciesDirPath)
+            script = self.__databricks_notebook_converter.to_workspace_import_notebook(source, package_path, dependencies_dir_path)
 
-            self.__logger.info('Updating {}'.format(targetPath))
-            self.__workspaceImporter.overwriteScript(script, targetPath)
+            self.__logger.info("Updating {}".format(target_path))
+            self.__workspace_importer.overwrite_script(script, target_path)
 
-    def __shouldRemoveMissingNotebooks(self):
+    def __should_remove_missing_notebooks(self):
         try:
-            currentGitBranch = self.__currentBranchResolver.resolve()
+            current_git_branch = self.__current_branch_resolver.resolve()
         except GitError:
             return False
 
-        return currentGitBranch == self.__gitDevBranch
+        return current_git_branch == self.__git_dev_branch
 
-    def __resolveExistingNotebooksPaths(self, currentReleasePath: PurePosixPath):
-        fileNames = []
+    def __resolve_existing_notebooks_paths(self, current_release_path: PurePosixPath):
+        file_names = []
 
-        def resolveFilenames(zipFile: ZipFile, file: ZipInfo): # pylint: disable = unused-argument
-            if file.orig_filename[-1:] == '/':
+        def resolve_filenames(zip_file: ZipFile, file: ZipInfo):
+            if file.orig_filename[-1:] == "/":
                 return
 
             """
             _current/myproject/foo/bar.python -> myproject/foo/bar.python (dbx:release)
             mybranch/myproject/foo/bar.python -> myproject/foo/bar.python (dbx:deploy)
             """
-            filePathWithoutRootdir = file.orig_filename[file.orig_filename.index('/') + 1:]
+            file_path_without_rootdir = file.orig_filename[file.orig_filename.index("/") + 1 :]  # noqa: 5203
 
-            fileNames.append(filePathWithoutRootdir)
+            file_names.append(file_path_without_rootdir)
 
         try:
-            dbcContent = self.__workspaceExporter.export(currentReleasePath)
+            dbc_content = self.__workspace_exporter.export(current_release_path)
         except WorkspaceExportException:
-            self.__logger.error('Unable to compare new notebooks to the existing ones in workspace')
+            self.__logger.error("Unable to compare new notebooks to the existing ones in workspace")
             return []
 
-        self.__dbcFilesHandler.handle(dbcContent, resolveFilenames)
+        self.__dbc_files_handler.handle(dbc_content, resolve_filenames)
 
-        return fileNames
+        return file_names

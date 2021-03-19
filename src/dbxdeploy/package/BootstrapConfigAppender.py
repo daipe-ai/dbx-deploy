@@ -1,26 +1,28 @@
 import json
 import zipfile
 from pyfonycore import pyproject
-from pyfonycore.bootstrap.config.raw import rawConfigReader
+from pyfonycore.bootstrap.config.raw import raw_config_reader
 from pathlib import Path
 
+
 class BootstrapConfigAppender:
+    def append(self, package_path: Path):
+        package_file_name = package_path.stem
+        package_file_name_parts = package_file_name.split("-")
+        package_file_name = package_file_name_parts[0].replace(
+            "__", "_"
+        )  # __myproject__ needs to be converted to _myproject_ for some reason
 
-    def append(self, packagePath: Path):
-        packageFileName = packagePath.stem
-        packageFileNameParts = packageFileName.split('-')
-        packageFileName = packageFileNameParts[0].replace('__', '_') # __myproject__ needs to be converted to _myproject_ for some reason
+        dist_info_dir = f"{package_file_name}-{package_file_name_parts[1]}.dist-info"
 
-        distInfoDir = f'{packageFileName}-{packageFileNameParts[1]}.dist-info'
+        zip_file = zipfile.ZipFile(package_path, "a")
+        zip_file.writestr(dist_info_dir + "/entry_points.txt", self.__prepare_entry_points())
+        zip_file.writestr(dist_info_dir + "/bootstrap_config.json", self.__prepare_bootstrap_config())
+        zip_file.close()
 
-        zipFile = zipfile.ZipFile(packagePath, 'a')
-        zipFile.writestr(distInfoDir + '/entry_points.txt', self.__prepareEntryPoints())
-        zipFile.writestr(distInfoDir + '/bootstrap_config.json', self.__prepareBootstrapConfig())
-        zipFile.close()
+    def __prepare_entry_points(self):
+        return "[pyfony.bootstrap]\nfoo=bar\n"
 
-    def __prepareEntryPoints(self):
-        return '[pyfony.bootstrap]\nfoo=bar\n'
-
-    def __prepareBootstrapConfig(self):
-        bootstrapConfig = rawConfigReader.read(pyproject.getPath())
-        return json.dumps(bootstrapConfig)
+    def __prepare_bootstrap_config(self):
+        bootstrap_config = raw_config_reader.read(pyproject.get_path())
+        return json.dumps(bootstrap_config)

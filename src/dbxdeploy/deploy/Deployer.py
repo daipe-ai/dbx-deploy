@@ -4,27 +4,27 @@ from dbxdeploy.package.PackageDeployer import PackageDeployer
 from pathlib import Path
 import asyncio
 
-class Deployer:
 
+class Deployer:
     def __init__(
         self,
-        projectBaseDir: Path,
-        packageMetadataLoader: PackageMetadataLoader,
-        currentAndReleaseDeployer: CurrentAndReleaseDeployer,
-        packageDeployer: PackageDeployer,
+        project_base_dir: Path,
+        package_metadata_loader: PackageMetadataLoader,
+        current_and_release_deployer: CurrentAndReleaseDeployer,
+        package_deployer: PackageDeployer,
     ):
-        self.__projectBaseDir = projectBaseDir
-        self.__packageMetadataLoader = packageMetadataLoader
-        self.__currentAndReleaseDeployer = currentAndReleaseDeployer
-        self.__packageDeployer = packageDeployer
+        self.__project_base_dir = project_base_dir
+        self.__package_metadata_loader = package_metadata_loader
+        self.__current_and_release_deployer = current_and_release_deployer
+        self.__package_deployer = package_deployer
 
     async def deploy(self):
-        packageMetadata = self.__packageMetadataLoader.load(self.__projectBaseDir)
+        package_metadata = self.__package_metadata_loader.load(self.__project_base_dir)
 
         loop = asyncio.get_event_loop()
 
-        packageDeployFuture = loop.run_in_executor(None, self.__packageDeployer.deploy, packageMetadata)
-        dbcDeployFuture = loop.run_in_executor(None, self.__currentAndReleaseDeployer.deploy, packageMetadata)
+        package_deploy_future = loop.run_in_executor(None, self.__package_deployer.deploy, package_metadata)
+        dbc_deploy_future = loop.run_in_executor(None, self.__current_and_release_deployer.deploy, package_metadata)
 
-        await packageDeployFuture
-        await dbcDeployFuture
+        await package_deploy_future
+        await dbc_deploy_future

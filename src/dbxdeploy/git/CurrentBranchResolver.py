@@ -1,12 +1,12 @@
 from dbxdeploy.git.CurrentRepositoryFactory import CurrentRepositoryFactory
 
-class CurrentBranchResolver:
 
+class CurrentBranchResolver:
     def __init__(
         self,
-        currentRepositoryFactory: CurrentRepositoryFactory,
+        current_repository_factory: CurrentRepositoryFactory,
     ):
-        self.__currentRepositoryFactory = currentRepositoryFactory
+        self.__current_repository_factory = current_repository_factory
 
     def resolve(self) -> str:
-        return self.__currentRepositoryFactory.create().head.shorthand
+        return self.__current_repository_factory.create().head.shorthand

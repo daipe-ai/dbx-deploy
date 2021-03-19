@@ -1,31 +1,31 @@
 import re
 
-class PackageInstaller:
 
+class PackageInstaller:
     def __init__(
         self,
-        packageBaseDir: str,
-        offlineInstall: bool,
+        package_base_dir: str,
+        offline_install: bool,
     ):
-        self.__packageBaseDir = packageBaseDir
-        self.__offlineInstall = offlineInstall
+        self.__package_base_dir = package_base_dir
+        self.__offline_install = offline_install
 
-    def getPackageInstallCommand(self, packageFilePath: str, dependenciesDirPath: str):
-        if self.__offlineInstall:
-            return self.__getOfflineInstallCommand(packageFilePath, dependenciesDirPath)
+    def get_package_install_command(self, package_file_path: str, dependencies_dir_path: str):
+        if self.__offline_install:
+            return self.__get_offline_install_command(package_file_path, dependencies_dir_path)
 
-        return self.__getOnlineInstallCommand(packageFilePath)
+        return self.__get_online_install_command(package_file_path)
 
-    def isPackageInstallCommand(self, commandCode: str):
-        regExp = '^' + re.escape(f'%pip install {self.__modifyDbfs(self.__packageBaseDir)}') + '.+-py3-none-any.whl'
+    def is_package_install_command(self, command_code: str):
+        reg_exp = "^" + re.escape(f"%pip install {self.__modify_dbfs(self.__package_base_dir)}") + ".+-py3-none-any.whl"
 
-        return re.match(regExp, commandCode) is not None
+        return re.match(reg_exp, command_code) is not None
 
-    def __modifyDbfs(self, path: str):
-        return '/dbfs/' + path.lstrip('dbfs:/')
+    def __modify_dbfs(self, path: str):
+        return "/dbfs/" + path.lstrip("dbfs:/")
 
-    def __getOnlineInstallCommand(self, packageFilePath: str):
-        return f'%pip install {self.__modifyDbfs(packageFilePath)}'
+    def __get_online_install_command(self, package_file_path: str):
+        return f"%pip install {self.__modify_dbfs(package_file_path)}"
 
-    def __getOfflineInstallCommand(self, packageFilePath: str, dependenciesDirPath: str):
-        return f'%pip install {self.__modifyDbfs(packageFilePath)} --no-index --find-links {self.__modifyDbfs(dependenciesDirPath)}'
+    def __get_offline_install_command(self, package_file_path: str, dependencies_dir_path: str):
+        return f"%pip install {self.__modify_dbfs(package_file_path)} --no-index --find-links {self.__modify_dbfs(dependencies_dir_path)}"

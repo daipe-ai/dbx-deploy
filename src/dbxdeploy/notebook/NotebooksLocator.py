@@ -3,58 +3,52 @@ from typing import List
 from dbxdeploy.notebook.Notebook import Notebook
 from dbxdeploy.notebook.RelativePathResolver import RelativePathResolver
 
-class NotebooksLocator:
 
+class NotebooksLocator:
     def __init__(
         self,
-        projectBaseDir: Path,
-        relativeBaseDir: str,
-        pathsPatterns: list,
-        consumerPathsPatterns: list,
-        masterPackageNotebookPath: str,
-        relativePathResolver: RelativePathResolver,
+        project_base_dir: Path,
+        relative_base_dir: str,
+        paths_patterns: list,
+        consumer_paths_patterns: list,
+        master_package_notebook_path: str,
+        relative_path_resolver: RelativePathResolver,
     ):
-        self.__projectBaseDir = projectBaseDir
-        self.__relativeBaseDir = relativeBaseDir
-        self.__pathsPatterns = pathsPatterns
-        self.__consumerPathsPatterns = consumerPathsPatterns
-        self.__masterPackageNotebookPath = masterPackageNotebookPath
-        self.__relativePathResolver = relativePathResolver
+        self.__project_base_dir = project_base_dir
+        self.__relative_base_dir = relative_base_dir
+        self.__paths_patterns = paths_patterns
+        self.__consumer_paths_patterns = consumer_paths_patterns
+        self.__master_package_notebook_path = master_package_notebook_path
+        self.__relative_path_resolver = relative_path_resolver
 
     def locate(self) -> List[Notebook]:
-        return self.__locate(self.__pathsPatterns)
+        return self.__locate(self.__paths_patterns)
 
-    def locateConsumers(self):
-        return self.__locate(self.__consumerPathsPatterns)
+    def locate_consumers(self):
+        return self.__locate(self.__consumer_paths_patterns)
 
-    def locateMasterPackageNotebook(self) -> Notebook:
-        notebookPath = self.__projectBaseDir.joinpath(self.__masterPackageNotebookPath)
-        purePosixPath = PurePosixPath(notebookPath.relative_to(self.__projectBaseDir).as_posix())
+    def locate_master_package_notebook(self) -> Notebook:
+        notebook_path = self.__project_base_dir.joinpath(self.__master_package_notebook_path)
+        pure_posix_path = PurePosixPath(notebook_path.relative_to(self.__project_base_dir).as_posix())
 
-        if not notebookPath.is_file():
-            raise Exception(f'Notebook at {notebookPath} not found')
+        if not notebook_path.is_file():
+            raise Exception(f"Notebook at {notebook_path} not found")
 
         return Notebook(
-            notebookPath,
-            notebookPath.relative_to(self.__projectBaseDir),
-            self.__relativePathResolver.resolve(purePosixPath)
+            notebook_path, notebook_path.relative_to(self.__project_base_dir), self.__relative_path_resolver.resolve(pure_posix_path)
         )
 
-    def __locate(self, pathsPatterns: list):
-        def createNotebook(path: Path):
-            purePosixPath = PurePosixPath(path.relative_to(self.__projectBaseDir).as_posix())
+    def __locate(self, paths_patterns: list):
+        def create_notebook(path: Path):
+            pure_posix_path = PurePosixPath(path.relative_to(self.__project_base_dir).as_posix())
 
-            return Notebook(
-                path,
-                path.relative_to(self.__projectBaseDir),
-                self.__relativePathResolver.resolve(purePosixPath)
-            )
+            return Notebook(path, path.relative_to(self.__project_base_dir), self.__relative_path_resolver.resolve(pure_posix_path))
 
-        baseDir = self.__projectBaseDir.joinpath(self.__relativeBaseDir)
+        base_dir = self.__project_base_dir.joinpath(self.__relative_base_dir)
 
-        filesGrabbed = []
+        files_grabbed = []
 
-        for pathPattern in pathsPatterns:
-            filesGrabbed.extend(baseDir.glob(pathPattern))
+        for path_pattern in paths_patterns:
+            files_grabbed.extend(base_dir.glob(path_pattern))
 
-        return list(map(createNotebook, filesGrabbed)) # pylint: disable = cell-var-from-loop
+        return list(map(create_notebook, files_grabbed))

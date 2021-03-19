@@ -1,20 +1,21 @@
 import os
 from pathlib import Path
 
-def deleteDirectoryContentRecursive(dirPath: Path):
-    if dirPath.is_dir():
-        fileList = []
-        dirList = []
 
-        for root, dirs, files in os.walk(dirPath):
+def delete_directory_content_recursive(dir_path: Path):
+    if dir_path.is_dir():
+        file_list = []
+        dir_list = []
+
+        for root, dirs, files in os.walk(dir_path):
             for f in files:
-                fileList.append(os.path.join(root, f))
+                file_list.append(os.path.join(root, f))
 
             for d in dirs:
-                dirList.append(os.path.join(root, d))
+                dir_list.append(os.path.join(root, d))
 
-        for f in fileList:
+        for f in file_list:
             os.unlink(f)
 
-        for d in dirList:
+        for d in dir_list:
             os.rmdir(d)

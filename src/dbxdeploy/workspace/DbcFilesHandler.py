@@ -1,16 +1,16 @@
 from io import BytesIO
 import zipfile
 
+
 class DbcFilesHandler:
-
-    def handle(self, dbcContent: bytes, callback: callable):
+    def handle(self, dbc_content: bytes, callback: callable):
         buffer = BytesIO()
-        buffer.write(dbcContent)
+        buffer.write(dbc_content)
 
-        zipFile = zipfile.ZipFile(buffer, 'r', zipfile.ZIP_DEFLATED)
+        zip_file = zipfile.ZipFile(buffer, "r", zipfile.ZIP_DEFLATED)
 
-        for file in zipFile.filelist:
-            callback(zipFile, file)
+        for file in zip_file.filelist:
+            callback(zip_file, file)
 
-        zipFile.close()
+        zip_file.close()
         buffer.seek(0)

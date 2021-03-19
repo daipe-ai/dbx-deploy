@@ -3,20 +3,17 @@ from databricks_api import DatabricksAPI
 from dbxdeploy.package.PackageUploaderInterface import PackageUploaderInterface
 from requests.exceptions import HTTPError
 
+
 class DbfsFileUploader(PackageUploaderInterface):
+    def __init__(self, dbx_api: DatabricksAPI):
+        self.__dbx_api = dbx_api
 
-    def __init__(
-        self,
-        dbxApi: DatabricksAPI
-    ):
-        self.__dbxApi = dbxApi
+    def upload(self, content: bytes, file_path: str, overwrite: bool = False):
+        self.__streaming_upload(content, file_path, overwrite)
 
-    def upload(self, content: bytes, filePath: str, overwrite: bool = False):
-        self.__streamingUpload(content, filePath, overwrite)
-
-    def exists(self, filePath: str):
+    def exists(self, file_path: str):
         try:
-            self.__dbxApi.dbfs.get_status(filePath)
+            self.__dbx_api.dbfs.get_status(file_path)
 
         except HTTPError as ex:
             if ex.response.status_code != 404:
@@ -26,19 +23,19 @@ class DbfsFileUploader(PackageUploaderInterface):
 
         return True
 
-    def __streamingUpload(self, content: bytes, filePath: str, overwrite: bool = False):
-        response = self.__dbxApi.dbfs.create(filePath, overwrite=overwrite)
-        handle = response['handle']
+    def __streaming_upload(self, content: bytes, file_path: str, overwrite: bool = False):
+        response = self.__dbx_api.dbfs.create(file_path, overwrite=overwrite)
+        handle = response["handle"]
 
-        chunkSize = int(0.5 * 1024 * 1024) # 0.5MiB
+        chunk_size = int(0.5 * 1024 * 1024)  # 0.5MiB
 
-        for chunk in self.__chunked(content, chunkSize):
-            chunkEncoded = b64encode(chunk).decode()
+        for chunk in self.__chunked(content, chunk_size):
+            chunk_encoded = b64encode(chunk).decode()
 
-            self.__dbxApi.dbfs.add_block(handle, chunkEncoded)
+            self.__dbx_api.dbfs.add_block(handle, chunk_encoded)
 
-        self.__dbxApi.dbfs.close(handle)
+        self.__dbx_api.dbfs.close(handle)
 
     def __chunked(self, source, size):
         for i in range(0, len(source), size):
-            yield source[i:i+size]
+            yield source[i : i + size]  # noqa: 5203

@@ -4,25 +4,27 @@ from dbxdeploy.package.PackageMetadata import PackageMetadata
 from databricks_api import DatabricksAPI
 from logging import Logger
 
-class NotebookKiller:
 
+class NotebookKiller:
     def __init__(
         self,
         logger: Logger,
-        dbxApi: DatabricksAPI,
-        runsGetter: RunsGetter,
+        dbx_api: DatabricksAPI,
+        runs_getter: RunsGetter,
     ):
         self.__logger = logger
-        self.__dbxApi = dbxApi
-        self.__runsGetter = runsGetter
+        self.__dbx_api = dbx_api
+        self.__runs_getter = runs_getter
 
-    def killIfRunning(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
-        self.__logger.info('Looking for jobs running the {} notebook'.format(notebookPath))
-        previousNotebookRuns = self.__runsGetter.get(notebookPath, packageMetadata)
+    def kill_if_running(self, notebook_path: PurePosixPath, package_metadata: PackageMetadata):
+        self.__logger.info("Looking for jobs running the {} notebook".format(notebook_path))
+        previous_notebook_runs = self.__runs_getter.get(notebook_path, package_metadata)
 
-        if previousNotebookRuns:
-            for runningJob in previousNotebookRuns:
-                self.__logger.warning('Killing JOB #{} for {}'.format(str(runningJob['run_id']), runningJob['task']['notebook_task']['notebook_path']))
-                self.__dbxApi.jobs.cancel_run(runningJob['run_id'])
+        if previous_notebook_runs:
+            for running_job in previous_notebook_runs:
+                self.__logger.warning(
+                    "Killing JOB #{} for {}".format(str(running_job["run_id"]), running_job["task"]["notebook_task"]["notebook_path"])
+                )
+                self.__dbx_api.jobs.cancel_run(running_job["run_id"])
         else:
-            self.__logger.info('notebook {} is not running in any job'.format(notebookPath))
+            self.__logger.info("notebook {} is not running in any job".format(notebook_path))

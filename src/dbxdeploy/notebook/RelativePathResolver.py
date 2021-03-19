@@ -1,12 +1,12 @@
 from pathlib import PurePosixPath
 
-class RelativePathResolver:
 
+class RelativePathResolver:
     def __init__(
         self,
-        baseDirPath: str,
+        base_dir_path: str,
     ):
-        self.__baseDirPath = baseDirPath
+        self.__base_dir_path = base_dir_path
 
-    def resolve(self, notebookPath: PurePosixPath):
-        return notebookPath.relative_to(self.__baseDirPath).with_suffix('')
+    def resolve(self, notebook_path: PurePosixPath):
+        return notebook_path.relative_to(self.__base_dir_path).with_suffix("")

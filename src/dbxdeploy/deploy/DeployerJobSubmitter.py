@@ -8,41 +8,41 @@ from dbxdeploy.job.JobSubmitter import JobSubmitter
 from pathlib import Path, PurePosixPath
 import asyncio
 
-class DeployerJobSubmitter:
 
+class DeployerJobSubmitter:
     def __init__(
         self,
-        projectBaseDir: Path,
-        packageMetadataLoader: PackageMetadataLoader,
-        notebookKiller: NotebookKiller,
-        notebooksDeployer: NotebooksDeployer,
-        packageDeployer: PackageDeployer,
-        jobSubmitter: JobSubmitter,
-        notebooksLocator: NotebooksLocator,
+        project_base_dir: Path,
+        package_metadata_loader: PackageMetadataLoader,
+        notebook_killer: NotebookKiller,
+        notebooks_deployer: NotebooksDeployer,
+        package_deployer: PackageDeployer,
+        job_submitter: JobSubmitter,
+        notebooks_locator: NotebooksLocator,
     ):
-        self.__projectBaseDir = projectBaseDir
-        self.__packageMetadataLoader = packageMetadataLoader
-        self.__notebookKiller = notebookKiller
-        self.__notebooksDeployer = notebooksDeployer
-        self.__packageDeployer = packageDeployer
-        self.__jobSubmitter = jobSubmitter
-        self.__notebooksLocator = notebooksLocator
+        self.__project_base_dir = project_base_dir
+        self.__package_metadata_loader = package_metadata_loader
+        self.__notebook_killer = notebook_killer
+        self.__notebooks_deployer = notebooks_deployer
+        self.__package_deployer = package_deployer
+        self.__job_submitter = job_submitter
+        self.__notebooks_locator = notebooks_locator
 
-    async def deployAndSubmitJob(self, notebookPath: PurePosixPath):
-        packageMetadata = self.__packageMetadataLoader.load(self.__projectBaseDir)
+    async def deploy_and_submit_job(self, notebook_path: PurePosixPath):
+        package_metadata = self.__package_metadata_loader.load(self.__project_base_dir)
 
-        def deployRoot(packageMetadata: PackageMetadata):
-            notebooks = self.__notebooksLocator.locate()
-            self.__notebooksDeployer.deploy(packageMetadata, notebooks)
+        def deploy_root(package_metadata: PackageMetadata):
+            notebooks = self.__notebooks_locator.locate()
+            self.__notebooks_deployer.deploy(package_metadata, notebooks)
 
         loop = asyncio.get_event_loop()
 
-        notebookKillerFuture = loop.run_in_executor(None, self.__notebookKiller.killIfRunning, notebookPath, packageMetadata)
-        packageDeployFuture = loop.run_in_executor(None, self.__packageDeployer.deploy, packageMetadata)
-        dbcDeployFuture = loop.run_in_executor(None, deployRoot, packageMetadata)
+        notebook_killer_future = loop.run_in_executor(None, self.__notebook_killer.kill_if_running, notebook_path, package_metadata)
+        package_deploy_future = loop.run_in_executor(None, self.__package_deployer.deploy, package_metadata)
+        dbc_deploy_future = loop.run_in_executor(None, deploy_root, package_metadata)
 
-        await notebookKillerFuture
-        await packageDeployFuture
-        await dbcDeployFuture
+        await notebook_killer_future
+        await package_deploy_future
+        await dbc_deploy_future
 
-        self.__jobSubmitter.submit(notebookPath, packageMetadata)
+        self.__job_submitter.submit(notebook_path, package_metadata)

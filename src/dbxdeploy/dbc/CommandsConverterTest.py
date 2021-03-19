@@ -1,60 +1,67 @@
 import unittest
-from pyfonycore.bootstrap import bootstrappedContainer
+from pyfonycore.bootstrap import bootstrapped_container
 from dbxdeploy.dbc.CommandConverter import CommandConverter
 from dbxdeploy.dbc.CommandsConverter import CommandsConverter
 from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
 
+
 class CommandsConverterTest(unittest.TestCase):
-
     def setUp(self):
-        container = bootstrappedContainer.init('test')
-        self.__commandConverter = container.get(CommandConverter) # type: CommandConverter
+        container = bootstrapped_container.init("test")
+        self.__command_converter = container.get(CommandConverter)  # type: CommandConverter
 
-    def test_forcedEndFileNewLine(self):
-        result = self.__createResult(True)
+    def test_forced_end_file_new_line(self):
+        result = self.__create_result(True, False)
 
-        self.__assertNotebook([
-            '# Databricks notebook source',
-            '# MAGIC %run /foo/bar',
-            '',
-            '# COMMAND ----------',
-            '',
-            'print("Hello world")',
-            '',
-        ], result)
-
-    def test_noForcedEndFileNewLine(self):
-        result = self.__createResult(False)
-
-        self.__assertNotebook([
-            '# Databricks notebook source',
-            '# MAGIC %run /foo/bar',
-            '',
-            '# COMMAND ----------',
-            '',
-            'print("Hello world")',
-        ], result)
-
-    def __createResult(self, forceEndFileNewLine: bool):
-        commandsConverter = CommandsConverter(forceEndFileNewLine, self.__commandConverter) # type: CommandsConverter
-
-        commands = [
-            {'command': 'print("Hello world")', 'position': 2, 'commandTitle': ''},
-            {'command': '%run /foo/bar', 'position': 1, 'commandTitle': ''},
-            {'command': '', 'position': 1.33, 'commandTitle': ''},
-            {'command': '', 'position': 1.66, 'commandTitle': ''}
-        ]
-
-        return commandsConverter.convert(
-            commands,
-            DatabricksNotebookConverter.firstLine,
-            DatabricksNotebookConverter.cellSeparator,
+        self.__assert_notebook(
+            [
+                "# Databricks notebook source",
+                "# MAGIC %run /foo/bar",
+                "",
+                "# COMMAND ----------",
+                "",
+                'print("Hello world")',
+                "",
+            ],
+            result,
         )
 
-    def __assertNotebook(self, expected: list, resultCode: str):
-        resultLines = resultCode.split('\n')
+    def test_no_forced_end_file_new_line(self):
+        result = self.__create_result(False, False)
 
-        self.assertEqual(expected, resultLines)
+        self.__assert_notebook(
+            [
+                "# Databricks notebook source",
+                "# MAGIC %run /foo/bar",
+                "",
+                "# COMMAND ----------",
+                "",
+                'print("Hello world")',
+            ],
+            result,
+        )
 
-if __name__ == '__main__':
+    def __create_result(self, force_end_file_newline: bool, black_enabled: bool):
+        commands_converter = CommandsConverter(force_end_file_newline, black_enabled, self.__command_converter)  # type: CommandsConverter
+
+        commands = [
+            {"command": 'print("Hello world")', "position": 2, "commandTitle": ""},
+            {"command": "%run /foo/bar", "position": 1, "commandTitle": ""},
+            {"command": "", "position": 1.33, "commandTitle": ""},
+            {"command": "", "position": 1.66, "commandTitle": ""},
+        ]
+
+        return commands_converter.convert(
+            commands,
+            DatabricksNotebookConverter.first_line,
+            DatabricksNotebookConverter.cell_separator,
+        )
+
+    def __assert_notebook(self, expected: list, result_code: str):
+        result_lines = result_code.split("\n")
+
+        self.assertEqual(expected, result_lines)
+
+
+if __name__ == "__main__":
     unittest.main()

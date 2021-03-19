@@ -1,19 +1,19 @@
 from dbxnotebookexporter.json.formatCellContent import formatCellContent
 import dbxnotebookexporter.json.JsonNotebookExporter as JsonNotebookExporterModule
-import nbconvert.templates.skeleton as nbConvertSkeleton
+import nbconvert.templates.skeleton as nb_convert_skeleton
 import jinja2
 import os
 
-class JinjaTemplateLoader:
 
+class JinjaTemplateLoader:
     def load(self):
-        basePaths = [
+        base_paths = [
             os.path.dirname(JsonNotebookExporterModule.__file__),
-            nbConvertSkeleton.__path__._path[0] # pylint: disable = no-member, protected-access
+            nb_convert_skeleton.__path__._path[0],
         ]
 
-        templateLoader = jinja2.FileSystemLoader(searchpath=basePaths)
-        templateEnv = jinja2.Environment(loader=templateLoader)
-        templateEnv.filters['formatCellContent'] = formatCellContent
+        template_loader = jinja2.FileSystemLoader(searchpath=base_paths)
+        template_env = jinja2.Environment(loader=template_loader)
+        template_env.filters["format_cell_content"] = formatCellContent
 
-        return templateEnv.get_template('json_notebook.tpl')
+        return template_env.get_template("json_notebook.tpl")

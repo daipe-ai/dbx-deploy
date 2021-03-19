@@ -7,53 +7,55 @@ from dbxdeploy.dbc.PathsPreparer import PathsPreparer
 from dbxdeploy.notebook.Notebook import Notebook
 from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
-from dbxdeploy.notebook.loader import loadNotebook
+from dbxdeploy.notebook.loader import load_notebook
+
 
 class DbcCreator:
-
     def __init__(
         self,
-        workingDirectory: Path,
+        working_directory: Path,
         logger: Logger,
-        pathsPreparer: PathsPreparer,
-        databricksNotebookConverter: DatabricksNotebookConverter,
+        paths_preparer: PathsPreparer,
+        databricks_notebook_converter: DatabricksNotebookConverter,
     ):
-        self.__workingDirectory = workingDirectory
+        self.__working_directory = working_directory
         self.__logger = logger
-        self.__pathsPreparer = pathsPreparer
-        self.__databricksNotebookConverter = databricksNotebookConverter
+        self.__paths_preparer = paths_preparer
+        self.__databricks_notebook_converter = databricks_notebook_converter
 
-    def create(self, notebooks: List[Notebook], packageFilePath: str, dependenciesDirPath: str) -> bytes:
-        databricksRelativePaths = list(map(lambda notebook: notebook.databricksRelativePath, notebooks))
-        rootIgnoredPathName = 'root_ignored_path'
+    def create(self, notebooks: List[Notebook], package_file_path: str, dependencies_dir_path: str) -> bytes:
+        databricks_relative_paths = list(map(lambda notebook: notebook.databricks_relative_path, notebooks))
+        root_ignored_path_name = "root_ignored_path"
 
-        inMemoryOutput = BytesIO()
+        in_memory_output = BytesIO()
 
-        zipFile = zipfile.ZipFile(inMemoryOutput, 'w', zipfile.ZIP_DEFLATED)
+        zip_file = zipfile.ZipFile(in_memory_output, "w", zipfile.ZIP_DEFLATED)
 
         # directories must be created first, otherwise DataBricks is not able to process that zip/dbc file
-        for dirPath in self.__pathsPreparer.prepare(databricksRelativePaths, rootIgnoredPathName):
-            zipFile.writestr(dirPath + '/', '')
+        for dir_path in self.__paths_preparer.prepare(databricks_relative_paths, root_ignored_path_name):
+            zip_file.writestr(dir_path + "/", "")
 
         for notebook in notebooks:
-            source = loadNotebook(notebook.path)
+            source = load_notebook(notebook.path)
 
             try:
-                self.__databricksNotebookConverter.validateSource(source)
+                self.__databricks_notebook_converter.validate_source(source)
             except UnexpectedSourceException:
-                self.__logger.debug(f'Skipping unrecognized file {notebook.relativePath}')
+                self.__logger.debug(f"Skipping unrecognized file {notebook.relative_path}")
                 continue
 
-            notebookSource = self.__databricksNotebookConverter.toDbcNotebook(notebook.path.stem, source, packageFilePath, dependenciesDirPath)
-            zipPath = PurePosixPath(rootIgnoredPathName).joinpath(notebook.databricksRelativePath).with_suffix('.python')
-            zipFile.writestr(str(zipPath), notebookSource)
+            notebook_source = self.__databricks_notebook_converter.to_dbc_notebook(
+                notebook.path.stem, source, package_file_path, dependencies_dir_path
+            )
+            zip_path = PurePosixPath(root_ignored_path_name).joinpath(notebook.databricks_relative_path).with_suffix(".python")
+            zip_file.writestr(str(zip_path), notebook_source)
 
-        zipFile.close()
-        inMemoryOutput.seek(0)
+        zip_file.close()
+        in_memory_output.seek(0)
 
-        zipContent = inMemoryOutput.getvalue()
+        zip_content = in_memory_output.getvalue()
 
-        with self.__workingDirectory.joinpath('dist/notebooks.dbc').open('wb') as f:
-            f.write(zipContent)
+        with self.__working_directory.joinpath("dist/notebooks.dbc").open("wb") as f:
+            f.write(zip_content)
 
-        return zipContent
+        return zip_content

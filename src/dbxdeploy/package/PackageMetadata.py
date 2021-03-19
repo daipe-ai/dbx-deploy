@@ -3,57 +3,57 @@ from datetime import datetime
 from pathlib import PurePosixPath
 from dbxdeploy.package.Dependency import Dependency
 
-class PackageMetadata:
 
+class PackageMetadata:
     def __init__(
         self,
-        packageName: str,
-        packageVersion: float,
-        dateTime: datetime,
-        randomString: str,
+        package_name: str,
+        package_version: str,
+        date_time: datetime,
+        random_string: str,
         dependencies: List[Dependency],
     ):
-        self.__packageName = packageName
-        self.__packageVersion = packageVersion
-        self.__dateTime = dateTime
-        self.__randomString = randomString
+        self.__package_name = package_name
+        self.__package_version = package_version
+        self.__date_time = date_time
+        self.__random_string = random_string
         self.__dependencies = dependencies
 
     @property
-    def packageName(self):
-        return self.__packageName
+    def package_name(self):
+        return self.__package_name
 
     @property
-    def packageVersion(self):
-        return self.__packageVersion
+    def package_version(self):
+        return self.__package_version
 
     @property
-    def dateTime(self):
-        return self.__dateTime
+    def date_time(self):
+        return self.__date_time
 
     @property
-    def randomString(self):
-        return self.__randomString
+    def random_string(self):
+        return self.__random_string
 
     @property
     def dependencies(self):
         return self.__dependencies
 
-    def getPackageFilename(self):
-        return '{}-{}-py3-none-any.whl'.format(self.__getPackageName(), self.__packageVersion)
+    def get_package_filename(self):
+        return "{}-{}-py3-none-any.whl".format(self.__get_package_name(), self.__package_version)
 
-    def getNotebookPathRegEx(self, workspaceBaseDir: PurePosixPath, notebookPath: PurePosixPath) -> str:
-        return '^' + str(workspaceBaseDir) + '/([^/]+)/' + str(notebookPath) + '$'
+    def get_notebook_path_reg_ex(self, workspace_base_dir: PurePosixPath, notebook_path: PurePosixPath) -> str:
+        return "^" + str(workspace_base_dir) + "/([^/]+)/" + str(notebook_path) + "$"
 
-    def getJobRunName(self) -> str:
-        return self.__dateTime.strftime('%Y-%m-%d_%H:%M:%S') + '_' + self.__randomString
+    def get_job_run_name(self) -> str:
+        return self.__date_time.strftime("%Y-%m-%d_%H:%M:%S") + "_" + self.__random_string
 
-    def getDependencyByName(self, dependencyName: str) -> Dependency:
+    def get_dependency_by_name(self, dependency_name: str) -> Dependency:
         for dependency in self.__dependencies:
-            if dependency.dependencyName == dependencyName:
+            if dependency.dependency_name == dependency_name:
                 return dependency
 
-        raise Exception(f'Dependency {dependencyName} not found')
+        raise Exception(f"Dependency {dependency_name} not found")
 
-    def __getPackageName(self):
-        return self.__packageName.replace('-', '_')
+    def __get_package_name(self):
+        return self.__package_name.replace("-", "_")

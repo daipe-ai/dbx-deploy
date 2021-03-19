@@ -7,27 +7,26 @@ from consolebundle.ConsoleCommand import ConsoleCommand
 
 
 class MasterPackageDeployer(ConsoleCommand):
-
     def __init__(
         self,
-        projectBaseDir: Path,
-        packageMetadataLoader: PackageMetadataLoader,
-        packageDeployer: PackageDeployer,
-        currentAndReleaseDeployer: CurrentAndReleaseDeployer,
+        project_base_dir: Path,
+        package_metadata_loader: PackageMetadataLoader,
+        package_deployer: PackageDeployer,
+        current_and_release_deployer: CurrentAndReleaseDeployer,
     ):
-        self.__projectBaseDir = projectBaseDir
-        self.__packageMetadataLoader = packageMetadataLoader
-        self.__packageDeployer = packageDeployer
-        self.__currentAndReleaseDeployer = currentAndReleaseDeployer
+        self.__project_base_dir = project_base_dir
+        self.__package_metadata_loader = package_metadata_loader
+        self.__package_deployer = package_deployer
+        self.__current_and_release_deployer = current_and_release_deployer
 
-    def getCommand(self) -> str:
-        return 'dbx:deploy-master-package'
+    def get_command(self) -> str:
+        return "dbx:deploy-master-package"
 
-    def getDescription(self):
-        return 'Deploy WHL to DBX'
+    def get_description(self):
+        return "Deploy WHL to DBX"
 
-    def run(self, inputArgs: Namespace):
-        packageMetadata = self.__packageMetadataLoader.load(self.__projectBaseDir)
+    def run(self, input_args: Namespace):
+        package_metadata = self.__package_metadata_loader.load(self.__project_base_dir)
 
-        self.__packageDeployer.deploy(packageMetadata)
-        self.__currentAndReleaseDeployer.deployOnlyMasterPackageNotebook(packageMetadata)
+        self.__package_deployer.deploy(package_metadata)
+        self.__current_and_release_deployer.deploy_only_master_package_notebook(package_metadata)

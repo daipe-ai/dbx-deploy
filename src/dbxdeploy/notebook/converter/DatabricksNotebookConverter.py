@@ -1,59 +1,63 @@
 import re
 from dbxdeploy.dbc.CommandsConverter import CommandsConverter
-from dbxdeploy.notebook.converter import emptyLinesRemover
+from dbxdeploy.notebook.converter import empty_lines_remover
 from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
 from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.package.PackageInstaller import PackageInstaller
 
+
 class DatabricksNotebookConverter:
 
-    firstLine = '# Databricks notebook source'
-    cellSeparator = '# COMMAND ----------'
+    first_line = "# Databricks notebook source"
+    cell_separator = "# COMMAND ----------"
 
     def __init__(
         self,
-        commandsConverter: CommandsConverter,
-        cellsExtractor: CellsExtractor,
-        jinjaTemplateLoader: JinjaTemplateLoader,
-        dbcScriptRenderer: DbcScriptRenderer,
-        packageInstaller: PackageInstaller,
+        commands_converter: CommandsConverter,
+        cells_extractor: CellsExtractor,
+        jinja_template_loader: JinjaTemplateLoader,
+        dbc_script_renderer: DbcScriptRenderer,
+        package_installer: PackageInstaller,
     ):
-        self.__commandsConverter = commandsConverter
-        self.__cellsExtractor = cellsExtractor
-        self.__jinjaTemplateLoader = jinjaTemplateLoader
-        self.__dbcScriptRenderer = dbcScriptRenderer
-        self.__packageInstaller = packageInstaller
+        self.__commands_converter = commands_converter
+        self.__cells_extractor = cells_extractor
+        self.__jinja_template_loader = jinja_template_loader
+        self.__dbc_script_renderer = dbc_script_renderer
+        self.__package_installer = package_installer
 
-    def validateSource(self, source: str):
-        if re.match(r'^' + self.firstLine + '[\r\n]', source) is None:
+    def validate_source(self, source: str):
+        if re.match(r"^" + self.first_line + "[\r\n]", source) is None:
             raise UnexpectedSourceException()
 
-    def fromDbcNotebook(self, content: dict) -> str:
-        return self.__commandsConverter.convert(content['commands'], self.firstLine, self.cellSeparator)
+    def from_dbc_notebook(self, content: dict) -> str:
+        return self.__commands_converter.convert(content["commands"], self.first_line, self.cell_separator)
 
-    def toDbcNotebook(self, notebookName: str, source: str, packageFilePath: str, dependenciesDirPath: str) -> str:
-        cells = self.__cellsExtractor.extract(source, r'#[\s]+COMMAND[\s]+[\-]+\n+')
+    def to_dbc_notebook(self, notebook_name: str, source: str, package_file_path: str, dependencies_dir_path: str) -> str:
+        cells = self.__cells_extractor.extract(source, r"#[\s]+COMMAND[\s]+[\-]+\n+")
 
-        def cleanupCell(cell: dict):
-            if cell['source'] == '# MAGIC %installMasterPackageWhl':
-                cell['source'] = self.__packageInstaller.getPackageInstallCommand(packageFilePath, dependenciesDirPath)
+        def cleanup_cell(cell: dict):
+            if cell["source"] == "# MAGIC %install_master_package_whl":
+                cell["source"] = self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path)
 
-            cell['source'] = re.sub(r'^' + self.firstLine + '[\r\n]+', '', cell['source'])
-            cell['source'] = re.sub(r'^# MAGIC ', '', cell['source'])
-            cell['source'] = emptyLinesRemover.remove(cell['source'])
+            cell["source"] = re.sub(r"^" + self.first_line + "[\r\n]+", "", cell["source"])
+            cell["source"] = re.sub(r"^# MAGIC ", "", cell["source"])
+            cell["source"] = empty_lines_remover.remove(cell["source"])
 
             return cell
 
-        cells = list(map(cleanupCell, cells))
+        cells = list(map(cleanup_cell, cells))
 
-        template = self.__jinjaTemplateLoader.load()
+        template = self.__jinja_template_loader.load()
 
-        return self.__dbcScriptRenderer.render(notebookName, template, cells)
+        return self.__dbc_script_renderer.render(notebook_name, template, cells)
 
-    def toWorkspaceImportNotebook(self, source: str, packageFilePath: str, dependenciesDirPath: str) -> str:
-        source = emptyLinesRemover.remove(source)
-        source = source.replace('# MAGIC %installMasterPackageWhl', self.__packageInstaller.getPackageInstallCommand(packageFilePath, dependenciesDirPath))
+    def to_workspace_import_notebook(self, source: str, package_file_path: str, dependencies_dir_path: str) -> str:
+        source = empty_lines_remover.remove(source)
+        source = source.replace(
+            "# MAGIC %install_master_package_whl",
+            self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path),
+        )
 
         return source

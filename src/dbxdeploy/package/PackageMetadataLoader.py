@@ -5,29 +5,29 @@ from dbxdeploy.package.PackageMetadata import PackageMetadata
 from dbxdeploy.package.PackageDependencyLoader import PackageDependencyLoader
 from dbxdeploy.string.RandomStringGenerator import RandomStringGenerator
 
-class PackageMetadataLoader:
 
+class PackageMetadataLoader:
     def __init__(
         self,
-        packageDependencyLoader: PackageDependencyLoader,
+        package_dependency_loader: PackageDependencyLoader,
     ):
-        self.__packageDependencyLoader = packageDependencyLoader
+        self.__package_dependency_loader = package_dependency_loader
 
-    def load(self, projectBaseDir: Path) -> PackageMetadata:
-        pyprojectPath = projectBaseDir.joinpath('pyproject.toml')
+    def load(self, project_base_dir: Path) -> PackageMetadata:
+        pyproject_path = project_base_dir.joinpath("pyproject.toml")
 
-        with pyprojectPath.open('r') as t:
+        with pyproject_path.open("r") as t:
             lock = tomlkit.parse(t.read())
 
-            toolParams = lock['tool']['poetry']
+            tool_params = lock["tool"]["poetry"]
 
-            packageName = str(toolParams['name'])
-            packageVersion = float(str(toolParams['version']))
+            package_name = str(tool_params["name"])
+            package_version = str(tool_params["version"])
 
             return PackageMetadata(
-                packageName,
-                packageVersion,
+                package_name,
+                package_version,
                 datetime.now(),
                 RandomStringGenerator().generate(10),
-                self.__packageDependencyLoader.load(projectBaseDir)
+                self.__package_dependency_loader.load(project_base_dir),
             )

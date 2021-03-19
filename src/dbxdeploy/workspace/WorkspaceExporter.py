@@ -4,15 +4,15 @@ from pathlib import PurePosixPath
 import base64
 from dbxdeploy.workspace.WorkspaceExportException import WorkspaceExportException
 
-class WorkspaceExporter:
 
-    def __init__(self, dbxApi: DatabricksAPI):
-        self.__dbxApi = dbxApi
+class WorkspaceExporter:
+    def __init__(self, dbx_api: DatabricksAPI):
+        self.__dbx_api = dbx_api
 
     def export(self, path: PurePosixPath) -> bytes:
         try:
-            response = self.__dbxApi.workspace.export_workspace(str(path), format='DBC')
+            response = self.__dbx_api.workspace.export_workspace(str(path), format="DBC")
         except HTTPError:
             raise WorkspaceExportException()
 
-        return base64.decodebytes(response['content'].encode('utf-8'))
+        return base64.decodebytes(response["content"].encode("utf-8"))

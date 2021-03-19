@@ -1,25 +1,25 @@
 from pathlib import Path, PurePosixPath
 
-class Notebook:
 
+class Notebook:
     def __init__(
         self,
         path: Path,
-        relativePath: Path,
-        databricksRelativePath: PurePosixPath,
+        relative_path: Path,
+        databricks_relative_path: PurePosixPath,
     ):
         self.__path = path
-        self.__relativePath = relativePath
-        self.__databricksRelativePath = databricksRelativePath
+        self.__relative_path = relative_path
+        self.__databricks_relative_path = databricks_relative_path
 
     @property
     def path(self) -> Path:
         return self.__path
 
     @property
-    def relativePath(self) -> Path:
-        return self.__relativePath
+    def relative_path(self) -> Path:
+        return self.__relative_path
 
     @property
-    def databricksRelativePath(self) -> PurePosixPath:
-        return self.__databricksRelativePath
+    def databricks_relative_path(self) -> PurePosixPath:
+        return self.__databricks_relative_path

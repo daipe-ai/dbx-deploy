@@ -1,81 +1,81 @@
-from pygit2 import GitError # pylint: disable = no-name-in-module
+from pygit2 import GitError
 from pathlib import PurePosixPath
 from dbxdeploy.git.CurrentBranchResolver import CurrentBranchResolver
 from dbxdeploy.package.PackageMetadata import PackageMetadata
 
-class TargetPathsResolver:
 
+class TargetPathsResolver:
     def __init__(
         self,
-        packageDeployPath: str,
-        packageReleasePath: str,
-        dependenciesDeployPath: str,
-        dependenciesReleasePath: str,
-        workspaceReleasePath: str,
-        workspaceCurrentPath: str,
-        currentBranchResolver: CurrentBranchResolver,
+        package_deploy_path: str,
+        package_release_path: str,
+        dependencies_deploy_path: str,
+        dependencies_release_path: str,
+        workspace_release_path: str,
+        workspace_current_path: str,
+        current_branch_resolver: CurrentBranchResolver,
     ):
-        self.__packageDeployPath = packageDeployPath
-        self.__packageReleasePath = packageReleasePath
-        self.__dependenciesDeployPath = dependenciesDeployPath
-        self.__dependenciesReleasePath = dependenciesReleasePath
-        self.__workspaceReleasePath = PurePosixPath(workspaceReleasePath)
-        self.__workspaceCurrentPath = PurePosixPath(workspaceCurrentPath)
-        self.__currentBranchResolver = currentBranchResolver
+        self.__package_deploy_path = package_deploy_path
+        self.__package_release_path = package_release_path
+        self.__dependencies_deploy_path = dependencies_deploy_path
+        self.__dependencies_release_path = dependencies_release_path
+        self.__workspace_release_path = PurePosixPath(workspace_release_path)
+        self.__workspace_current_path = PurePosixPath(workspace_current_path)
+        self.__current_branch_resolver = current_branch_resolver
 
-    def getPackageUploadPathForDeploy(self, packageMetadata: PackageMetadata):
-        return self.__replacePackagePath(packageMetadata, self.__packageDeployPath)
+    def get_package_upload_path_for_deploy(self, package_metadata: PackageMetadata):
+        return self.__replace_package_path(package_metadata, self.__package_deploy_path)
 
-    def getPackageUploadPathForRelease(self, packageMetadata: PackageMetadata):
-        return self.__replacePackagePath(packageMetadata, self.__packageReleasePath)
+    def get_package_upload_path_for_release(self, package_metadata: PackageMetadata):
+        return self.__replace_package_path(package_metadata, self.__package_release_path)
 
-    def getDependencyUploadPathForDeploy(self, packageMetadata: PackageMetadata, dependencyFilename):
-        return self.__replaceDependencyPath(packageMetadata, self.__dependenciesDeployPath, dependencyFilename)
+    def get_dependency_upload_path_for_deploy(self, package_metadata: PackageMetadata, dependency_filename):
+        return self.__replace_dependency_path(package_metadata, self.__dependencies_deploy_path, dependency_filename)
 
-    def getDependencyUploadPathForRelease(self, packageMetadata: PackageMetadata, dependencyFilename):
-        return self.__replaceDependencyPath(packageMetadata, self.__dependenciesReleasePath, dependencyFilename)
+    def get_dependency_upload_path_for_release(self, package_metadata: PackageMetadata, dependency_filename):
+        return self.__replace_dependency_path(package_metadata, self.__dependencies_release_path, dependency_filename)
 
-    def getDependenciesUploadDirForDeploy(self, packageMetadata: PackageMetadata):
-        return self.__replacePath(packageMetadata, self.__dependenciesDeployPath.rstrip('{packageFilename}'), None)
+    def get_dependencies_upload_dir_for_deploy(self, package_metadata: PackageMetadata):
+        return self.__replace_path(package_metadata, self.__dependencies_deploy_path.rstrip("{package_filename}"), None)
 
-    def getDependenciesUploadDirForRelease(self, packageMetadata: PackageMetadata):
-        return self.__replacePath(packageMetadata, self.__dependenciesReleasePath.rstrip('{packageFilename}'), None)
+    def get_dependencies_upload_dir_for_release(self, package_metadata: PackageMetadata):
+        return self.__replace_path(package_metadata, self.__dependencies_release_path.rstrip("{package_filename}"), None)
 
-    def getWorkspaceReleasePath(self, packageMetadata: PackageMetadata) -> PurePosixPath:
-        return self.__replaceWorkspacePath(packageMetadata, self.__workspaceReleasePath)
+    def get_workspace_release_path(self, package_metadata: PackageMetadata) -> PurePosixPath:
+        return self.__replace_workspace_path(package_metadata, self.__workspace_release_path)
 
-    def getWorkspaceCurrentPath(self, packageMetadata: PackageMetadata) -> PurePosixPath:
-        return self.__replaceWorkspacePath(packageMetadata, self.__workspaceCurrentPath)
+    def get_workspace_current_path(self, package_metadata: PackageMetadata) -> PurePosixPath:
+        return self.__replace_workspace_path(package_metadata, self.__workspace_current_path)
 
-    def __replacePackagePath(self, packageMetadata: PackageMetadata, packagePath: str):
-        return self.__replacePath(packageMetadata, packagePath, packageMetadata.getPackageFilename())
+    def __replace_package_path(self, package_metadata: PackageMetadata, package_path: str):
+        return self.__replace_path(package_metadata, package_path, package_metadata.get_package_filename())
 
-    def __replaceDependencyPath(self, packageMetadata: PackageMetadata, packagePath: str, dependencyFilename):
-        return self.__replacePath(packageMetadata, packagePath, dependencyFilename)
+    def __replace_dependency_path(self, package_metadata: PackageMetadata, package_path: str, dependency_filename):
+        return self.__replace_path(package_metadata, package_path, dependency_filename)
 
-    def __replacePath(self, packageMetadata: PackageMetadata, packagePath: str, packageFilename: str):
+    def __replace_path(self, package_metadata: PackageMetadata, package_path: str, package_filename: str):
         replacements = {
-            'packageName': packageMetadata.packageName,
-            'packageFilename': packageFilename,
-            'currentTime': packageMetadata.dateTime.strftime('%Y-%m-%d_%H-%M-%S'),
-            'randomString': packageMetadata.randomString,
+            "package_name": package_metadata.package_name,
+            "package_filename": package_filename,
+            "current_time": package_metadata.date_time.strftime("%Y-%m-%d_%H-%M-%S"),
+            "random_string": package_metadata.random_string,
         }
 
-        if '{currentBranch}' in packagePath:
+        if "{current_branch}" in package_path:
             try:
-                replacements['currentBranch'] = self.__currentBranchResolver.resolve()
+                replacements["current_branch"] = self.__current_branch_resolver.resolve()
             except GitError:
-                replacements['currentBranch'] = '__no_git_repo__'
+                replacements["current_branch"] = "__no_git_repo__"
 
-        return packagePath.format(**replacements)
+        return package_path.format(**replacements)
 
-    def __replaceWorkspacePath(self, packageMetadata: PackageMetadata, workspacePath: PurePosixPath):
+    def __replace_workspace_path(self, package_metadata: PackageMetadata, workspace_path: PurePosixPath):
         replacements = {
-            'currentTime': packageMetadata.dateTime.strftime('%Y-%m-%d_%H:%M:%S'),
-            'randomString': packageMetadata.randomString,
+            "current_time": package_metadata.date_time.strftime("%Y-%m-%d_%H:%M:%S"),
+            "random_string": package_metadata.random_string,
         }
 
-        if '{currentBranch}' in str(workspacePath):
-            replacements['currentBranch'] = self.__currentBranchResolver.resolve()
+        if "{current_branch}" in str(workspace_path):
+            replacements["current_branch"] = self.__current_branch_resolver.resolve()
 
-        return PurePosixPath(str(workspacePath).format(**replacements))
+        return PurePosixPath(str(workspace_path).format(**replacements))

@@ -3,71 +3,73 @@ from pathlib import Path
 from dbxdeploy.package.PackageMetadata import PackageMetadata
 from dbxdeploy.package.Dependency import Dependency
 
-class LocalPathsResolver:
 
+class LocalPathsResolver:
     def __init__(
         self,
-        projectBaseDir: Path,
+        project_base_dir: Path,
     ):
-        self.__projectBaseDir = projectBaseDir
+        self.__project_base_dir = project_base_dir
 
-    def getPackageDistPath(self, packageMetadata: PackageMetadata):
-        distDir = self.__projectBaseDir.joinpath('dist')
+    def get_package_dist_path(self, package_metadata: PackageMetadata):
+        dist_dir = self.__project_base_dir.joinpath("dist")
 
-        return distDir.joinpath(packageMetadata.getPackageFilename())
+        return dist_dir.joinpath(package_metadata.get_package_filename())
 
-    def getDependencyDistPath(self, dependency: Dependency):
-        distDir = self.__projectBaseDir.joinpath('dist')
+    def get_dependency_dist_path(self, dependency: Dependency):
+        dist_dir = self.__project_base_dir.joinpath("dist")
 
-        return self.getDependencyPathFromDir(distDir, dependency)
+        return self.get_dependency_path_from_dir(dist_dir, dependency)
 
-    def getDependencyPathFromDir(self, directory: Path, dependency: Dependency):
-        dependencyPaths = self.__getAllDependencyPathsFromDir(directory)
-        dependencyPath = self.__findDependencyPath(dependencyPaths, dependency)
+    def get_dependency_path_from_dir(self, directory: Path, dependency: Dependency):
+        dependency_paths = self.__get_all_dependency_paths_from_dir(directory)
+        dependency_path = self.__find_dependency_path(dependency_paths, dependency)
 
-        if dependencyPath:
-            return dependencyPath
+        if dependency_path:
+            return dependency_path
 
-        raise Exception(f'Dependency {dependency.dependencyName}=={dependency.dependencyVersion} not found in {directory} directory')
+        raise Exception(f"Dependency {dependency.dependency_name}=={dependency.dependency_version} not found in {directory} directory")
 
-    def getLinuxDependencyPathFromDir(self, directory: Path, dependency: Dependency):
-        dependencyPaths = self.__getLinuxDependencyPathsFromDir(directory)
-        dependencyPath = self.__findDependencyPath(dependencyPaths, dependency)
+    def get_linux_dependency_path_from_dir(self, directory: Path, dependency: Dependency):
+        dependency_paths = self.__get_linux_dependency_paths_from_dir(directory)
+        dependency_path = self.__find_dependency_path(dependency_paths, dependency)
 
-        if dependencyPath:
-            return dependencyPath
+        if dependency_path:
+            return dependency_path
 
-        raise Exception(f'Linux Dependency {dependency.dependencyName}=={dependency.dependencyVersion} not found in {directory} directory')
+        raise Exception(
+            f"Linux Dependency {dependency.dependency_name}=={dependency.dependency_version} not found in {directory} directory"
+        )
 
-    def getDependencyFilenameFromPath(self, dependencyPath: Path):
-        return dependencyPath.name
+    def get_dependency_filename_from_path(self, dependency_path: Path):
+        return dependency_path.name
 
-    def __getDependencyNameFromPath(self, dependencyPath: Path):
-        return dependencyPath.stem.split('-')[0].replace('_', '-')
+    def __get_dependency_name_from_path(self, dependency_path: Path):
+        return dependency_path.stem.split("-")[0].replace("_", "-")
 
-    def __getDependencyVersionFromPath(self, dependencyPath: Path):
-        return dependencyPath.stem.split('-')[1]
+    def __get_dependency_version_from_path(self, dependency_path: Path):
+        return dependency_path.stem.split("-")[1]
 
-    def __getDependencyPlatformFromPath(self, dependencyPath: Path):
-        return dependencyPath.stem.split('-')[-1]
+    def __get_dependency_platform_from_path(self, dependency_path: Path):
+        return dependency_path.stem.split("-")[-1]
 
-    def __getAllDependencyPathsFromDir(self, directory: Path):
-        return directory.glob('*.whl')
+    def __get_all_dependency_paths_from_dir(self, directory: Path):
+        return directory.glob("*.whl")
 
-    def __getLinuxDependencyPathsFromDir(self, directory: Path):
-        return [dependencyPath for dependencyPath in directory.glob('*.whl') if self.__isLinuxDependency(dependencyPath)]
+    def __get_linux_dependency_paths_from_dir(self, directory: Path):
+        return [dependency_path for dependency_path in directory.glob("*.whl") if self.__is_linux_dependency(dependency_path)]
 
-    def __isLinuxDependency(self, dependencyPath: Path):
-        platform = self.__getDependencyPlatformFromPath(dependencyPath).lower()
+    def __is_linux_dependency(self, dependency_path: Path):
+        platform = self.__get_dependency_platform_from_path(dependency_path).lower()
 
-        return platform == 'any' or 'linux' in platform
+        return platform == "any" or "linux" in platform
 
-    def __findDependencyPath(self, dependencyPaths: Iterable[Path], dependency: Dependency):
-        for dependencyPath in dependencyPaths:
-            wheelName = self.__getDependencyNameFromPath(dependencyPath)
-            wheelVersion = self.__getDependencyVersionFromPath(dependencyPath)
+    def __find_dependency_path(self, dependency_paths: Iterable[Path], dependency: Dependency):
+        for dependency_path in dependency_paths:
+            wheel_name = self.__get_dependency_name_from_path(dependency_path)
+            wheel_version = self.__get_dependency_version_from_path(dependency_path)
 
-            if wheelName.lower() == dependency.dependencyName.lower() and wheelVersion == dependency.dependencyVersion:
-                return dependencyPath
+            if wheel_name.lower() == dependency.dependency_name.lower() and wheel_version == dependency.dependency_version:
+                return dependency_path
 
         return None

@@ -6,52 +6,54 @@ parameters:
       path: 'c:/Program Files (x86)/Google/Chrome/Application/chrome.exe'
       arguments: ['-d', '{runUrl}']
     git:
-      devBranch: 'master'
+      dev_branch: 'master'
     source:
       notebooks:
-        baseDir: 'src/%bricksflow.rootModule.name%'
+        base_dir: 'src/%daipe.root_module.name%'
         patterns: ['**/*.py']
-        consumersPatterns: ['**/*.consumer.py']
-        masterPackageNotebookPath: '%dbxdeploy.source.notebooks.baseDir%/app/install_master_package.py'
+        consumers_patterns: ['**/*.consumer.py']
+        master_package_notebook_path: '%dbxdeploy.source.notebooks.base_dir%/app/install_master_package.py'
     target:
       storage: 'dbfs'
       workspace:
-        baseDir: '/{currentBranch}'
-        releasePath: '%dbxdeploy.target.workspace.baseDir%/{currentTime}_{randomString}'
-        currentPath: '%dbxdeploy.target.workspace.baseDir%/_current'
+        base_dir: '/{currentBranch}'
+        release_path: '%dbxdeploy.target.workspace.base_dir%/{current_time}_{random_string}'
+        current_path: '%dbxdeploy.target.workspace.base_dir%/_current'
       package:
-        baseDir: 'dbfs:/FileStore/jars'
-        deployPath: '%dbxdeploy.target.package.baseDir%/{packageName}/{currentTime}_{randomString}/{packageFilename}'
-        releasePath: '%dbxdeploy.target.package.baseDir%/{packageName}/{currentTime}_{randomString}/{packageFilename}'
-        dependenciesDeployPath: '%dbxdeploy.target.package.baseDir%/{packageName}/dependencies/{packageFilename}'
-        dependenciesReleasePath: '%dbxdeploy.target.package.releasePath%'
-        offlineInstall: False
+        base_dir: 'dbfs:/FileStore/jars'
+        deploy_path: '%dbxdeploy.target.package.base_dir%/{package_name}/{current_time}_{random_string}/{package_filename}'
+        release_path: '%dbxdeploy.target.package.base_dir%/{package_name}/{current_time}_{random_string}/{package_filename}'
+        dependencies_deploy_path: '%dbxdeploy.target.package.base_dir%/{package_name}/dependencies/{package_filename}'
+        dependencies_release_path: '%dbxdeploy.target.package.release_path%'
+        offline_install: False
     export:
-      forceEndFileNewline: False
+      force_end_file_newline: False
+      black:
+        enabled: True
 
 services:
   dbxdeploy.cluster.ClusterRestarter:
     arguments:
-      - '%dbxdeploy.databricks.clusterId%'
+      - '%dbxdeploy.databricks.cluster_id%'
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
 
   dbxdeploy.dbfs.DbfsFileUploader:
     arguments:
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
     tags:
       - {name: 'dbxdeploy.package.uploader', alias: 'dbfs'}
 
   dbxdeploy.dbfs.DbfsUploadCommand:
     arguments:
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricks.dbfsApi'
+      - '@dbxdeploy.databricks.dbfs_api'
     tags:
       - 'console.command'
 
   dbxdeploy.deploy.WorkingDirFactory:
 
-  dbxdeploy.deploy.workingDir:
+  dbxdeploy.deploy.working_dir:
     class: pathlib.Path
     factory: ['@dbxdeploy.deploy.WorkingDirFactory', 'create']
 
@@ -59,19 +61,19 @@ services:
 
   dbxdeploy.deploy.Deployer:
     arguments:
-      - '@dbxdeploy.deploy.workingDir'
+      - '@dbxdeploy.deploy.working_dir'
 
   dbxdeploy.deploy.DeployCommand:
     arguments:
       - '%dbxdeploy.databricks.host%'
-      - '%dbxdeploy.target.workspace.baseDir%'
+      - '%dbxdeploy.target.workspace.base_dir%'
       - '@consolebundle.logger'
     tags:
       - 'console.command'
 
   dbxdeploy.deploy.DeployerJobSubmitter:
     arguments:
-      - '@dbxdeploy.deploy.workingDir'
+      - '@dbxdeploy.deploy.working_dir'
 
   dbxdeploy.deploy.DeployJobSubmitCommand:
     arguments:
@@ -81,20 +83,20 @@ services:
 
   dbxdeploy.deploy.Releaser:
     arguments:
-      - '@dbxdeploy.deploy.workingDir'
+      - '@dbxdeploy.deploy.working_dir'
       - '@consolebundle.logger'
 
   dbxdeploy.deploy.ReleaseCommand:
     arguments:
       - '%dbxdeploy.databricks.host%'
-      - '%dbxdeploy.target.workspace.baseDir%'
+      - '%dbxdeploy.target.workspace.base_dir%'
       - '@consolebundle.logger'
     tags:
       - 'console.command'
 
   dbxdeploy.deploy.MasterPackageDeployer:
     arguments:
-      - '@dbxdeploy.deploy.workingDir'
+      - '@dbxdeploy.deploy.working_dir'
     tags:
       - 'console.command'
 
@@ -104,22 +106,22 @@ services:
 
   dbxdeploy.deploy.TargetPathsResolver:
     arguments:
-      - '%dbxdeploy.target.package.deployPath%'
-      - '%dbxdeploy.target.package.releasePath%'
-      - '%dbxdeploy.target.package.dependenciesDeployPath%'
-      - '%dbxdeploy.target.package.dependenciesReleasePath%'
-      - '%dbxdeploy.target.workspace.releasePath%'
-      - '%dbxdeploy.target.workspace.currentPath%'
+      - '%dbxdeploy.target.package.deploy_path%'
+      - '%dbxdeploy.target.package.release_path%'
+      - '%dbxdeploy.target.package.dependencies_deploy_path%'
+      - '%dbxdeploy.target.package.dependencies_release_path%'
+      - '%dbxdeploy.target.workspace.release_path%'
+      - '%dbxdeploy.target.workspace.current_path%'
 
   dbxdeploy.deploy.LocalPathsResolver:
     arguments:
-      - '@dbxdeploy.deploy.workingDir'
+      - '@dbxdeploy.deploy.working_dir'
 
   dbxdeploy.git.CurrentBranchResolver:
 
   dbxdeploy.git.CurrentRepositoryFactory:
     arguments:
-      - '@dbxdeploy.deploy.workingDir'
+      - '@dbxdeploy.deploy.working_dir'
 
   dbxdeploy.package.BootstrapConfigAppender:
 
@@ -131,20 +133,20 @@ services:
 
   dbxdeploy.package.PackageBuilder:
     arguments:
-      - '@dbxdeploy.deploy.workingDir'
-      - '%dbxdeploy.target.package.offlineInstall%'
+      - '@dbxdeploy.deploy.working_dir'
+      - '%dbxdeploy.target.package.offline_install%'
 
   dbxdeploy.package.PackageDeployer:
     arguments:
-      - '@dbxdeploy.deploy.workingDir'
-      - '%dbxdeploy.target.package.offlineInstall%'
+      - '@dbxdeploy.deploy.working_dir'
+      - '%dbxdeploy.target.package.offline_install%'
       - '@consolebundle.logger'
       - !tagged_aliased ['dbxdeploy.package.uploader', '%dbxdeploy.target.storage%']
 
   dbxdeploy.package.PackageInstaller:
     arguments:
-      - '%dbxdeploy.target.package.baseDir%'
-      - '%dbxdeploy.target.package.offlineInstall%'
+      - '%dbxdeploy.target.package.base_dir%'
+      - '%dbxdeploy.target.package.offline_install%'
 
   dbxdeploy.package.RequirementsCreator:
 
@@ -152,33 +154,34 @@ services:
 
   dbxdeploy.dbc.DbcCreator:
     arguments:
-      - '@dbxdeploy.deploy.workingDir'
+      - '@dbxdeploy.deploy.working_dir'
       - '@consolebundle.logger'
 
   dbxdeploy.dbc.DbcNotebookConverter:
 
   dbxdeploy.dbc.DbcUploader:
     arguments:
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
 
   dbxdeploy.dbc.PathsPreparer:
 
   dbxdeploy.dbc.CommandsConverter:
     arguments:
-      - '%dbxdeploy.export.forceEndFileNewline%'
+      - '%dbxdeploy.export.force_end_file_newline%'
+      - '%dbxdeploy.export.black.enabled%'
 
   dbxdeploy.dbc.CommandConverter:
 
   dbxdeploy.notebook.NotebooksDeployer:
     arguments:
-      - '@dbxdeploy.target.workspace.baseDir'
+      - '@dbxdeploy.target.workspace.base_dir'
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
 
   dbxdeploy.job.JobsDeleter:
     arguments:
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
 
   dbxdeploy.job.JobsDeleterCommand:
     arguments:
@@ -188,35 +191,35 @@ services:
 
   dbxdeploy.job.JobCreator:
     arguments:
-      - '%dbxdeploy.databricks.clusterId%'
+      - '%dbxdeploy.databricks.cluster_id%'
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
 
   dbxdeploy.job.JobsCreatorAndRunner:
     arguments:
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
 
   dbxdeploy.job.JobSubmitter:
     arguments:
-      - '%dbxdeploy.databricks.clusterId%'
-      - '@dbxdeploy.target.workspace.baseDir'
+      - '%dbxdeploy.databricks.cluster_id%'
+      - '@dbxdeploy.target.workspace.base_dir'
       - '%dbxdeploy.browser%'
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
 
   dbxdeploy.job.RunsGetter:
     arguments:
-      - '%dbxdeploy.databricks.clusterId%'
-      - '@dbxdeploy.target.workspace.baseDir'
-      - '@dbxdeploy.databricksApi'
+      - '%dbxdeploy.databricks.cluster_id%'
+      - '@dbxdeploy.target.workspace.base_dir'
+      - '@dbxdeploy.databricks_api'
 
   dbxdeploy.job.NotebookKiller:
     arguments:
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
 
-  dbxdeploy.databricksApi:
+  dbxdeploy.databricks_api:
     class: databricks_api.databricks.DatabricksAPI
     autowire: False
     arguments:
@@ -230,39 +233,39 @@ services:
       host: '%dbxdeploy.databricks.host%'
       token: '%dbxdeploy.databricks.token%'
 
-  dbxdeploy.databricks.dbfsApi:
+  dbxdeploy.databricks.dbfs_api:
     class: databricks_cli.dbfs.api.DbfsApi
     arguments:
       - '@dbxdeploy.databricks.client'
 
   dbxdeploy.notebook.CurrentDirectoryUpdater:
     arguments:
-      - '@dbxdeploy.target.workspace.baseDir'
-      - '%dbxdeploy.git.devBranch%'
+      - '@dbxdeploy.target.workspace.base_dir'
+      - '%dbxdeploy.git.dev_branch%'
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
 
   dbxdeploy.workspace.WorkspaceBaseDirFactory:
     arguments:
-      - '%dbxdeploy.target.workspace.baseDir%'
+      - '%dbxdeploy.target.workspace.base_dir%'
 
-  dbxdeploy.target.workspace.baseDir:
+  dbxdeploy.target.workspace.base_dir:
     class: pathlib.PurePosixPath
     factory: ['@dbxdeploy.workspace.WorkspaceBaseDirFactory', 'create']
 
   dbxdeploy.workspace.WorkspaceImporter:
     arguments:
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
 
   dbxdeploy.workspace.WorkspaceExporter:
     arguments:
-      - '@dbxdeploy.databricksApi'
+      - '@dbxdeploy.databricks_api'
 
   dbxdeploy.workspace.WorkspaceExportCommand:
     arguments:
-      - '@dbxdeploy.target.workspace.baseDir'
-      - '@dbxdeploy.deploy.workingDir'
-      - '%dbxdeploy.source.notebooks.baseDir%'
+      - '@dbxdeploy.target.workspace.base_dir'
+      - '@dbxdeploy.deploy.working_dir'
+      - '%dbxdeploy.source.notebooks.base_dir%'
       - '@consolebundle.logger'
     tags:
       - 'console.command'
@@ -271,15 +274,15 @@ services:
 
   dbxdeploy.notebook.NotebooksLocator:
     arguments:
-      - '@dbxdeploy.deploy.workingDir'
-      - '%dbxdeploy.source.notebooks.baseDir%'
+      - '@dbxdeploy.deploy.working_dir'
+      - '%dbxdeploy.source.notebooks.base_dir%'
       - '%dbxdeploy.source.notebooks.patterns%'
-      - '%dbxdeploy.source.notebooks.consumersPatterns%'
-      - '%dbxdeploy.source.notebooks.masterPackageNotebookPath%'
+      - '%dbxdeploy.source.notebooks.consumers_patterns%'
+      - '%dbxdeploy.source.notebooks.master_package_notebook_path%'
 
   dbxdeploy.notebook.RelativePathResolver:
     arguments:
-      - '%dbxdeploy.source.notebooks.baseDir%'
+      - '%dbxdeploy.source.notebooks.base_dir%'
 
   dbxdeploy.notebook.converter.JinjaTemplateLoader:
 

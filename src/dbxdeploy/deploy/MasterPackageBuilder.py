@@ -4,23 +4,24 @@ from dbxdeploy.package.PackageBuilder import PackageBuilder
 from consolebundle.ConsoleCommand import ConsoleCommand
 from dbxdeploy.package.PackageMetadataLoader import PackageMetadataLoader
 
+
 class MasterPackageBuilder(ConsoleCommand):
     def __init__(
         self,
-        packageMetadataLoader: PackageMetadataLoader,
-        packageBuilder: PackageBuilder,
+        package_metadata_loader: PackageMetadataLoader,
+        package_builder: PackageBuilder,
     ):
-        self.__packageMetadataLoader = packageMetadataLoader
-        self.__packageBuilder = packageBuilder
+        self.__package_metadata_loader = package_metadata_loader
+        self.__package_builder = package_builder
 
-    def getCommand(self) -> str:
+    def get_command(self) -> str:
         return "dbx:build-master-package"
 
-    def getDescription(self):
+    def get_description(self):
         return "Build the master package"
 
-    def run(self, inputArgs: Namespace):
-        projectBaseDir = Path.cwd()
-        packageMetadata = self.__packageMetadataLoader.load(projectBaseDir)
+    def run(self, input_args: Namespace):
+        project_base_dir = Path.cwd()
+        package_metadata = self.__package_metadata_loader.load(project_base_dir)
 
-        self.__packageBuilder.build(projectBaseDir, packageMetadata)
+        self.__package_builder.build(project_base_dir, package_metadata)

@@ -5,68 +5,69 @@ from pathlib import Path
 from dbxdeploy.package.RequirementsLineConverter import RequirementsLineConverter
 from dbxdeploy.package.RequirementsCreator import RequirementsCreator
 
-class LockedPyprojectCreator:
 
+class LockedPyprojectCreator:
     def __init__(
         self,
-        requirementsLineConverter: RequirementsLineConverter,
-        requirementsCreator: RequirementsCreator,
+        requirements_line_converter: RequirementsLineConverter,
+        requirements_creator: RequirementsCreator,
     ):
-        self.__requirementsLineConverter = requirementsLineConverter
-        self.__requirementsCreator = requirementsCreator
+        self.__requirements_line_converter = requirements_line_converter
+        self.__requirements_creator = requirements_creator
 
-    def create(self, basePath: Path, pyprojectOrigPath: Path, pyprojectNewPath: Path):
-        tomlDoc = self.getLockedPyprojectToml(basePath, pyprojectOrigPath)
+    def create(self, base_path: Path, pyproject_orig_path: Path, pyproject_new_path: Path):
+        toml_doc = self.get_locked_pyproject_toml(base_path, pyproject_orig_path)
 
-        with pyprojectNewPath.open('w') as t:
-            t.write(tomlDoc.as_string())
+        with pyproject_new_path.open("w") as t:
+            t.write(toml_doc.as_string())
 
-    def getLockedPyprojectToml(self, basePath: Path, pyprojectOrigPath: Path) -> TOMLDocument:
-        mainDependencies = self.__loadMainDependencies(basePath)
-        tomlDoc = self.__generatePyprojectNew(pyprojectOrigPath, mainDependencies)
+    def get_locked_pyproject_toml(self, base_path: Path, pyproject_orig_path: Path) -> TOMLDocument:
+        main_dependencies = self.__load_main_dependencies(base_path)
+        toml_doc = self.__generate_pyproject_new(pyproject_orig_path, main_dependencies)
 
-        return tomlDoc
+        return toml_doc
 
-    def __loadMainDependencies(self, basePath: Path) -> list:
-        requirements = self.__requirementsCreator.exportToString(basePath).splitlines()
+    def __load_main_dependencies(self, base_path: Path) -> list:
+        requirements = self.__requirements_creator.export_to_string(base_path).splitlines()
 
-        return list(map(self.__requirementsLineConverter.parse, requirements))
+        return list(map(self.__requirements_line_converter.parse, requirements))
 
-    def __generatePyprojectNew(self, pyprojectOrigPath: Path, requirements: list) -> TOMLDocument:
-        with pyprojectOrigPath.open('r') as t:
-            tomlDoc = tomlkit.parse(t.read())
+    def __generate_pyproject_new(self, pyproject_orig_path: Path, requirements: list) -> TOMLDocument:
+        with pyproject_orig_path.open("r") as t:
+            toml_doc = tomlkit.parse(t.read())
 
-            dependencies = tomlDoc['tool']['poetry']['dependencies']
+            dependencies = toml_doc["tool"]["poetry"]["dependencies"]
 
-            if 'python' not in dependencies:
+            if "python" not in dependencies:
                 raise Exception('"python" must be defined in [tool.poetry.dependencies]')
 
-            newDependencies = table()
-            newDependencies.add('python', dependencies['python'])
+            new_dependencies = table()
+            new_dependencies.add("python", dependencies["python"])
 
             for requirement in requirements:
-                if self.__isLinuxDependency(requirement):
-                    newDependencies.add(*requirement)
+                if self.__is_linux_dependency(requirement):
+                    new_dependencies.add(*requirement)
 
-            tomlDoc['tool']['poetry']['dependencies'] = newDependencies
-            del tomlDoc['tool']['poetry']['dev-dependencies']
+            toml_doc["tool"]["poetry"]["dependencies"] = new_dependencies
+            del toml_doc["tool"]["poetry"]["dev-dependencies"]
 
-        return tomlDoc
+        return toml_doc
 
-    def __isLinuxDependency(self, requirement):
-        markersPresent = isinstance(requirement[1], dict) and 'markers' in requirement[1]
+    def __is_linux_dependency(self, requirement):
+        markers_present = isinstance(requirement[1], dict) and "markers" in requirement[1]
 
-        if not markersPresent:
+        if not markers_present:
             return True
 
-        platformInfoPresent = 'sys_platform' in requirement[1]['markers'] or \
-                              'platform_system' in requirement[1]['markers']
+        platform_info_present = "sys_platform" in requirement[1]["markers"] or "platform_system" in requirement[1]["markers"]
 
-        if not platformInfoPresent:
+        if not platform_info_present:
             return True
 
-        isLinuxDependency = 'sys_platform == "linux"' in requirement[1]['markers'] or \
-                            'sys_platform == "linux2"' in requirement[1]['markers'] or \
-                            'platform_system == "Linux"' in requirement[1]['markers']
+        is_linux_dependency = (
+            'sys_platform == "linux"' in requirement[1]["markers"]
+            or 'sys_platform == "linux2"' in requirement[1]["markers"]
+            or 'platform_system == "Linux"' in requirement[1]["markers"]
+        )
 
-        return isLinuxDependency
+        return is_linux_dependency

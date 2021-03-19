@@ -3,25 +3,19 @@ from pathlib import PurePosixPath
 from databricks_api import DatabricksAPI
 import os
 
-class WorkspaceImporter:
 
+class WorkspaceImporter:
     def __init__(
         self,
-        dbxApi: DatabricksAPI,
+        dbx_api: DatabricksAPI,
     ):
-        self.__dbxApi = dbxApi
+        self.__dbx_api = dbx_api
 
-    def overwriteScript(self, script: str, targetPath: PurePosixPath):
-        contentToUpload = b64encode(script.encode('utf-8'))
+    def overwrite_script(self, script: str, target_path: PurePosixPath):
+        content_to_upload = b64encode(script.encode("utf-8"))
 
-        self.__dbxApi.workspace.mkdirs(
-            os.path.dirname(str(targetPath))
-        )
+        self.__dbx_api.workspace.mkdirs(os.path.dirname(str(target_path)))
 
-        self.__dbxApi.workspace.import_workspace(
-            str(targetPath),
-            format='SOURCE',
-            language='PYTHON',
-            content=str(contentToUpload, 'utf-8'),
-            overwrite=True
+        self.__dbx_api.workspace.import_workspace(
+            str(target_path), format="SOURCE", language="PYTHON", content=str(content_to_upload, "utf-8"), overwrite=True
         )

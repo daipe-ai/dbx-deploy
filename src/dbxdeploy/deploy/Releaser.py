@@ -1,4 +1,3 @@
-# pylint: disable = too-many-instance-attributes
 from logging import Logger
 from pathlib import Path
 from dbxdeploy.cluster.ClusterRestarter import ClusterRestarter
@@ -12,59 +11,61 @@ from dbxdeploy.package.PackageDeployer import PackageDeployer
 import asyncio
 from dbxdeploy.deploy.TargetPathsResolver import TargetPathsResolver
 
-class Releaser:
 
+class Releaser:
     def __init__(
         self,
-        projectBaseDir: Path,
+        project_base_dir: Path,
         logger: Logger,
-        targetPathsResolver: TargetPathsResolver,
-        packageMetadataLoader: PackageMetadataLoader,
-        currentAndReleaseDeployer: CurrentAndReleaseDeployer,
-        packageDeployer: PackageDeployer,
-        clusterRestarter: ClusterRestarter,
-        jobsDeleter: JobsDeleter,
-        jobsCreatorAndRunner: JobsCreatorAndRunner,
-        notebooksLocator: NotebooksLocator,
+        target_paths_resolver: TargetPathsResolver,
+        package_metadata_loader: PackageMetadataLoader,
+        current_and_release_deployer: CurrentAndReleaseDeployer,
+        package_deployer: PackageDeployer,
+        cluster_restarter: ClusterRestarter,
+        jobs_deleter: JobsDeleter,
+        jobs_creator_and_runner: JobsCreatorAndRunner,
+        notebooks_locator: NotebooksLocator,
     ):
-        self.__projectBaseDir = projectBaseDir
+        self.__project_base_dir = project_base_dir
         self.__logger = logger
-        self.__targetPathsResolver = targetPathsResolver
-        self.__packageMetadataLoader = packageMetadataLoader
-        self.__currentAndReleaseDeployer = currentAndReleaseDeployer
-        self.__packageDeployer = packageDeployer
-        self.__clusterRestarter = clusterRestarter
-        self.__jobsDeleter = jobsDeleter
-        self.__jobsCreatorAndRunner = jobsCreatorAndRunner
-        self.__notebooksLocator = notebooksLocator
+        self.__target_paths_resolver = target_paths_resolver
+        self.__package_metadata_loader = package_metadata_loader
+        self.__current_and_release_deployer = current_and_release_deployer
+        self.__package_deployer = package_deployer
+        self.__cluster_restarter = cluster_restarter
+        self.__jobs_deleter = jobs_deleter
+        self.__jobs_creator_and_runner = jobs_creator_and_runner
+        self.__notebooks_locator = notebooks_locator
 
     async def release(self):
-        packageMetadata = self.__packageMetadataLoader.load(self.__projectBaseDir)
+        package_metadata = self.__package_metadata_loader.load(self.__project_base_dir)
 
         loop = asyncio.get_event_loop()
 
-        packageReleaseFuture = loop.run_in_executor(None, self.__packageDeployer.release, packageMetadata)
-        dbcDeployFuture = loop.run_in_executor(None, self.__currentAndReleaseDeployer.release, packageMetadata)
+        package_release_future = loop.run_in_executor(None, self.__package_deployer.release, package_metadata)
+        dbc_deploy_future = loop.run_in_executor(None, self.__current_and_release_deployer.release, package_metadata)
 
-        await packageReleaseFuture
-        await dbcDeployFuture
+        await package_release_future
+        await dbc_deploy_future
 
-        self.__logger.info('--')
+        self.__logger.info("--")
 
-        consumerNotebooks = self.__notebooksLocator.locateConsumers()
+        consumer_notebooks = self.__notebooks_locator.locate_consumers()
 
-        if consumerNotebooks:
-            self.__clusterRestarter.restart()
+        if consumer_notebooks:
+            self.__cluster_restarter.restart()
 
-            def createJobNotebookPath(consumerNotebook: Notebook):
-                return str(self.__targetPathsResolver.getWorkspaceReleasePath(packageMetadata) / consumerNotebook.databricksRelativePath)
+            def create_job_notebook_path(consumer_notebook: Notebook):
+                return str(
+                    self.__target_paths_resolver.get_workspace_release_path(package_metadata) / consumer_notebook.databricks_relative_path
+                )
 
-            consumerNotebooksReleasePaths = set(map(createJobNotebookPath, consumerNotebooks))
+            consumer_notebooks_release_paths = set(map(create_job_notebook_path, consumer_notebooks))
 
-            self.__jobsDeleter.remove(consumerNotebooksReleasePaths)
+            self.__jobs_deleter.remove(consumer_notebooks_release_paths)
 
-            self.__logger.info('--')
+            self.__logger.info("--")
 
-            self.__jobsCreatorAndRunner.createAndRun(consumerNotebooks, packageMetadata)
+            self.__jobs_creator_and_runner.create_and_run(consumer_notebooks, package_metadata)
 
-        self.__logger.info('Deployment completed')
+        self.__logger.info("Deployment completed")

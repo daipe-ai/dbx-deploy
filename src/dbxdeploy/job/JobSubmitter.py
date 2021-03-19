@@ -5,49 +5,45 @@ from dbxdeploy.package.PackageMetadata import PackageMetadata
 from pathlib import PurePosixPath
 from logging import Logger
 
-class JobSubmitter:
 
+class JobSubmitter:
     def __init__(
         self,
-        clusterId: str,
-        workspaceBaseDir: PurePosixPath,
-        browserConfig: Box,
+        cluster_id: str,
+        workspace_base_dir: PurePosixPath,
+        browser_config: Box,
         logger: Logger,
-        dbxApi: DatabricksAPI,
+        dbx_api: DatabricksAPI,
     ):
-        self.__clusterId = clusterId
-        self.__workspaceBaseDir = workspaceBaseDir
-        self.__browserConfig = browserConfig
+        self.__cluster_id = cluster_id
+        self.__workspace_base_dir = workspace_base_dir
+        self.__browser_config = browser_config
         self.__logger = logger
-        self.__dbxApi = dbxApi
+        self.__dbx_api = dbx_api
 
-    def submit(self, notebookPath: PurePosixPath, packageMetadata: PackageMetadata):
-        notebookReleasePath = self.__workspaceBaseDir.joinpath(notebookPath)
+    def submit(self, notebook_path: PurePosixPath, package_metadata: PackageMetadata):
+        notebook_release_path = self.__workspace_base_dir.joinpath(notebook_path)
 
-        self.__logger.info(f'Submitting job for {notebookReleasePath} to cluster {self.__clusterId}')
+        self.__logger.info(f"Submitting job for {notebook_release_path} to cluster {self.__cluster_id}")
 
-        submitedRun = self.__dbxApi.jobs.submit_run(
-            run_name=packageMetadata.getJobRunName(),
-            existing_cluster_id=self.__clusterId,
-            notebook_task=dict(
-                notebook_path=str(notebookReleasePath)
-            )
+        submited_run = self.__dbx_api.jobs.submit_run(
+            run_name=package_metadata.get_job_run_name(),
+            existing_cluster_id=self.__cluster_id,
+            notebook_task=dict(notebook_path=str(notebook_release_path)),
         )
 
-        self.__logger.info(f'Job {str(submitedRun["run_id"])} created')
+        self.__logger.info(f'Job {str(submited_run["run_id"])} created')
 
-        run = self.__dbxApi.jobs.get_run(
-            run_id=submitedRun['run_id']
-        )
+        run = self.__dbx_api.jobs.get_run(run_id=submited_run["run_id"])
 
-        self.__openJobInDatabricks(run['run_page_url'])
+        self.__open_job_in_databricks(run["run_page_url"])
 
-    def __openJobInDatabricks(self, runUrl: str):
-        self.__logger.info(f'Opening {runUrl}')
+    def __open_job_in_databricks(self, run_url: str):
+        self.__logger.info(f"Opening {run_url}")
 
-        arguments = [self.__browserConfig.path]
+        arguments = [self.__browser_config.path]
 
-        for argument in self.__browserConfig.arguments:
-            arguments.append(argument.replace('{runUrl}', runUrl))
+        for argument in self.__browser_config.arguments:
+            arguments.append(argument.replace("{run_url}", run_url))
 
         subprocess.run(arguments, check=True)
