@@ -46,7 +46,7 @@ class PackageMetadata:
         return "^" + str(workspace_base_dir) + "/([^/]+)/" + str(notebook_path) + "$"
 
     def get_job_run_name(self) -> str:
-        return self.__date_time.strftime("%Y-%m-%d_%H:%M:%S") + "_" + self.__random_string
+        return self.__date_time.strftime("%Y-%m-%d_%H-%M-%S") + "_" + self.__random_string
 
     def get_dependency_by_name(self, dependency_name: str) -> Dependency:
         for dependency in self.__dependencies:

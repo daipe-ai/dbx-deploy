@@ -26,6 +26,14 @@ parameters:
         dependencies_deploy_path: '%dbxdeploy.target.package.base_dir%/{package_name}/dependencies/{package_filename}'
         dependencies_release_path: '%dbxdeploy.target.package.release_path%'
         offline_install: False
+        build:
+          databricks:
+            host: '%dbxdeploy.databricks.host%'
+            token: '%dbxdeploy.databricks.token%'
+            job_cluster_definition:
+              spark_version: '7.3.x-scala2.12'
+              node_type_id: 'Standard_DS3_v2'
+              num_workers: 1
     export:
       force_end_file_newline: False
       black:
@@ -104,6 +112,12 @@ services:
     tags:
       - 'console.command'
 
+  dbxdeploy.deploy.DependencyBuilderCommand:
+    arguments:
+      - '@dbxdeploy.deploy.working_dir'
+    tags:
+      - 'console.command'
+
   dbxdeploy.deploy.TargetPathsResolver:
     arguments:
       - '%dbxdeploy.target.package.deploy_path%'
@@ -136,6 +150,15 @@ services:
       - '@dbxdeploy.deploy.working_dir'
       - '%dbxdeploy.target.package.offline_install%'
 
+  dbxdeploy.package.DependencyBuilder:
+    arguments:
+      - '@dbxdeploy.deploy.working_dir'
+      - '@consolebundle.logger'
+      - '@dbxdeploy.package.dependency_builder.databricks_api'
+      - '@dbxdeploy.package.dependency_builder.DbfsFileUploader'
+      - '@dbxdeploy.package.dependency_builder.DbfsFileDownloader'
+      - '%dbxdeploy.target.package.build.databricks.job_cluster_definition%'
+
   dbxdeploy.package.PackageDeployer:
     arguments:
       - '@dbxdeploy.deploy.working_dir'
@@ -155,6 +178,23 @@ services:
   dbxdeploy.package.RequirementsCreator:
 
   dbxdeploy.package.RequirementsLineConverter:
+
+  dbxdeploy.package.dependency_builder.databricks_api:
+    class: databricks_api.databricks.DatabricksAPI
+    autowire: False
+    arguments:
+      host: '%dbxdeploy.target.package.build.databricks.host%'
+      token: '%dbxdeploy.target.package.build.databricks.token%'
+
+  dbxdeploy.package.dependency_builder.DbfsFileUploader:
+    class: dbxdeploy.dbfs.DbfsFileUploader
+    arguments:
+      - '@dbxdeploy.package.dependency_builder.databricks_api'
+
+  dbxdeploy.package.dependency_builder.DbfsFileDownloader:
+    class: dbxdeploy.dbfs.DbfsFileDownloader
+    arguments:
+      - '@dbxdeploy.package.dependency_builder.databricks_api'
 
   dbxdeploy.dbc.DbcCreator:
     arguments:
