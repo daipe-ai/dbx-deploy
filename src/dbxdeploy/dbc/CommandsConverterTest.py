@@ -45,10 +45,10 @@ class CommandsConverterTest(unittest.TestCase):
         commands_converter = CommandsConverter(force_end_file_newline, black_enabled, self.__command_converter)  # type: CommandsConverter
 
         commands = [
-            {"command": 'print("Hello world")', "position": 2, "commandTitle": ""},
-            {"command": "%run /foo/bar", "position": 1, "commandTitle": ""},
-            {"command": "", "position": 1.33, "commandTitle": ""},
-            {"command": "", "position": 1.66, "commandTitle": ""},
+            {"command": 'print("Hello world")', "position": 2, "commandTitle": "", "subtype": "command"},
+            {"command": "%run /foo/bar", "position": 1, "commandTitle": "", "subtype": "command"},
+            {"command": "", "position": 1.33, "commandTitle": "", "subtype": "command"},
+            {"command": "", "position": 1.66, "commandTitle": "", "subtype": "command"},
         ]
 
         return commands_converter.convert(
