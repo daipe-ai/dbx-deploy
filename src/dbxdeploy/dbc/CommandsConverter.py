@@ -13,6 +13,7 @@ class CommandsConverter:
             commands.pop()
 
         commands.sort(key=lambda command: command["position"])
+        commands = [command for command in commands if command["subtype"] == "command"]
         commands = list(map(self.__command_converter.convert, commands))
 
         output = f"\n\n{cell_separator}\n\n".join(commands)
