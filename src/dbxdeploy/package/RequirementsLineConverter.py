@@ -2,31 +2,38 @@ import re
 from pathlib import Path
 from typing import Match
 from tomlkit import inline_table
+from dbxdeploy.package.requirements_regex import (
+    CLASSIC_LINE_REGEX,
+    GIT_LINE_REGEX,
+    GIT_OLD_LINE1_REGEX,
+    GIT_OLD_LINE2_REGEX,
+    LOCAL_FILE_LINE_REGEX,
+)
 
 
 class RequirementsLineConverter:
     def parse(self, line: str):
-        matches = re.match(r"^([^=]+)==([^;]+)(?:; (.+))?$", line)
+        matches = re.match(CLASSIC_LINE_REGEX, line)
 
         if matches:
             return self.__parse_line(matches)
 
-        matches = re.match(r"^-e git\+(git@[^@]+)@([^#]+)#egg=(.+)$", line)
+        matches = re.match(GIT_OLD_LINE1_REGEX, line)
 
         if matches:
             return self.__parse_git_old_line(matches)
 
-        matches = re.match(r"^-e git\+(https://(?:[^@]+@)?[^@]+)@([^#]+)#egg=(.+)$", line)
+        matches = re.match(GIT_OLD_LINE2_REGEX, line)
 
         if matches:
             return self.__parse_git_old_line(matches)
 
-        matches = re.match(r"^([^ ]+) @ git\+(https://(?:[^@]+@)?[^@]+)@([^#]+)(?:#egg=.+)?$", line)
+        matches = re.match(GIT_LINE_REGEX, line)
 
         if matches:
             return self.__parse_git_line(matches)
 
-        matches = re.match(r"^([^ ]+) @ file:///([^;]+)(?:; (.+))?$", line)
+        matches = re.match(LOCAL_FILE_LINE_REGEX, line)
 
         if matches:
             return self.__parse_local_file_line(matches)

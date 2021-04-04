@@ -1,0 +1,5 @@
+CLASSIC_LINE_REGEX = r"^([^=]+)==([^;]+)(?:; (.+))?$"
+GIT_LINE_REGEX = r"^([^ ]+) @ git\+(https://(?:[^@]+@)?[^@]+)@([^#]+)(?:#egg=.+)?$"
+GIT_OLD_LINE1_REGEX = r"^-e git\+(git@[^@]+)@([^#]+)#egg=(.+)$"
+GIT_OLD_LINE2_REGEX = r"^-e git\+(https://(?:[^@]+@)?[^@]+)@([^#]+)#egg=(.+)$"
+LOCAL_FILE_LINE_REGEX = r"^([^ ]+) @ file:///([^;]+)(?:; (.+))?$"

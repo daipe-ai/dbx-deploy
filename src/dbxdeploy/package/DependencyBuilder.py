@@ -1,4 +1,5 @@
 import time
+import re
 from pathlib import Path
 from pathlib import PurePosixPath
 from logging import Logger
@@ -7,6 +8,12 @@ from dbxdeploy.package.PackageMetadata import PackageMetadata
 from dbxdeploy.package.RequirementsCreator import RequirementsCreator
 from dbxdeploy.dbfs.DbfsFileUploader import DbfsFileUploader
 from dbxdeploy.dbfs.DbfsFileDownloader import DbfsFileDownloader
+from dbxdeploy.package.requirements_regex import (
+    CLASSIC_LINE_REGEX,
+    GIT_LINE_REGEX,
+    GIT_OLD_LINE1_REGEX,
+    GIT_OLD_LINE2_REGEX,
+)
 
 
 class DependencyBuilder:
@@ -28,15 +35,23 @@ class DependencyBuilder:
         self.__job_cluster_definition = job_cluster_definition
         self.__requirements_creator = requirements_creator
 
-    def build(self, base_path: Path, package_metadata: PackageMetadata):
+    def build(self, base_path: Path, package_metadata: PackageMetadata, dev_dependencies: bool = False):
         self.__logger.info("Preparing packages build script...")
 
-        requirements = self.__requirements_creator.export_to_string(base_path, only_dependencies=True).splitlines()
         dbfs_build_dir = PurePosixPath(f"dbfs:/tmp/DependencyBuild/{package_metadata.get_job_run_name()}")
         dbfs_script_path = dbfs_build_dir.joinpath("download_dependencies.py")
         dbfs_dependencies_dir = dbfs_build_dir.joinpath("dependencies")
         local_dependencies_dir = base_path.joinpath("dependencies")
         unix_dependencies_dir = "/dbfs/" + dbfs_dependencies_dir.as_posix().lstrip("dbfs:/")
+        requirements = self.__requirements_creator.export_to_string(base_path, dev_dependencies=dev_dependencies).splitlines()
+        requirements = [
+            requirement
+            for requirement in requirements
+            if re.match(CLASSIC_LINE_REGEX, requirement)
+            or re.match(GIT_LINE_REGEX, requirement)
+            or re.match(GIT_OLD_LINE1_REGEX, requirement)
+            or re.match(GIT_OLD_LINE2_REGEX, requirement)
+        ]
 
         script = (
             f"import sys, subprocess\n"

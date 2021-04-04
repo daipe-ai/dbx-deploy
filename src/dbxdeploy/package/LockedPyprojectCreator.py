@@ -28,7 +28,14 @@ class LockedPyprojectCreator:
         return toml_doc
 
     def __load_main_dependencies(self, base_path: Path) -> list:
-        requirements = self.__requirements_creator.export_to_string(base_path, only_dependencies=True).splitlines()
+        requirements = self.__requirements_creator.export_to_string(base_path).splitlines()
+        requirements = [
+            requirement
+            for requirement in requirements
+            if not requirement.strip() == ""
+            and not requirement.startswith("--index-url")
+            and not requirement.startswith("--extra-index-url")
+        ]
 
         return list(map(self.__requirements_line_converter.parse, requirements))
 
