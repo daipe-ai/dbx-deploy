@@ -6,12 +6,13 @@ from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
 from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.package.PackageInstaller import PackageInstaller
+from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
 
 
-class DatabricksNotebookConverter:
+class PercentSeparatorConverter(NotebookConverterInterface):
 
-    first_line = "# Databricks notebook source"
-    cell_separator = "# COMMAND ----------"
+    first_line = "# %%"
+    cell_separator = "# %%"
 
     def __init__(
         self,
@@ -35,7 +36,7 @@ class DatabricksNotebookConverter:
         return self.__commands_converter.convert(content["commands"], self.first_line, self.cell_separator)
 
     def to_dbc_notebook(self, notebook_name: str, source: str, package_file_path: str, dependencies_dir_path: str) -> str:
-        cells = self.__cells_extractor.extract(source, r"#[\s]+COMMAND[\s]+[\-]+\n+")
+        cells = self.__cells_extractor.extract(source, r"#[\s]+%%[\s]+\n+")
 
         def cleanup_cell(cell: dict):
             if cell["source"] == "# MAGIC %install_master_package_whl":
@@ -55,6 +56,7 @@ class DatabricksNotebookConverter:
 
     def to_workspace_import_notebook(self, source: str, package_file_path: str, dependencies_dir_path: str) -> str:
         source = empty_lines_remover.remove(source)
+        source = source.replace("# %%", "# COMMAND ----------")
         source = source.replace(
             "# MAGIC %install_master_package_whl",
             self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path),
