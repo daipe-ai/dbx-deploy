@@ -14,6 +14,6 @@ class JinjaTemplateLoader:
 
         template_loader = jinja2.FileSystemLoader(searchpath=base_paths)
         template_env = jinja2.Environment(loader=template_loader)
-        template_env.filters["format_cell_content"] = formatCellContent
+        template_env.filters["formatCellContent"] = formatCellContent
 
         return template_env.get_template("json_notebook.tpl")
