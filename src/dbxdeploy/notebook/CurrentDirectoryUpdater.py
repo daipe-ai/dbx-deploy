@@ -6,7 +6,7 @@ from databricks_api import DatabricksAPI
 from pathlib import PurePosixPath
 from pygit2 import GitError
 from dbxdeploy.git.CurrentBranchResolver import CurrentBranchResolver
-from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
+from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.notebook.loader import load_notebook
 from dbxdeploy.workspace.DbcFilesHandler import DbcFilesHandler
@@ -23,20 +23,20 @@ class CurrentDirectoryUpdater:
         git_dev_branch: str,
         logger: Logger,
         dbx_api: DatabricksAPI,
+        notebook_converter: NotebookConverterInterface,
         workspace_exporter: WorkspaceExporter,
         dbc_files_handler: DbcFilesHandler,
         workspace_importer: WorkspaceImporter,
-        databricks_notebook_converter: DatabricksNotebookConverter,
         current_branch_resolver: CurrentBranchResolver,
     ):
         self.__workspace_base_dir = workspace_base_dir
         self.__git_dev_branch = git_dev_branch
         self.__logger = logger
         self.__dbx_api = dbx_api
+        self.__notebook_converter = notebook_converter
         self.__workspace_exporter = workspace_exporter
         self.__dbc_files_handler = dbc_files_handler
         self.__workspace_importer = workspace_importer
-        self.__databricks_notebook_converter = databricks_notebook_converter
         self.__current_branch_resolver = current_branch_resolver
 
     def update(self, notebooks: List[Notebook], current_release_path: PurePosixPath, package_path: str, dependencies_dir_path: str):
@@ -69,12 +69,12 @@ class CurrentDirectoryUpdater:
             source = load_notebook(notebook.path)
 
             try:
-                self.__databricks_notebook_converter.validate_source(source)
+                self.__notebook_converter.validate_source(source)
             except UnexpectedSourceException:
                 self.__logger.debug(f"Skipping unrecognized file {notebook.relative_path}")
                 continue
 
-            script = self.__databricks_notebook_converter.to_workspace_import_notebook(source, package_path, dependencies_dir_path)
+            script = self.__notebook_converter.to_workspace_import_notebook(source, package_path, dependencies_dir_path)
 
             self.__logger.info("Updating {}".format(target_path))
             self.__workspace_importer.overwrite_script(script, target_path)

@@ -13,6 +13,7 @@ parameters:
         patterns: ['**/*.py']
         consumers_patterns: ['**/*.consumer.py']
         master_package_notebook_path: '%dbxdeploy.source.notebooks.base_dir%/app/install_master_package.py'
+        cell_separator: 'command' # command or percent
     target:
       storage: 'dbfs'
       workspace:
@@ -86,6 +87,7 @@ services:
   dbxdeploy.deploy.DeployJobSubmitCommand:
     arguments:
       - '@consolebundle.logger'
+      - !tagged_aliased ['dbxdeploy.notebook.converter', '%dbxdeploy.source.notebooks.cell_separator%']
     tags:
       - 'console.command'
 
@@ -200,8 +202,11 @@ services:
     arguments:
       - '@dbxdeploy.deploy.working_dir'
       - '@consolebundle.logger'
+      - !tagged_aliased ['dbxdeploy.notebook.converter', '%dbxdeploy.source.notebooks.cell_separator%']
 
   dbxdeploy.dbc.DbcNotebookConverter:
+    arguments:
+      - !tagged_aliased ['dbxdeploy.notebook.converter', '%dbxdeploy.source.notebooks.cell_separator%']
 
   dbxdeploy.dbc.DbcUploader:
     arguments:
@@ -288,6 +293,7 @@ services:
       - '%dbxdeploy.git.dev_branch%'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricks_api'
+      - !tagged_aliased ['dbxdeploy.notebook.converter', '%dbxdeploy.source.notebooks.cell_separator%']
 
   dbxdeploy.workspace.WorkspaceBaseDirFactory:
     arguments:
@@ -311,6 +317,7 @@ services:
       - '@dbxdeploy.deploy.working_dir'
       - '%dbxdeploy.source.notebooks.base_dir%'
       - '@consolebundle.logger'
+      - !tagged_aliased ['dbxdeploy.notebook.converter', '%dbxdeploy.source.notebooks.cell_separator%']
     tags:
       - 'console.command'
 
@@ -334,7 +341,13 @@ services:
 
   dbxdeploy.notebook.converter.CellsExtractor:
 
-  dbxdeploy.notebook.converter.DatabricksNotebookConverter:
+  dbxdeploy.notebook.converter.CommandSeparatorConverter:
+    tags:
+      - { name: 'dbxdeploy.notebook.converter', alias: 'command' }
+
+  dbxdeploy.notebook.converter.PercentSeparatorConverter:
+    tags:
+      - { name: 'dbxdeploy.notebook.converter', alias: 'percent' }
 
   dbxdeploy.poetry.PoetryPathResolver:
     arguments:

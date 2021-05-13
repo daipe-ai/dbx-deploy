@@ -5,7 +5,7 @@ import zipfile
 from io import BytesIO
 from dbxdeploy.dbc.PathsPreparer import PathsPreparer
 from dbxdeploy.notebook.Notebook import Notebook
-from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
+from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.notebook.loader import load_notebook
 
@@ -15,13 +15,13 @@ class DbcCreator:
         self,
         working_directory: Path,
         logger: Logger,
+        notebook_converter: NotebookConverterInterface,
         paths_preparer: PathsPreparer,
-        databricks_notebook_converter: DatabricksNotebookConverter,
     ):
         self.__working_directory = working_directory
         self.__logger = logger
+        self.__notebook_converter = notebook_converter
         self.__paths_preparer = paths_preparer
-        self.__databricks_notebook_converter = databricks_notebook_converter
 
     def create(self, notebooks: List[Notebook], package_file_path: str, dependencies_dir_path: str) -> bytes:
         databricks_relative_paths = list(map(lambda notebook: notebook.databricks_relative_path, notebooks))
@@ -39,12 +39,12 @@ class DbcCreator:
             source = load_notebook(notebook.path)
 
             try:
-                self.__databricks_notebook_converter.validate_source(source)
+                self.__notebook_converter.validate_source(source)
             except UnexpectedSourceException:
                 self.__logger.debug(f"Skipping unrecognized file {notebook.relative_path}")
                 continue
 
-            notebook_source = self.__databricks_notebook_converter.to_dbc_notebook(
+            notebook_source = self.__notebook_converter.to_dbc_notebook(
                 notebook.path.stem, source, package_file_path, dependencies_dir_path
             )
             zip_path = PurePosixPath(root_ignored_path_name).joinpath(notebook.databricks_relative_path).with_suffix(".python")

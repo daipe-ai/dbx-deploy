@@ -2,7 +2,7 @@ import unittest
 from pyfonycore.bootstrap import bootstrapped_container
 from dbxdeploy.dbc.CommandConverter import CommandConverter
 from dbxdeploy.dbc.CommandsConverter import CommandsConverter
-from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
+from dbxdeploy.notebook.converter.CommandSeparatorConverter import CommandSeparatorConverter
 
 
 class CommandsConverterTest(unittest.TestCase):
@@ -53,8 +53,8 @@ class CommandsConverterTest(unittest.TestCase):
 
         return commands_converter.convert(
             commands,
-            DatabricksNotebookConverter.first_line,
-            DatabricksNotebookConverter.cell_separator,
+            CommandSeparatorConverter.first_line,
+            CommandSeparatorConverter.cell_separator,
         )
 
     def __assert_notebook(self, expected: list, result_code: str):

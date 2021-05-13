@@ -41,7 +41,6 @@ class NotebooksLocator:
     def __locate(self, paths_patterns: list):
         def create_notebook(path: Path):
             pure_posix_path = PurePosixPath(path.relative_to(self.__project_base_dir).as_posix())
-
             return Notebook(path, path.relative_to(self.__project_base_dir), self.__relative_path_resolver.resolve(pure_posix_path))
 
         base_dir = self.__project_base_dir.joinpath(self.__relative_base_dir)
@@ -49,6 +48,7 @@ class NotebooksLocator:
         files_grabbed = []
 
         for path_pattern in paths_patterns:
-            files_grabbed.extend(base_dir.glob(path_pattern))
+            cleaned = [file for file in base_dir.glob(path_pattern) if not PurePosixPath(file).match(".ipynb_checkpoints/*.py")]
+            files_grabbed.extend(cleaned)
 
         return list(map(create_notebook, files_grabbed))
