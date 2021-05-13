@@ -6,9 +6,10 @@ from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
 from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.package.PackageInstaller import PackageInstaller
+from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
 
 
-class DatabricksNotebookConverter:
+class CommandSeparatorConverter(NotebookConverterInterface):
 
     first_line = "# Databricks notebook source"
     cell_separator = "# COMMAND ----------"
@@ -42,7 +43,7 @@ class DatabricksNotebookConverter:
                 cell["source"] = self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path)
 
             cell["source"] = re.sub(r"^" + self.first_line + "[\r\n]+", "", cell["source"])
-            cell["source"] = re.sub(r"^# MAGIC ", "", cell["source"])
+            cell["source"] = re.sub(r"# MAGIC\s*", "", cell["source"])
             cell["source"] = empty_lines_remover.remove(cell["source"])
 
             return cell

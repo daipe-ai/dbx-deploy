@@ -6,7 +6,7 @@ from pathlib import PurePosixPath, Path
 from dbxdeploy.deploy.DeployerJobSubmitter import DeployerJobSubmitter
 from consolebundle.ConsoleCommand import ConsoleCommand
 from dbxdeploy.notebook.RelativePathResolver import RelativePathResolver
-from dbxdeploy.notebook.converter.DatabricksNotebookConverter import DatabricksNotebookConverter
+from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.notebook.loader import load_notebook
 
@@ -15,12 +15,12 @@ class DeployJobSubmitCommand(ConsoleCommand):
     def __init__(
         self,
         logger: Logger,
-        databricks_notebook_converter: DatabricksNotebookConverter,
+        notebook_converter: NotebookConverterInterface,
         deployer_job_submitter: DeployerJobSubmitter,
         relative_path_resolver: RelativePathResolver,
     ):
         self.__logger = logger
-        self.__databricks_notebook_converter = databricks_notebook_converter
+        self.__notebook_converter = notebook_converter
         self.__deployer_job_submitter = deployer_job_submitter
         self.__relative_path_resolver = relative_path_resolver
 
@@ -40,7 +40,7 @@ class DeployJobSubmitCommand(ConsoleCommand):
         source = load_notebook(notebook_path)
 
         try:
-            self.__databricks_notebook_converter.validate_source(source)
+            self.__notebook_converter.validate_source(source)
         except UnexpectedSourceException:
             self.__logger.error("Only valid Databricks notebooks can be submitted as Databricks job")
             sys.exit(1)
