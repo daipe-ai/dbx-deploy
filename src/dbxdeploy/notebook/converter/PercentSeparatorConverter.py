@@ -7,6 +7,7 @@ from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
 from dbxdeploy.package.PackageInstaller import PackageInstaller
 from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
+from dbxdeploy.notebook.converter import markdowns_converter
 
 
 class PercentSeparatorConverter(NotebookConverterInterface):
@@ -29,19 +30,22 @@ class PercentSeparatorConverter(NotebookConverterInterface):
         self.first_line = self.cell_separator
 
     def validate_source(self, source: str):
-        if re.match(r"^" + self.first_line + "[\r\n]", source) is None:
+        source_file_preprocessed = markdowns_converter.to_databricks_markdown(source)
+        if re.match(r"^" + self.first_line + "[\r\n]", source_file_preprocessed) is None:
             raise UnexpectedSourceException()
 
     def from_dbc_notebook(self, content: dict) -> str:
-        return self.__commands_converter.convert(content["commands"], self.first_line, self.cell_separator)
+        source_file = self.__commands_converter.convert(content["commands"], self.first_line, self.cell_separator)
+        return markdowns_converter.to_jupyter_markdown(source_file)
 
     def to_dbc_notebook(self, notebook_name: str, source: str, package_file_path: str, dependencies_dir_path: str) -> str:
-        cells = self.__cells_extractor.extract(source, r"# %%\n+")
+        preprocessed_source = markdowns_converter.to_databricks_markdown(source)
+        cells = self.__cells_extractor.extract(preprocessed_source, r"# %%\n+")
 
         def cleanup_cell(cell: dict):
-            if cell["source"] == "# MAGIC %install_master_package_whl":
+            cell["source"] = re.sub("# %", "%", cell["source"])
+            if cell["source"] == "%install_master_package_whl":
                 cell["source"] = self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path)
-            cell["source"] = re.sub(r"# MAGIC\s*", "", cell["source"])
             cell["source"] = empty_lines_remover.remove(cell["source"])
 
             return cell
@@ -53,10 +57,13 @@ class PercentSeparatorConverter(NotebookConverterInterface):
         return self.__dbc_script_renderer.render(notebook_name, template, cells)
 
     def to_workspace_import_notebook(self, source: str, package_file_path: str, dependencies_dir_path: str) -> str:
+        source = markdowns_converter.to_databricks_markdown(source)
         source = source.replace("# %%", "# COMMAND ----------")
+        source = re.sub(r"# MAGIC\s*", "", source)
+        source = source.replace("# %", "%")
         source = empty_lines_remover.remove(source)
         source = source.replace(
-            "# MAGIC %install_master_package_whl",
+            "%install_master_package_whl",
             self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path),
         )
 
