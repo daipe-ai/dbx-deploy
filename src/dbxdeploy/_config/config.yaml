@@ -218,6 +218,7 @@ services:
     arguments:
       - '%dbxdeploy.export.force_end_file_newline%'
       - '%dbxdeploy.export.black.enabled%'
+      - '@consolebundle.logger'
 
   dbxdeploy.dbc.CommandConverter:
 

@@ -1,11 +1,13 @@
 import os
 from dbxdeploy.dbc.CommandConverter import CommandConverter
+from logging import Logger
 
 
 class CommandsConverter:
-    def __init__(self, force_end_file_newline: bool, black_enabled: bool, command_converter: CommandConverter):
+    def __init__(self, force_end_file_newline: bool, black_enabled: bool, logger: Logger, command_converter: CommandConverter):
         self.__force_end_file_newline = force_end_file_newline
         self.__black_enabled = black_enabled
+        self.__logger = logger
         self.__command_converter = command_converter
 
     def convert(self, commands: list, first_line: str, cell_separator: str) -> str:
@@ -21,6 +23,11 @@ class CommandsConverter:
         return self.__format(first_line, output)
 
     def __format(self, first_line: str, output: str):
+        def format_without_black(starting_line: str, text: str):
+            if self.__force_end_file_newline is True and text[-1:] != "\n":
+                text += "\n"
+
+            return starting_line + "\n" + text
 
         if self.__black_enabled:
             try:
@@ -28,12 +35,9 @@ class CommandsConverter:
 
                 black_config = black.parse_pyproject_toml(os.getcwd() + "/pyproject.toml")
                 black_mode = black.Mode(**black_config)
-
                 return black.format_str(first_line + "\n" + output, mode=black_mode)
             except ImportError:
-                raise Exception("Black enabled but not installed")
+                self.__logger.warning("Black enabled, but not installed. Skipping black formatting.")
+                return format_without_black(first_line, output)
         else:
-            if self.__force_end_file_newline is True and output[-1:] != "\n":
-                output += "\n"
-
-            return first_line + "\n" + output
+            return format_without_black(first_line, output)
