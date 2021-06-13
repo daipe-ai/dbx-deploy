@@ -54,8 +54,12 @@ class DbcCreator:
         in_memory_output.seek(0)
 
         zip_content = in_memory_output.getvalue()
+        dist_dir = self.__working_directory.joinpath("dist")
 
-        with self.__working_directory.joinpath("dist/notebooks.dbc").open("wb") as f:
+        if not dist_dir.exists():
+            dist_dir.mkdir()
+
+        with dist_dir.joinpath("notebooks.dbc").open("wb") as f:
             f.write(zip_content)
 
         return zip_content
