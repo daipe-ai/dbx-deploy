@@ -5,6 +5,7 @@ from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
 from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
+from dbxdeploy.package.CodestyleLoader import CodestyleLoader
 from dbxdeploy.package.PackageInstaller import PackageInstaller
 from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
 from dbxdeploy.notebook.converter import markdowns_converter
@@ -21,12 +22,14 @@ class PercentSeparatorConverter(NotebookConverterInterface):
         jinja_template_loader: JinjaTemplateLoader,
         dbc_script_renderer: DbcScriptRenderer,
         package_installer: PackageInstaller,
+        codestyle_loader: CodestyleLoader,
     ):
         self.__commands_converter = commands_converter
         self.__cells_extractor = cells_extractor
         self.__jinja_template_loader = jinja_template_loader
         self.__dbc_script_renderer = dbc_script_renderer
         self.__package_installer = package_installer
+        self.__codestyle_loader = codestyle_loader
         self.first_line = self.cell_separator
 
     def validate_source(self, source: str):
@@ -46,6 +49,9 @@ class PercentSeparatorConverter(NotebookConverterInterface):
             cell["source"] = re.sub("# %", "%", cell["source"])
             if cell["source"] == "%install_master_package_whl":
                 cell["source"] = self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path)
+
+            if cell["source"] == "%turn_on_flake8":
+                cell["source"] = self.__codestyle_loader.get_flake8()
             cell["source"] = empty_lines_remover.remove(cell["source"])
 
             return cell
@@ -65,6 +71,10 @@ class PercentSeparatorConverter(NotebookConverterInterface):
         source = source.replace(
             "%install_master_package_whl",
             self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path),
+        )
+        source = source.replace(
+            "%install_master_package_whl",
+            self.__codestyle_loader.get_flake8(),
         )
 
         return source

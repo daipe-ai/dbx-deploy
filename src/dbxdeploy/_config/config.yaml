@@ -141,6 +141,10 @@ services:
 
   dbxdeploy.package.BootstrapConfigAppender:
 
+  dbxdeploy.package.CodestyleLoader:
+    arguments:
+      - '@dbxdeploy.deploy.working_dir'
+
   dbxdeploy.package.LockedPyprojectCreator:
 
   dbxdeploy.package.PackageMetadataLoader:
