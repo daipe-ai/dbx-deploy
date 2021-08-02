@@ -28,7 +28,7 @@ class DeployerJobSubmitter:
         self.__job_submitter = job_submitter
         self.__notebooks_locator = notebooks_locator
 
-    async def deploy_and_submit_job(self, notebook_path: PurePosixPath):
+    async def deploy_and_submit_job(self, notebook_path: PurePosixPath, cluster_id: str):
         package_metadata = self.__package_metadata_loader.load(self.__project_base_dir)
 
         def deploy_root(package_metadata: PackageMetadata):
@@ -37,7 +37,9 @@ class DeployerJobSubmitter:
 
         loop = asyncio.get_event_loop()
 
-        notebook_killer_future = loop.run_in_executor(None, self.__notebook_killer.kill_if_running, notebook_path, package_metadata)
+        notebook_killer_future = loop.run_in_executor(
+            None, self.__notebook_killer.kill_if_running, notebook_path, cluster_id, package_metadata
+        )
         package_deploy_future = loop.run_in_executor(None, self.__package_deployer.deploy, package_metadata)
         dbc_deploy_future = loop.run_in_executor(None, deploy_root, package_metadata)
 
@@ -45,4 +47,4 @@ class DeployerJobSubmitter:
         await package_deploy_future
         await dbc_deploy_future
 
-        self.__job_submitter.submit(notebook_path, package_metadata)
+        self.__job_submitter.submit(notebook_path, cluster_id, package_metadata)

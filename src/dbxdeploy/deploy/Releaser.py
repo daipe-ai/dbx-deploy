@@ -37,7 +37,7 @@ class Releaser:
         self.__jobs_creator_and_runner = jobs_creator_and_runner
         self.__notebooks_locator = notebooks_locator
 
-    async def release(self):
+    async def release(self, cluster_id: str):
         package_metadata = self.__package_metadata_loader.load(self.__project_base_dir)
 
         loop = asyncio.get_event_loop()
@@ -53,7 +53,7 @@ class Releaser:
         consumer_notebooks = self.__notebooks_locator.locate_consumers()
 
         if consumer_notebooks:
-            self.__cluster_restarter.restart()
+            self.__cluster_restarter.restart(cluster_id)
 
             def create_job_notebook_path(consumer_notebook: Notebook):
                 return str(
@@ -66,6 +66,6 @@ class Releaser:
 
             self.__logger.info("--")
 
-            self.__jobs_creator_and_runner.create_and_run(consumer_notebooks, package_metadata)
+            self.__jobs_creator_and_runner.create_and_run(consumer_notebooks, cluster_id, package_metadata)
 
         self.__logger.info("Deployment completed")

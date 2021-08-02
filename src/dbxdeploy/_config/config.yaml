@@ -7,6 +7,8 @@ parameters:
       arguments: ['-d', '{runUrl}']
     git:
       dev_branch: 'master'
+    databricks:
+      cluster_id: # deprecated, will be removed in 2.0; use CLI argument to defined cluster_id instead
     source:
       notebooks:
         base_dir: 'src/%daipe.root_module.name%'
@@ -43,7 +45,6 @@ parameters:
 services:
   dbxdeploy.cluster.ClusterRestarter:
     arguments:
-      - '%dbxdeploy.databricks.cluster_id%'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricks_api'
 
@@ -86,6 +87,7 @@ services:
 
   dbxdeploy.deploy.DeployJobSubmitCommand:
     arguments:
+      - '%dbxdeploy.databricks.cluster_id%'
       - '@consolebundle.logger'
       - !tagged_aliased ['dbxdeploy.notebook.converter', '%dbxdeploy.source.notebooks.cell_separator%']
     tags:
@@ -98,6 +100,7 @@ services:
 
   dbxdeploy.deploy.ReleaseCommand:
     arguments:
+      - '%dbxdeploy.databricks.cluster_id%'
       - '%dbxdeploy.databricks.host%'
       - '%dbxdeploy.target.workspace.base_dir%'
       - '@consolebundle.logger'
@@ -235,13 +238,13 @@ services:
 
   dbxdeploy.job.JobsDeleterCommand:
     arguments:
+      - '%dbxdeploy.databricks.cluster_id%'
       - '@consolebundle.logger'
     tags:
       - 'console.command'
 
   dbxdeploy.job.JobCreator:
     arguments:
-      - '%dbxdeploy.databricks.cluster_id%'
       - '@consolebundle.logger'
       - '@dbxdeploy.databricks_api'
 
@@ -252,7 +255,6 @@ services:
 
   dbxdeploy.job.JobSubmitter:
     arguments:
-      - '%dbxdeploy.databricks.cluster_id%'
       - '@dbxdeploy.target.workspace.base_dir'
       - '%dbxdeploy.browser%'
       - '@consolebundle.logger'
@@ -260,7 +262,6 @@ services:
 
   dbxdeploy.job.RunsGetter:
     arguments:
-      - '%dbxdeploy.databricks.cluster_id%'
       - '@dbxdeploy.target.workspace.base_dir'
       - '@dbxdeploy.databricks_api'
 

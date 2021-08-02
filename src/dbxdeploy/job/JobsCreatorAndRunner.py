@@ -17,8 +17,10 @@ class JobsCreatorAndRunner:
         self.__dbx_api = dbx_api
         self.__job_creator = job_creator
 
-    def create_and_run(self, notebooks: List[Notebook], package_metadata: PackageMetadata):
-        created_jobs = list(map(lambda notebook: self.__job_creator.create(notebook.databricks_relative_path, package_metadata), notebooks))
+    def create_and_run(self, notebooks: List[Notebook], cluster_id: str, package_metadata: PackageMetadata):
+        created_jobs = list(
+            map(lambda notebook: self.__job_creator.create(notebook.databricks_relative_path, cluster_id, package_metadata), notebooks)
+        )
 
         self.__logger.info("--")
 
