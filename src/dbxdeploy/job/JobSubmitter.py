@@ -9,26 +9,24 @@ from logging import Logger
 class JobSubmitter:
     def __init__(
         self,
-        cluster_id: str,
         workspace_base_dir: PurePosixPath,
         browser_config: Box,
         logger: Logger,
         dbx_api: DatabricksAPI,
     ):
-        self.__cluster_id = cluster_id
         self.__workspace_base_dir = workspace_base_dir
         self.__browser_config = browser_config
         self.__logger = logger
         self.__dbx_api = dbx_api
 
-    def submit(self, notebook_path: PurePosixPath, package_metadata: PackageMetadata):
+    def submit(self, notebook_path: PurePosixPath, cluster_id: str, package_metadata: PackageMetadata):
         notebook_release_path = self.__workspace_base_dir.joinpath(notebook_path)
 
-        self.__logger.info(f"Submitting job for {notebook_release_path} to cluster {self.__cluster_id}")
+        self.__logger.info(f"Submitting job for {notebook_release_path} to cluster {cluster_id}")
 
         submited_run = self.__dbx_api.jobs.submit_run(
             run_name=package_metadata.get_job_run_name(),
-            existing_cluster_id=self.__cluster_id,
+            existing_cluster_id=cluster_id,
             notebook_task=dict(notebook_path=str(notebook_release_path)),
         )
 

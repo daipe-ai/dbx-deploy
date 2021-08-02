@@ -16,9 +16,9 @@ class NotebookKiller:
         self.__dbx_api = dbx_api
         self.__runs_getter = runs_getter
 
-    def kill_if_running(self, notebook_path: PurePosixPath, package_metadata: PackageMetadata):
+    def kill_if_running(self, notebook_path: PurePosixPath, cluster_id: str, package_metadata: PackageMetadata):
         self.__logger.info("Looking for jobs running the {} notebook".format(notebook_path))
-        previous_notebook_runs = self.__runs_getter.get(notebook_path, package_metadata)
+        previous_notebook_runs = self.__runs_getter.get(notebook_path, cluster_id, package_metadata)
 
         if previous_notebook_runs:
             for running_job in previous_notebook_runs:
