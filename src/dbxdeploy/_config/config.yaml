@@ -19,7 +19,7 @@ parameters:
     target:
       storage: 'dbfs'
       workspace:
-        base_dir: '/{currentBranch}'
+        base_dir: '/{current_branch}'
         release_path: '%dbxdeploy.target.workspace.base_dir%/{current_time}_{random_string}'
         current_path: '%dbxdeploy.target.workspace.base_dir%/_current'
       package:
