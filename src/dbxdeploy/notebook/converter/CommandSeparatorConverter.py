@@ -5,6 +5,7 @@ from dbxdeploy.notebook.converter.CellsExtractor import CellsExtractor
 from dbxdeploy.notebook.converter.DbcScriptRenderer import DbcScriptRenderer
 from dbxdeploy.notebook.converter.JinjaTemplateLoader import JinjaTemplateLoader
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
+from dbxdeploy.package.CodeStyleLoader import CodeStyleLoader
 from dbxdeploy.package.PackageInstaller import PackageInstaller
 from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
 
@@ -21,12 +22,14 @@ class CommandSeparatorConverter(NotebookConverterInterface):
         jinja_template_loader: JinjaTemplateLoader,
         dbc_script_renderer: DbcScriptRenderer,
         package_installer: PackageInstaller,
+        codestyle_loader: CodeStyleLoader,
     ):
         self.__commands_converter = commands_converter
         self.__cells_extractor = cells_extractor
         self.__jinja_template_loader = jinja_template_loader
         self.__dbc_script_renderer = dbc_script_renderer
         self.__package_installer = package_installer
+        self.__codestyle_loader = codestyle_loader
 
     def validate_source(self, source: str):
         if re.match(r"^" + self.first_line + "[\r\n]", source) is None:
@@ -41,6 +44,13 @@ class CommandSeparatorConverter(NotebookConverterInterface):
         def cleanup_cell(cell: dict):
             if cell["source"] == "# MAGIC %install_master_package_whl":
                 cell["source"] = self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path)
+
+            if cell["source"] == f"# MAGIC {self.__codestyle_loader.get_setup_command()}":
+                cell["source"] = (
+                    f"{self.__codestyle_loader.get_codestyle_install_command()}\n"
+                    f"{self.cell_separator}\n"
+                    f"{self.__codestyle_loader.get_codestyle_setup_command()}"
+                )
 
             cell["source"] = re.sub(r"^" + self.first_line + "[\r\n]+", "", cell["source"])
             cell["source"] = re.sub(r"# MAGIC\s*", "", cell["source"])
@@ -59,6 +69,12 @@ class CommandSeparatorConverter(NotebookConverterInterface):
         source = source.replace(
             "# MAGIC %install_master_package_whl",
             self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path),
+        )
+        source = source.replace(
+            f"# MAGIC {self.__codestyle_loader.get_setup_command()}",
+            f"{self.__codestyle_loader.get_codestyle_install_command()}\n"
+            f"{self.cell_separator}\n"
+            f"{self.__codestyle_loader.get_codestyle_setup_command()}",
         )
 
         return source

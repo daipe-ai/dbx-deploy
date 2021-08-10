@@ -30,9 +30,10 @@ class PackageInstaller:
 
         return (
             "# %install_master_package_whl\n"
-            "import IPython, os\n"
-            f"IPython.get_ipython().run_line_magic"
-            f"('pip', f'install {self.__modify_dbfs(package_file_path)} {pip_options}')"
+            "import IPython\n"
+            "ipy = IPython.get_ipython()\n"
+            "ipy.run_line_magic"
+            f"('pip', 'install {self.__modify_dbfs(package_file_path)} {pip_options}') # noqa E501"
         )
 
     def __get_online_install_command(self, package_file_path: str):
