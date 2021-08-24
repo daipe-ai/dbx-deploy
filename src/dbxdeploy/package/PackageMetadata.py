@@ -14,7 +14,7 @@ class PackageMetadata:
         dependencies: List[Dependency],
     ):
         self.__package_name = package_name
-        self.__package_version = package_version
+        self.__package_version = f"{package_version}.{date_time.strftime('%Y%m%d%H%M%S%f')}"
         self.__date_time = date_time
         self.__random_string = random_string
         self.__dependencies = dependencies
@@ -40,7 +40,7 @@ class PackageMetadata:
         return self.__dependencies
 
     def get_package_filename(self):
-        return "{}-{}-py3-none-any.whl".format(self.__get_package_name(), self.__package_version)
+        return f"{self.__get_package_name()}-{self.__package_version}-py3-none-any.whl"
 
     def get_notebook_path_reg_ex(self, workspace_base_dir: PurePosixPath, notebook_path: PurePosixPath) -> str:
         return "^" + str(workspace_base_dir) + "/([^/]+)/" + str(notebook_path) + "$"
