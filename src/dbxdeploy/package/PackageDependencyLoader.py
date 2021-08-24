@@ -13,7 +13,7 @@ class PackageDependencyLoader:
     def load(self, project_base_dir: Path) -> List[Dependency]:
         pyproject_path = project_base_dir.joinpath("pyproject.toml")
         poetry_lock_path = project_base_dir.joinpath("poetry.lock")
-        locked_pyproject_toml = self.__locked_pyproject_creator.get_locked_pyproject_toml(project_base_dir, pyproject_path)
+        locked_pyproject_toml = self.__locked_pyproject_creator.get_locked_pyproject_toml(pyproject_path)
         locked_pyproject_dependencies = locked_pyproject_toml["tool"]["poetry"]["dependencies"]
         poetry_lock_dependencies = self.__load_poetry_lock_dependencies(poetry_lock_path)
         dependencies = []

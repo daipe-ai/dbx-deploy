@@ -1,19 +1,13 @@
 import time
-import re
 from pathlib import Path
 from pathlib import PurePosixPath
 from logging import Logger
 from databricks_api import DatabricksAPI
 from dbxdeploy.package.PackageMetadata import PackageMetadata
-from dbxdeploy.package.RequirementsCreator import RequirementsCreator
+from dbxdeploy.package.RequirementsGenerator import RequirementsGenerator
+from dbxdeploy.package.RequirementsConfig import RequirementsConfig
 from dbxdeploy.dbfs.DbfsFileUploader import DbfsFileUploader
 from dbxdeploy.dbfs.DbfsFileDownloader import DbfsFileDownloader
-from dbxdeploy.package.requirements_regex import (
-    CLASSIC_LINE_REGEX,
-    GIT_LINE_REGEX,
-    GIT_OLD_LINE1_REGEX,
-    GIT_OLD_LINE2_REGEX,
-)
 
 
 class DependencyBuilder:
@@ -25,7 +19,7 @@ class DependencyBuilder:
         dbfs_file_uploader: DbfsFileUploader,
         dbfs_file_downloader: DbfsFileDownloader,
         job_cluster_definition: dict,
-        requirements_creator: RequirementsCreator,
+        requirements_generator: RequirementsGenerator,
     ):
         self.__project_base_dir = project_base_dir
         self.__logger = logger
@@ -33,38 +27,49 @@ class DependencyBuilder:
         self.__dbfs_file_uploader = dbfs_file_uploader
         self.__dbfs_file_downloader = dbfs_file_downloader
         self.__job_cluster_definition = job_cluster_definition
-        self.__requirements_creator = requirements_creator
+        self.__requirements_generator = requirements_generator
 
     def build(self, base_path: Path, package_metadata: PackageMetadata, dev_dependencies: bool = False):
         self.__logger.info("Preparing packages build script...")
 
         dbfs_build_dir = PurePosixPath(f"dbfs:/tmp/DependencyBuild/{package_metadata.get_job_run_name()}")
         dbfs_script_path = dbfs_build_dir.joinpath("download_dependencies.py")
+        dbfs_requirements_path = dbfs_build_dir.joinpath("requirements.txt")
         dbfs_dependencies_dir = dbfs_build_dir.joinpath("dependencies")
         local_dependencies_dir = base_path.joinpath("dependencies")
         unix_dependencies_dir = "/dbfs/" + dbfs_dependencies_dir.as_posix().lstrip("dbfs:/")
-        requirements = self.__requirements_creator.export_to_string(base_path, dev_dependencies=dev_dependencies).splitlines()
-        requirements = [
-            requirement
-            for requirement in requirements
-            if re.match(CLASSIC_LINE_REGEX, requirement)
-            or re.match(GIT_LINE_REGEX, requirement)
-            or re.match(GIT_OLD_LINE1_REGEX, requirement)
-            or re.match(GIT_OLD_LINE2_REGEX, requirement)
-        ]
+        unix_requirements_path = "/dbfs/" + dbfs_requirements_path.as_posix().lstrip("dbfs:/")
+
+        requirements_config = RequirementsConfig()
+
+        if dev_dependencies:
+            requirements_config = requirements_config.include_dev_dependencies()
+
+        requirements_config = requirements_config.include_credentials()
+        requirements_config = requirements_config.exclude_file_dependencies()
+
+        requirements_txt = self.__requirements_generator.generate(requirements_config)
+
+        requirements_config = requirements_config.redact_credentials()
+
+        requirements_txt_redacted = self.__requirements_generator.generate(requirements_config)
 
         script = (
             f"import sys, subprocess\n"
-            f"requirements = {requirements}\n"
-            f'subprocess.run([sys.executable, "-m", "pip", "wheel", "-w", "{unix_dependencies_dir}", *requirements], capture_output=False, encoding="utf-8")\n'
-        ).encode("utf-8")
+            f"subprocess.run(\n"
+            f'    [sys.executable, "-m", "pip", "wheel", "-w", "{unix_dependencies_dir}", "-r", "{unix_requirements_path}"],\n'
+            f'    capture_output=False, encoding="utf-8"\n'
+            f")\n"
+        )
 
         self.__logger.info("Uploading build script to dbfs...")
-        self.__dbfs_file_uploader.upload(script, str(dbfs_script_path))
+        self.__dbfs_file_uploader.upload(script.encode("utf-8"), str(dbfs_script_path))
+        self.__dbfs_file_uploader.upload(requirements_txt.encode("utf-8"), str(dbfs_requirements_path))
         self.__logger.info("Build Script uploaded")
 
         self.__logger.info("Building python packages on Databricks cluster...")
         self.__submit_python_script_on_job_cluster(dbfs_script_path, package_metadata, wait=True)
+        self.__dbfs_file_uploader.upload(requirements_txt_redacted.encode("utf-8"), str(dbfs_requirements_path), overwrite=True)
         self.__logger.info("Build done")
 
         self.__logger.info(f"Downloading built packages to {local_dependencies_dir}...")

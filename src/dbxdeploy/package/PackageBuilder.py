@@ -35,7 +35,7 @@ class PackageBuilder:
         pyproject_orig_path = base_path.joinpath("pyproject.toml")
         pyproject_new_path = base_path.joinpath("pyproject.toml.new")
 
-        self.__locked_pyproject_creator.create(base_path, pyproject_orig_path, pyproject_new_path)
+        self.__locked_pyproject_creator.create(pyproject_orig_path, pyproject_new_path)
 
         package_file_name = package_metadata.get_package_filename()
         package_path = self.__project_base_dir.joinpath(Path("dist")).joinpath(package_file_name)
