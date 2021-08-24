@@ -25,8 +25,8 @@ class PackageInstaller:
     def __modify_dbfs(self, path: str):
         return "/dbfs/" + path.lstrip("dbfs:/")
 
-    def __get_install_command(self, package_file_path: str, options_list: [str]):
-        pip_options = " ".join(options_list)
+    def __get_install_command(self, package_file_path: str, options: [str]):
+        pip_options = " ".join(options)
 
         return (
             "# %install_master_package_whl\n"
@@ -37,20 +37,21 @@ class PackageInstaller:
         )
 
     def __get_online_install_command(self, package_file_path: str):
-        options_list = ["--force-reinstall"]
+        options = []
+
         if self.__package_index_resolver.has_default_index():
-            options_list.append(f"{self.__get_index_url_part()}")
+            options.append(f"{self.__get_index_url_part()}")
 
         if self.__package_index_resolver.has_secondary_indexes():
-            options_list.append(f"{self.__get_extra_index_url_part()}")
+            options.append(f"{self.__get_extra_index_url_part()}")
 
-        install_command = self.__get_install_command(package_file_path, options_list)
+        install_command = self.__get_install_command(package_file_path, options)
 
         return install_command
 
     def __get_offline_install_command(self, package_file_path: str, dependencies_dir_path: str):
-        options_list = ["--no-index", f"--find-links {self.__modify_dbfs(dependencies_dir_path)}", "--force-reinstall"]
-        install_command = self.__get_install_command(package_file_path, options_list)
+        options = ["--no-index", f"--find-links {self.__modify_dbfs(dependencies_dir_path)}"]
+        install_command = self.__get_install_command(package_file_path, options)
 
         return install_command
 
