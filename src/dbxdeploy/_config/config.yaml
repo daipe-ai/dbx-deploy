@@ -184,7 +184,9 @@ services:
     arguments:
       - '@dbxdeploy.deploy.working_dir'
 
-  dbxdeploy.package.RequirementsCreator:
+  dbxdeploy.package.RequirementsGenerator:
+    arguments:
+      - '@dbxdeploy.deploy.working_dir'
 
   dbxdeploy.package.RequirementsLineConverter:
 

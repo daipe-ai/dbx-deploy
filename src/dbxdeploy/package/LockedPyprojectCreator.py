@@ -3,41 +3,37 @@ from tomlkit import table
 from tomlkit.toml_document import TOMLDocument
 from pathlib import Path
 from dbxdeploy.package.RequirementsLineConverter import RequirementsLineConverter
-from dbxdeploy.package.RequirementsCreator import RequirementsCreator
+from dbxdeploy.package.RequirementsGenerator import RequirementsGenerator
+from dbxdeploy.package.RequirementsConfig import RequirementsConfig
 
 
 class LockedPyprojectCreator:
     def __init__(
         self,
         requirements_line_converter: RequirementsLineConverter,
-        requirements_creator: RequirementsCreator,
+        requirements_generator: RequirementsGenerator,
     ):
         self.__requirements_line_converter = requirements_line_converter
-        self.__requirements_creator = requirements_creator
+        self.__requirements_generator = requirements_generator
 
-    def create(self, base_path: Path, pyproject_orig_path: Path, pyproject_new_path: Path):
-        toml_doc = self.get_locked_pyproject_toml(base_path, pyproject_orig_path)
+    def create(self, pyproject_orig_path: Path, pyproject_new_path: Path):
+        toml_doc = self.get_locked_pyproject_toml(pyproject_orig_path)
 
         with pyproject_new_path.open("w") as t:
             t.write(toml_doc.as_string())
 
-    def get_locked_pyproject_toml(self, base_path: Path, pyproject_orig_path: Path) -> TOMLDocument:
-        main_dependencies = self.__load_main_dependencies(base_path)
+    def get_locked_pyproject_toml(self, pyproject_orig_path: Path) -> TOMLDocument:
+        main_dependencies = self.__load_main_dependencies()
         toml_doc = self.__generate_pyproject_new(pyproject_orig_path, main_dependencies)
 
         return toml_doc
 
-    def __load_main_dependencies(self, base_path: Path) -> list:
-        requirements = self.__requirements_creator.export_to_string(base_path).splitlines()
-        requirements = [
-            requirement
-            for requirement in requirements
-            if not requirement.strip() == ""
-            and not requirement.startswith("--index-url")
-            and not requirement.startswith("--extra-index-url")
-        ]
+    def __load_main_dependencies(self) -> list:
+        requirements_config = RequirementsConfig()
+        requirements_config = requirements_config.exclude_index_info()
+        requirements_txt = self.__requirements_generator.generate(requirements_config)
 
-        return list(map(self.__requirements_line_converter.parse, requirements))
+        return list(map(self.__requirements_line_converter.parse, requirements_txt.splitlines()))
 
     def __generate_pyproject_new(self, pyproject_orig_path: Path, requirements: list) -> TOMLDocument:
         with pyproject_orig_path.open("r") as t:
