@@ -43,14 +43,14 @@ class DependencyBuilder:
         requirements_config = RequirementsConfig()
 
         if dev_dependencies:
-            requirements_config = requirements_config.include_dev_dependencies()
+            requirements_config.include_dev_dependencies()
 
-        requirements_config = requirements_config.include_credentials()
-        requirements_config = requirements_config.exclude_file_dependencies()
+        requirements_config.include_credentials()
+        requirements_config.exclude_file_dependencies()
 
         requirements_txt = self.__requirements_generator.generate(requirements_config)
 
-        requirements_config = requirements_config.redact_credentials()
+        requirements_config.redact_credentials()
 
         requirements_txt_redacted = self.__requirements_generator.generate(requirements_config)
 
