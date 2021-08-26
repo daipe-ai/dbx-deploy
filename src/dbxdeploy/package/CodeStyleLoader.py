@@ -19,7 +19,7 @@ class CodeStyleLoader:
 
         return (
             f"# {self.get_setup_command()}\n"
-            "import IPython\n"
+            "import IPython  # noqa E402\n"
             f"IPython.get_ipython().run_line_magic('pip', 'install flake8=={versions['flake8']} pycodestyle_magic=={versions['pycodestyle-magic']}')\n"
         )
 
@@ -30,7 +30,7 @@ class CodeStyleLoader:
         flake8_options = " ".join([f"--{opt[2:].replace('=', ' ').replace('-', '_')}" for opt in flake8_options if opt.startswith("--")])
 
         return (
-            "import IPython\n"
+            "import IPython  # noqa E402\n"
             f"ipy = IPython.get_ipython()\n"
             "ipy.run_line_magic('load_ext', 'pycodestyle_magic')\n"
             f"ipy.run_line_magic('flake8_on', '{flake8_options}')"
