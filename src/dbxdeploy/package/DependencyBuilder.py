@@ -68,8 +68,17 @@ class DependencyBuilder:
         self.__logger.info("Build Script uploaded")
 
         self.__logger.info("Building python packages on Databricks cluster...")
-        self.__submit_python_script_on_job_cluster(dbfs_script_path, package_metadata, wait=True)
-        self.__dbfs_file_uploader.upload(requirements_txt_redacted.encode("utf-8"), str(dbfs_requirements_path), overwrite=True)
+
+        try:
+            self.__submit_python_script_on_job_cluster(dbfs_script_path, package_metadata, wait=True)
+
+        except BaseException:
+            self.__logger.error("Build failed")
+            return
+
+        finally:
+            self.__dbfs_file_uploader.upload(requirements_txt_redacted.encode("utf-8"), str(dbfs_requirements_path), overwrite=True)
+
         self.__logger.info("Build done")
 
         self.__logger.info(f"Downloading built packages to {local_dependencies_dir}...")
