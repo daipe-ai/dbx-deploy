@@ -34,7 +34,7 @@ class PackageDependencyLoader:
 
     def __load_main_dependencies(self) -> list:
         requirements_config = RequirementsConfig()
-        requirements_config = requirements_config.exclude_index_info()
+        requirements_config.exclude_index_info()
         requirements_txt = self.__requirements_generator.generate(requirements_config)
 
         return list(map(self.__requirements_line_converter.parse, requirements_txt.splitlines()))
