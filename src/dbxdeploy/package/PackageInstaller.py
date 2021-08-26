@@ -31,6 +31,7 @@ class PackageInstaller:
         return (
             "# %install_master_package_whl\n"
             "import IPython\n"
+            "import os\n"
             "ipy = IPython.get_ipython()\n"
             "ipy.run_line_magic"
             f"('pip', 'install {self.__modify_dbfs(package_file_path)} {pip_options}') # noqa E501"
