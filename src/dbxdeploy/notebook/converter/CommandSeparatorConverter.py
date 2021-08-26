@@ -70,11 +70,12 @@ class CommandSeparatorConverter(NotebookConverterInterface):
             "# MAGIC %install_master_package_whl",
             self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path),
         )
-        source = source.replace(
-            f"# MAGIC {self.__codestyle_loader.get_setup_command()}",
-            f"{self.__codestyle_loader.get_codestyle_install_command()}\n"
-            f"{self.cell_separator}\n"
-            f"{self.__codestyle_loader.get_codestyle_setup_command()}",
-        )
+        if self.__codestyle_loader.get_setup_command() in source:
+            source = source.replace(
+                f"# MAGIC {self.__codestyle_loader.get_setup_command()}",
+                f"{self.__codestyle_loader.get_codestyle_install_command()}\n"
+                f"{self.cell_separator}\n"
+                f"{self.__codestyle_loader.get_codestyle_setup_command()}",
+            )
 
         return source
