@@ -3,6 +3,7 @@ from pyfonycore.bootstrap import bootstrapped_container
 from dbxdeploy.dbc.CommandConverter import CommandConverter
 from dbxdeploy.dbc.CommandsConverter import CommandsConverter
 from dbxdeploy.notebook.converter.CommandSeparatorConverter import CommandSeparatorConverter
+from dbxdeploy.black.BlackChecker import BlackChecker
 from logging import Logger
 
 
@@ -45,7 +46,7 @@ class CommandsConverterTest(unittest.TestCase):
 
     def __create_result(self, force_end_file_newline: bool, black_enabled: bool):
         commands_converter = CommandsConverter(
-            force_end_file_newline, black_enabled, self.__logger, self.__command_converter
+            force_end_file_newline, self.__logger, self.__command_converter, BlackChecker(black_enabled)
         )  # type: CommandsConverter
 
         commands = [

@@ -226,7 +226,6 @@ services:
   dbxdeploy.dbc.CommandsConverter:
     arguments:
       - '%dbxdeploy.export.force_end_file_newline%'
-      - '%dbxdeploy.export.black.enabled%'
       - '@consolebundle.logger'
 
   dbxdeploy.dbc.CommandConverter:
@@ -360,3 +359,7 @@ services:
   dbxdeploy.poetry.PoetryPathResolver:
     arguments:
       - '%dbxdeploy.poetry.path%'
+
+  dbxdeploy.black.BlackChecker:
+    arguments:
+      - '%dbxdeploy.export.black.enabled%'
