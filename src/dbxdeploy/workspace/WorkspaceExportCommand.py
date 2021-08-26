@@ -9,6 +9,7 @@ from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSou
 from dbxdeploy.notebook.loader import load_notebook
 from dbxdeploy.workspace.DbcFilesHandler import DbcFilesHandler
 from dbxdeploy.workspace.WorkspaceExporter import WorkspaceExporter
+from dbxdeploy.black.BlackChecker import BlackChecker
 
 
 class WorkspaceExportCommand(ConsoleCommand):
@@ -22,6 +23,7 @@ class WorkspaceExportCommand(ConsoleCommand):
         workspace_exporter: WorkspaceExporter,
         dbc_files_handler: DbcFilesHandler,
         dbc_notebook_converter: DbcNotebookConverter,
+        black_checker: BlackChecker,
     ):
         self.__workspace_base_dir = workspace_base_dir
         self.__local_base_dir = project_base_dir.joinpath(relative_base_dir)
@@ -30,6 +32,7 @@ class WorkspaceExportCommand(ConsoleCommand):
         self.__workspace_exporter = workspace_exporter
         self.__dbc_files_handler = dbc_files_handler
         self.__dbc_notebook_converter = dbc_notebook_converter
+        self.__black_checker = black_checker
 
     def get_command(self) -> str:
         return "dbx:workspace:export"
@@ -39,6 +42,9 @@ class WorkspaceExportCommand(ConsoleCommand):
 
     def run(self, input_args: Namespace):
         self.__logger.info(f"Exporting {self.__workspace_base_dir} to {self.__local_base_dir}")
+
+        if self.__black_checker.is_black_enabled and not self.__black_checker.is_black_installed:
+            self.__logger.warning("Black enabled, but not installed. Skipping black formatting.")
 
         dbc_content = self.__workspace_exporter.export(self.__workspace_base_dir)
         self.__dbc_files_handler.handle(dbc_content, self.__read_file)
@@ -63,9 +69,20 @@ class WorkspaceExportCommand(ConsoleCommand):
                 self.__logger.error(f"Skipping unrecognized file {local_file_path}")
                 return
 
+        if self.__black_checker.is_black_enabled and self.__black_checker.is_black_installed:
+            import black
+
+            try:
+                py_content = self.__dbc_notebook_converter.convert(zip_file, file)
+                self.__write_py_content(local_file_path, py_content)
+
+            except black.InvalidInput:
+                self.__logger.error(f"Black cannot format file {file.orig_filename}, skipping...")
+                return
+
+    def __write_py_content(self, local_file_path, py_content):
         if not local_file_path.parent.exists():
             local_file_path.parent.mkdir(parents=True)
 
         with local_file_path.open("wb") as f:
-            py_content = self.__dbc_notebook_converter.convert(zip_file, file)
             f.write(py_content)
