@@ -76,7 +76,7 @@ services:
   dbxdeploy.deploy.DeployCommand:
     arguments:
       - '%dbxdeploy.databricks.host%'
-      - '%dbxdeploy.target.workspace.base_dir%'
+      - '@dbxdeploy.target.workspace.base_dir'
       - '@consolebundle.logger'
     tags:
       - 'console.command'
@@ -102,7 +102,7 @@ services:
     arguments:
       - '%dbxdeploy.databricks.cluster_id%'
       - '%dbxdeploy.databricks.host%'
-      - '%dbxdeploy.target.workspace.base_dir%'
+      - '@dbxdeploy.target.workspace.base_dir'
       - '@consolebundle.logger'
     tags:
       - 'console.command'

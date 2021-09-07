@@ -1,12 +1,13 @@
 import asyncio
 from argparse import Namespace
 from logging import Logger
+from pathlib import PurePosixPath
 from dbxdeploy.deploy.Deployer import Deployer
 from consolebundle.ConsoleCommand import ConsoleCommand
 
 
 class DeployCommand(ConsoleCommand):
-    def __init__(self, dbx_host: str, workspace_base_dir: str, logger: Logger, deployer: Deployer):
+    def __init__(self, dbx_host: str, workspace_base_dir: PurePosixPath, logger: Logger, deployer: Deployer):
         self.__dbx_host = dbx_host
         self.__workspace_base_dir = workspace_base_dir
         self.__logger = logger

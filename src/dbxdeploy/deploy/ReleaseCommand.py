@@ -1,13 +1,14 @@
 import asyncio
 from argparse import Namespace, ArgumentParser
 from logging import Logger
+from pathlib import PurePosixPath
 from typing import Optional
 from dbxdeploy.deploy.Releaser import Releaser
 from consolebundle.ConsoleCommand import ConsoleCommand
 
 
 class ReleaseCommand(ConsoleCommand):
-    def __init__(self, cluster_id: Optional[str], dbx_host: str, workspace_base_dir: str, logger: Logger, releaser: Releaser):
+    def __init__(self, cluster_id: Optional[str], dbx_host: str, workspace_base_dir: PurePosixPath, logger: Logger, releaser: Releaser):
         self.__cluster_id = cluster_id
         self.__dbx_host = dbx_host
         self.__workspace_base_dir = workspace_base_dir
