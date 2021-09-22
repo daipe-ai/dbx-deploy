@@ -32,4 +32,4 @@ class ReleaseCommand(ConsoleCommand):
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.__releaser.release(cluster_id))
 
-        self.__logger.info(f"Deployed to {self.__dbx_host}, {self.__workspace_base_dir}")
+        self.__logger.info(f"Released to {self.__dbx_host}/#workspace{self.__workspace_base_dir}")
