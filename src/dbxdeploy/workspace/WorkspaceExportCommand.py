@@ -70,16 +70,16 @@ class WorkspaceExportCommand(ConsoleCommand):
                 return
 
         if self.__black_checker.is_black_enabled and self.__black_checker.is_black_installed:
-            import black
-
             try:
-                py_content = self.__dbc_notebook_converter.convert(zip_file, file)
-                self.__write_py_content(local_file_path, py_content)
+                self.__dbc_notebook_converter.convert(zip_file, file)
 
-            except black.InvalidInput as ex:
+            except Exception as ex:
                 self.__logger.error(f"Black cannot format file {file.orig_filename}, skipping...")
                 self.__logger.error(ex)
                 return
+
+        py_content = self.__dbc_notebook_converter.convert(zip_file, file)
+        self.__write_py_content(local_file_path, py_content)
 
     def __write_py_content(self, local_file_path, py_content):
         if not local_file_path.parent.exists():
