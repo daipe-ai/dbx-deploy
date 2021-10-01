@@ -33,7 +33,7 @@ python-box = "^3.4"
 tomlkit = ">=0.5.8,<1.0.0"
 pyfony-bundles = "0.4.*"
 pyfony-core = "0.8.*"
-console-bundle = "0.4.*"
+console-bundle = "^0.5"
 Jinja2 = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
