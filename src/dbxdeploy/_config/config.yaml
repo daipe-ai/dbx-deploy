@@ -43,14 +43,43 @@ parameters:
         enabled: True
 
 services:
+  dbxdeploy.databricks.client:
+    class: databricks_cli.sdk.ApiClient
+    autowire: False
+    arguments:
+      host: '%dbxdeploy.databricks.host%'
+      token: '%dbxdeploy.databricks.token%'
+
+  dbxdeploy.utils.DatabricksClient:
+    class: dbxdeploy.utils.DatabricksClient.DatabricksClient
+    arguments:
+      client: '@dbxdeploy.databricks.client'
+
+  dbxdeploy.package.dependency_builder.databricks.client:
+    class: databricks_cli.sdk.ApiClient
+    autowire: False
+    arguments:
+      host: '%dbxdeploy.target.package.build.databricks.host%'
+      token: '%dbxdeploy.target.package.build.databricks.token%'
+
+  dbxdeploy.package.dependency_builder.databricks_api:
+    class: dbxdeploy.utils.DatabricksClient.DatabricksClient
+    arguments:
+      client: '@dbxdeploy.package.dependency_builder.databricks.client'
+
+  dbxdeploy.databricks.dbfs_api:
+    class: databricks_cli.dbfs.api.DbfsApi
+    arguments:
+      - '@dbxdeploy.databricks.client'
+
   dbxdeploy.cluster.ClusterRestarter:
     arguments:
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
 
   dbxdeploy.dbfs.DbfsFileUploader:
     arguments:
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
     tags:
       - {name: 'dbxdeploy.package.uploader', alias: 'dbfs'}
 
@@ -190,13 +219,6 @@ services:
 
   dbxdeploy.package.RequirementsLineConverter:
 
-  dbxdeploy.package.dependency_builder.databricks_api:
-    class: databricks_api.databricks.DatabricksAPI
-    autowire: False
-    arguments:
-      host: '%dbxdeploy.target.package.build.databricks.host%'
-      token: '%dbxdeploy.target.package.build.databricks.token%'
-
   dbxdeploy.package.dependency_builder.DbfsFileUploader:
     class: dbxdeploy.dbfs.DbfsFileUploader
     arguments:
@@ -219,7 +241,7 @@ services:
 
   dbxdeploy.dbc.DbcUploader:
     arguments:
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
 
   dbxdeploy.dbc.PathsPreparer:
 
@@ -234,12 +256,12 @@ services:
     arguments:
       - '@dbxdeploy.target.workspace.base_dir'
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
 
   dbxdeploy.job.JobsDeleter:
     arguments:
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
 
   dbxdeploy.job.JobsDeleterCommand:
     arguments:
@@ -251,55 +273,36 @@ services:
   dbxdeploy.job.JobCreator:
     arguments:
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
 
   dbxdeploy.job.JobsCreatorAndRunner:
     arguments:
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
 
   dbxdeploy.job.JobSubmitter:
     arguments:
       - '@dbxdeploy.target.workspace.base_dir'
       - '%dbxdeploy.browser%'
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
 
   dbxdeploy.job.RunsGetter:
     arguments:
       - '@dbxdeploy.target.workspace.base_dir'
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
 
   dbxdeploy.job.NotebookKiller:
     arguments:
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricks_api'
-
-  dbxdeploy.databricks_api:
-    class: databricks_api.databricks.DatabricksAPI
-    autowire: False
-    arguments:
-      host: '%dbxdeploy.databricks.host%'
-      token: '%dbxdeploy.databricks.token%'
-
-  dbxdeploy.databricks.client:
-    class: databricks_cli.sdk.ApiClient
-    autowire: False
-    arguments:
-      host: '%dbxdeploy.databricks.host%'
-      token: '%dbxdeploy.databricks.token%'
-
-  dbxdeploy.databricks.dbfs_api:
-    class: databricks_cli.dbfs.api.DbfsApi
-    arguments:
-      - '@dbxdeploy.databricks.client'
+      - '@dbxdeploy.utils.DatabricksClient'
 
   dbxdeploy.notebook.CurrentDirectoryUpdater:
     arguments:
       - '@dbxdeploy.target.workspace.base_dir'
       - '%dbxdeploy.git.dev_branch%'
       - '@consolebundle.logger'
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
       - !tagged_aliased ['dbxdeploy.notebook.converter', '%dbxdeploy.source.notebooks.cell_separator%']
 
   dbxdeploy.workspace.WorkspaceBaseDirFactory:
@@ -312,11 +315,11 @@ services:
 
   dbxdeploy.workspace.WorkspaceImporter:
     arguments:
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
 
   dbxdeploy.workspace.WorkspaceExporter:
     arguments:
-      - '@dbxdeploy.databricks_api'
+      - '@dbxdeploy.utils.DatabricksClient'
 
   dbxdeploy.workspace.WorkspaceExportCommand:
     arguments:

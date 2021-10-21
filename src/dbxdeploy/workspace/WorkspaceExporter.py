@@ -1,12 +1,12 @@
 from requests.exceptions import HTTPError
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from pathlib import PurePosixPath
 import base64
 from dbxdeploy.workspace.WorkspaceExportException import WorkspaceExportException
 
 
 class WorkspaceExporter:
-    def __init__(self, dbx_api: DatabricksAPI):
+    def __init__(self, dbx_api: DatabricksClient):
         self.__dbx_api = dbx_api
 
     def export(self, path: PurePosixPath) -> bytes:

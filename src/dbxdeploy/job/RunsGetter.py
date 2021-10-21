@@ -1,11 +1,11 @@
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from pathlib import PurePosixPath
 from dbxdeploy.package.PackageMetadata import PackageMetadata
 import re
 
 
 class RunsGetter:
-    def __init__(self, workspace_base_dir: PurePosixPath, dbx_api: DatabricksAPI):
+    def __init__(self, workspace_base_dir: PurePosixPath, dbx_api: DatabricksClient):
         self.__workspace_base_dir = workspace_base_dir
         self.__dbx_api = dbx_api
 

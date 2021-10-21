@@ -1,6 +1,6 @@
 from pathlib import PurePosixPath
 from dbxdeploy.package.PackageMetadata import PackageMetadata
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from logging import Logger
 from dbxdeploy.deploy.TargetPathsResolver import TargetPathsResolver
 
@@ -9,7 +9,7 @@ class JobCreator:
     def __init__(
         self,
         logger: Logger,
-        dbx_api: DatabricksAPI,
+        dbx_api: DatabricksClient,
         target_paths_resolver: TargetPathsResolver,
     ):
         self.__logger = logger
