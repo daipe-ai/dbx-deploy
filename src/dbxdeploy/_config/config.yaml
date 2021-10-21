@@ -22,6 +22,10 @@ parameters:
         base_dir: '/{current_branch}'
         release_path: '%dbxdeploy.target.workspace.base_dir%/{current_time}_{random_string}'
         current_path: '%dbxdeploy.target.workspace.base_dir%/_current'
+      repo:
+        root_dir: "/Repos/%kernel.environment%-%dbxdeploy.target.repo.project_name%"
+        project_name:
+        path: "%dbxdeploy.target.repo.root_dir%/{repo_name}"
       package:
         base_dir: 'dbfs:/FileStore/jars'
         deploy_path: '%dbxdeploy.target.package.base_dir%/{package_name}/{current_time}_{random_string}/{package_filename}'
@@ -69,6 +73,16 @@ services:
 
   dbxdeploy.databricks.dbfs_api:
     class: databricks_cli.dbfs.api.DbfsApi
+    arguments:
+      - '@dbxdeploy.databricks.client'
+
+  dbxdeploy.databricks.repos_api:
+    class: databricks_cli.repos.api.ReposApi
+    arguments:
+      - '@dbxdeploy.databricks.client'
+
+  dbxdeploy.databricks.workspace_api:
+    class: databricks_cli.workspace.api.WorkspaceApi
     arguments:
       - '@dbxdeploy.databricks.client'
 
@@ -366,3 +380,14 @@ services:
   dbxdeploy.black.BlackChecker:
     arguments:
       - '%dbxdeploy.export.black.enabled%'
+
+  dbxdeploy.repo.RepoPullCommand:
+    arguments:
+      - '@dbxdeploy.databricks.repos_api'
+      - '@dbxdeploy.databricks.workspace_api'
+      - '@dbxdeploy.git.CurrentBranchResolver'
+      - '@consolebundle.logger'
+      - '%dbxdeploy.target.repo.root_dir%'
+      - "%dbxdeploy.target.repo.path%"
+    tags:
+      - 'console.command'
