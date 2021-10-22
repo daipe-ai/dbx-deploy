@@ -391,3 +391,13 @@ services:
       - "%dbxdeploy.target.repo.path%"
     tags:
       - 'console.command'
+
+  dbxdeploy.repo.RepoDeleteCommand:
+    arguments:
+      - '@dbxdeploy.databricks.repos_api'
+      - '@dbxdeploy.git.CurrentBranchResolver'
+      - '@consolebundle.logger'
+      - '%dbxdeploy.target.repo.root_dir%'
+      - "%dbxdeploy.target.repo.path%"
+    tags:
+      - 'console.command'
