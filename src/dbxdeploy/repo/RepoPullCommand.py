@@ -19,10 +19,10 @@ class RepoPullCommand(ConsoleCommand):
     ):
         self.__repos_api = repos_api
         self.__workspace_api = workspace_api
-        self.__current_branch_resolver = current_branch_resolver
+        self.__branch = current_branch_resolver.resolve()
         self.__logger = logger
         self.__repo_root_dir = "/" + repo_root_dir.strip("/") + "/"
-        self.__repo_path = repo_path
+        self.__repo_path = repo_path.format(repo_name=self.__branch)
 
     def get_command(self) -> str:
         return "dbx:repo:pull"
@@ -42,7 +42,7 @@ class RepoPullCommand(ConsoleCommand):
         repo_list = self.__repos_api.list(self.__repo_root_dir, None)["repos"]
         repo_branches = [repo["branch"] for repo in repo_list]
         if repo_to_be_created:
-            repo_branches.append(self.__current_branch_resolver.resolve())
+            repo_branches.append(self.__branch)
         branch_counter = [{"name": branch, "count": repo_branches.count(branch)} for branch in set(repo_branches)]
         duplicated_branches = [branch["name"] for branch in branch_counter if branch["count"] > 1]
 
@@ -64,11 +64,9 @@ class RepoPullCommand(ConsoleCommand):
             raise Exception(f"Git provider for {url} not listed.")
 
     def run(self, input_args: Namespace):
-        branch = self.__current_branch_resolver.resolve()
         repo_url = input_args.repo_url
-        self.__repo_path = self.__repo_path.format(repo_name=branch)
 
-        self.__logger.info(f"Branch: {branch}")
+        self.__logger.info(f"Branch: {self.__branch}")
 
         self.__workspace_api.mkdirs(self.__repo_root_dir)
 
@@ -84,5 +82,5 @@ class RepoPullCommand(ConsoleCommand):
                 provider=self.__get_provider_from_url(repo_url),
                 path=self.__repo_path
             )["id"]
-        self.__repos_api.update(repo_id=env_repo_id, branch=branch, tag=None)
+        self.__repos_api.update(repo_id=env_repo_id, branch=self.__branch, tag=None)
         self.__logger.info("Repo successfully pulled")
