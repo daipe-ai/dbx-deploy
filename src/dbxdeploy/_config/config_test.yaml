@@ -7,3 +7,6 @@ parameters:
     source:
       notebooks:
         base_dir: 'src/foobar'
+    target:
+      repo:
+        project_name: 'test_project'
