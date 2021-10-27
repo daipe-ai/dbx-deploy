@@ -7,7 +7,7 @@ from databricks_cli.workspace.api import WorkspaceApi
 from dbxdeploy.git.CurrentBranchResolver import CurrentBranchResolver
 
 
-class RepoPullCommand(ConsoleCommand):
+class RepoUpdateCommand(ConsoleCommand):
     def __init__(
         self,
         repos_api: ReposApi,
@@ -22,13 +22,13 @@ class RepoPullCommand(ConsoleCommand):
         self.__branch = current_branch_resolver.resolve()
         self.__logger = logger
         self.__repo_root_dir = "/" + repo_root_dir.strip("/") + "/"
-        self.__repo_path = repo_path.format(repo_name=self.__branch)
+        self.__repo_path = repo_path.format(current_branch=self.__branch)
 
     def get_command(self) -> str:
-        return "dbx:repo:pull"
+        return "dbx:repo:update"
 
     def get_description(self):
-        return "Pulls a latest version of a repository on DBX"
+        return "Pulls and checkouts the current branch of a repo on DBX"
 
     def configure(self, argument_parser: ArgumentParser):
         argument_parser.add_argument("--repo-url", dest="repo_url", help="Project repo url")
@@ -39,7 +39,9 @@ class RepoPullCommand(ConsoleCommand):
             raise Exception(f"Repo at {repo['path']} has source at {repo['url']}, expected {repo_url}")
 
     def __check_for_duplicates(self, repo_to_be_created: bool):
-        repo_list = self.__repos_api.list(self.__repo_root_dir, None)["repos"]
+        repo_list = self.__repos_api.list(self.__repo_root_dir, None).get("repos")
+        if not repo_list:
+            return
         repo_branches = [repo["branch"] for repo in repo_list]
         if repo_to_be_created:
             repo_branches.append(self.__branch)

@@ -18,7 +18,7 @@ class RepoDeleteCommand(ConsoleCommand):
         self.__branch = current_branch_resolver.resolve()
         self.__logger = logger
         self.__repo_root_dir = "/" + repo_root_dir.strip("/") + "/"
-        self.__repo_path = repo_path.format(repo_name=self.__branch)
+        self.__repo_path = repo_path.format(current_branch=self.__branch)
 
     def get_command(self) -> str:
         return "dbx:repo:delete"

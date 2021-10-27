@@ -25,7 +25,7 @@ parameters:
       repo:
         root_dir: "/Repos/%kernel.environment%-%dbxdeploy.target.repo.project_name%"
         project_name:
-        path: "%dbxdeploy.target.repo.root_dir%/{repo_name}"
+        path: "%dbxdeploy.target.repo.root_dir%/{current_branch}"
       package:
         base_dir: 'dbfs:/FileStore/jars'
         deploy_path: '%dbxdeploy.target.package.base_dir%/{package_name}/{current_time}_{random_string}/{package_filename}'
@@ -381,7 +381,7 @@ services:
     arguments:
       - '%dbxdeploy.export.black.enabled%'
 
-  dbxdeploy.repo.RepoPullCommand:
+  dbxdeploy.repo.RepoUpdateCommand:
     arguments:
       - '@dbxdeploy.databricks.repos_api'
       - '@dbxdeploy.databricks.workspace_api'
