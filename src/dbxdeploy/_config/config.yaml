@@ -385,7 +385,6 @@ services:
     arguments:
       - '@dbxdeploy.databricks.repos_api'
       - '@dbxdeploy.databricks.workspace_api'
-      - '@dbxdeploy.git.CurrentBranchResolver'
       - '@consolebundle.logger'
       - '%dbxdeploy.target.repo.root_dir%'
       - "%dbxdeploy.target.repo.path%"
