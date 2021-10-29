@@ -39,9 +39,7 @@ class RepoUpdateCommand(ConsoleCommand):
             raise Exception(f"Repo at {repo['path']} has source at {repo['url']}, expected {repo_url}")
 
     def __check_for_duplicates(self, repo_to_be_created: bool):
-        repo_list = self.__repos_api.list(self.__repo_root_dir, None).get("repos")
-        if not repo_list:
-            return
+        repo_list = self.__repos_api.list(self.__repo_root_dir, None).get("repos", [])
         repo_branches = [repo["branch"] for repo in repo_list]
         if repo_to_be_created:
             repo_branches.append(self.__branch)
