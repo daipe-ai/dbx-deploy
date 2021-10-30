@@ -4,7 +4,6 @@ from urllib3 import get_host
 from consolebundle.ConsoleCommand import ConsoleCommand
 from databricks_cli.repos.api import ReposApi
 from databricks_cli.workspace.api import WorkspaceApi
-from dbxdeploy.git.CurrentBranchResolver import CurrentBranchResolver
 
 
 class RepoUpdateCommand(ConsoleCommand):
@@ -29,9 +28,10 @@ class RepoUpdateCommand(ConsoleCommand):
         return "Pulls and checkouts the current branch of a repo on DBX"
 
     def configure(self, argument_parser: ArgumentParser):
-        argument_parser.add_argument("--repo-url", dest="repo_url", help="Project repo url")
-        argument_parser.add_argument("--checkout-branch", dest="checkout_branch", help="Branch to checkout")
-        argument_parser.add_argument("--repo-name", dest="repo_name", help="Project repo name")
+        required_args = argument_parser.add_argument_group('required arguments')
+        required_args.add_argument("--repo-url", dest="repo_url", help="Project repo url")
+        required_args.add_argument("--checkout-branch", dest="checkout_branch", help="Branch to checkout")
+        required_args.add_argument("--repo-name", dest="repo_name", help="Project repo name")
 
     def __check_correct_project(self, repo_id, repo_url):
         repo = self.__repos_api.get(repo_id)
@@ -63,12 +63,13 @@ class RepoUpdateCommand(ConsoleCommand):
 
     def run(self, input_args: Namespace):
         if not (input_args.repo_url and input_args.checkout_branch and input_args.repo_name):
-            raise Exception("All arguments are required. Check -h for the list of arguments.")
+            raise Exception("All arguments are required. Check -h for the list of required arguments.")
 
         repo_url = input_args.repo_url
         checkout_branch = input_args.checkout_branch
         repo_path = self.__repo_path.format(current_branch=input_args.repo_name)
 
+        self.__logger.info(f"Trying to update repo at {repo_path}")
         self.__workspace_api.mkdirs(self.__repo_root_dir)
 
         try:
@@ -85,4 +86,4 @@ class RepoUpdateCommand(ConsoleCommand):
             )["id"]
 
         self.__repos_api.update(repo_id=env_repo_id, branch=checkout_branch, tag=None)
-        self.__logger.info("Repo successfully pulled")
+        self.__logger.info("Repo successfully updated")
