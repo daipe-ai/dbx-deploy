@@ -8,5 +8,7 @@ parameters:
       notebooks:
         base_dir: 'src/foobar'
     target:
+      workspace:
+        base_dir: '/foobar/master'
       repo:
-        project_name: 'test_project'
+        root_dir: '/Repos/foobar'

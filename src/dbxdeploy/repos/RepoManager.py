@@ -1,12 +1,10 @@
-from argparse import Namespace, ArgumentParser
 from logging import Logger
 from urllib3 import get_host
-from consolebundle.ConsoleCommand import ConsoleCommand
 from databricks_cli.repos.api import ReposApi
 from databricks_cli.workspace.api import WorkspaceApi
 
 
-class RepoUpdateCommand(ConsoleCommand):
+class RepoManager:
     def __init__(
         self,
         repos_api: ReposApi,
@@ -18,20 +16,8 @@ class RepoUpdateCommand(ConsoleCommand):
         self.__repos_api = repos_api
         self.__workspace_api = workspace_api
         self.__logger = logger
-        self.__repo_root_dir = "/" + repo_root_dir.strip("/") + "/"
+        self.__repo_root_dir = repo_root_dir
         self.__repo_path = repo_path
-
-    def get_command(self) -> str:
-        return "dbx:repo:update"
-
-    def get_description(self):
-        return "Pulls and checkouts the current branch of a repo on DBX"
-
-    def configure(self, argument_parser: ArgumentParser):
-        required_args = argument_parser.add_argument_group('required arguments')
-        required_args.add_argument("--repo-url", dest="repo_url", help="Project repo url")
-        required_args.add_argument("--checkout-branch", dest="checkout_branch", help="Branch to checkout")
-        required_args.add_argument("--repo-name", dest="repo_name", help="Project repo name")
 
     def __check_correct_project(self, repo_id, repo_url):
         repo = self.__repos_api.get(repo_id)
@@ -47,8 +33,12 @@ class RepoUpdateCommand(ConsoleCommand):
         duplicated_branches = [branch["name"] for branch in branch_counter if branch["count"] > 1]
 
         if len(duplicated_branches) > 0:
-            message = f"Following branches are/would be duplicated in current env: {', '.join(duplicated_branches)}."
-            raise Exception(message)
+            raise Exception(f"Following branches are/would be duplicated in current env: {', '.join(duplicated_branches)}.")
+
+    def __delete_root_dir_if_empty(self):
+        ls = self.__workspace_api.list_objects(self.__repo_root_dir)
+        if len(ls) < 1:
+            self.__workspace_api.delete(self.__repo_root_dir, is_recursive=False)
 
     @staticmethod
     def __get_provider_from_url(url):
@@ -61,29 +51,36 @@ class RepoUpdateCommand(ConsoleCommand):
         except KeyError:
             raise Exception(f"Git provider for {url} not listed.")
 
-    def run(self, input_args: Namespace):
-        if not (input_args.repo_url and input_args.checkout_branch and input_args.repo_name):
-            raise Exception("All arguments are required. Check -h for the list of required arguments.")
-
-        repo_url = input_args.repo_url
-        checkout_branch = input_args.checkout_branch
-        repo_path = self.__repo_path.format(current_branch=input_args.repo_name)
+    def update_or_create(self, repo_url, checkout_branch, repo_name):
+        repo_path = self.__repo_path.format(repo_name=repo_name)
 
         self.__logger.info(f"Trying to update repo at {repo_path}")
         self.__workspace_api.mkdirs(self.__repo_root_dir)
 
         try:
-            env_repo_id = self.__repos_api.get_repo_id(repo_path)
+            repo_id = self.__repos_api.get_repo_id(repo_path)
             self.__check_for_duplicates()
-            self.__check_correct_project(env_repo_id, repo_url)
+            self.__check_correct_project(repo_id, repo_url)
         except RuntimeError:
             self.__logger.info("Repo not found, cloning new repo")
             self.__check_for_duplicates(with_branch=checkout_branch)
-            env_repo_id = self.__repos_api.create(
-                url=repo_url,
-                provider=self.__get_provider_from_url(repo_url),
-                path=repo_path
-            )["id"]
+            repo_id = self.__repos_api.create(url=repo_url, provider=self.__get_provider_from_url(repo_url), path=repo_path)["id"]
 
-        self.__repos_api.update(repo_id=env_repo_id, branch=checkout_branch, tag=None)
+        self.__repos_api.update(repo_id=repo_id, branch=checkout_branch, tag=None)
         self.__logger.info("Repo successfully updated")
+
+    def delete(self, repo_url, repo_name):
+        repo_path = self.__repo_path.format(repo_name=repo_name)
+
+        self.__logger.info(f"Trying to delete repo at {repo_path}")
+
+        try:
+            repo_id = self.__repos_api.get_repo_id(repo_path)
+            self.__check_correct_project(repo_id, repo_url)
+        except RuntimeError:
+            self.__logger.info("Repo not found, skipping delete")
+        else:
+            self.__repos_api.delete(repo_id)
+            self.__logger.info("Repo successfully deleted")
+
+        self.__delete_root_dir_if_empty()
