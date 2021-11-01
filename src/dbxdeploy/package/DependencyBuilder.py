@@ -2,7 +2,7 @@ import time
 from pathlib import Path
 from pathlib import PurePosixPath
 from logging import Logger
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from dbxdeploy.package.PackageMetadata import PackageMetadata
 from dbxdeploy.package.RequirementsGenerator import RequirementsGenerator
 from dbxdeploy.package.RequirementsConfig import RequirementsConfig
@@ -15,7 +15,7 @@ class DependencyBuilder:
         self,
         project_base_dir: Path,
         logger: Logger,
-        dbx_api: DatabricksAPI,
+        dbx_api: DatabricksClient,
         dbfs_file_uploader: DbfsFileUploader,
         dbfs_file_downloader: DbfsFileDownloader,
         job_cluster_definition: dict,

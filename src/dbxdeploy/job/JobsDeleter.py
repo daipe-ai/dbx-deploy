@@ -1,9 +1,9 @@
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from logging import Logger
 
 
 class JobsDeleter:
-    def __init__(self, logger: Logger, dbx_api: DatabricksAPI):
+    def __init__(self, logger: Logger, dbx_api: DatabricksClient):
         self.__logger = logger
         self.__dbx_api = dbx_api
 

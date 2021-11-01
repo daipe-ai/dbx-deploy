@@ -1,6 +1,6 @@
 import subprocess
 from box import Box
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from dbxdeploy.package.PackageMetadata import PackageMetadata
 from pathlib import PurePosixPath
 from logging import Logger
@@ -12,7 +12,7 @@ class JobSubmitter:
         workspace_base_dir: PurePosixPath,
         browser_config: Box,
         logger: Logger,
-        dbx_api: DatabricksAPI,
+        dbx_api: DatabricksClient,
     ):
         self.__workspace_base_dir = workspace_base_dir
         self.__browser_config = browser_config

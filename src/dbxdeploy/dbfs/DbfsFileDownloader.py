@@ -2,12 +2,12 @@ from pathlib import Path
 from pathlib import PurePosixPath
 from typing import List
 from base64 import b64decode
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from requests.exceptions import HTTPError
 
 
 class DbfsFileDownloader:
-    def __init__(self, dbx_api: DatabricksAPI):
+    def __init__(self, dbx_api: DatabricksClient):
         self.__dbx_api = dbx_api
 
     def download(self, dbfs_path: PurePosixPath):

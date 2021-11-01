@@ -1,13 +1,13 @@
 from base64 import b64encode
 from pathlib import PurePosixPath
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 import os
 
 
 class WorkspaceImporter:
     def __init__(
         self,
-        dbx_api: DatabricksAPI,
+        dbx_api: DatabricksClient,
     ):
         self.__dbx_api = dbx_api
 

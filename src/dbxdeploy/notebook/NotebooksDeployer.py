@@ -1,7 +1,7 @@
 from pathlib import PurePosixPath
 from typing import List
 from requests.exceptions import HTTPError
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from dbxdeploy.dbc.DbcCreator import DbcCreator
 from dbxdeploy.dbc.DbcUploader import DbcUploader
 from dbxdeploy.notebook.CurrentDirectoryUpdater import CurrentDirectoryUpdater
@@ -16,7 +16,7 @@ class NotebooksDeployer:
         self,
         workspace_base_dir: PurePosixPath,
         logger: Logger,
-        dbx_api: DatabricksAPI,
+        dbx_api: DatabricksClient,
         dbc_creator: DbcCreator,
         dbc_uploader: DbcUploader,
         current_directory_updater: CurrentDirectoryUpdater,

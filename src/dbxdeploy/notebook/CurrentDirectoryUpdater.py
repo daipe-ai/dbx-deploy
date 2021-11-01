@@ -2,7 +2,7 @@ import re
 from logging import Logger
 from typing import List
 from zipfile import ZipInfo, ZipFile
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from pathlib import PurePosixPath
 from pygit2 import GitError
 from dbxdeploy.git.CurrentBranchResolver import CurrentBranchResolver
@@ -22,7 +22,7 @@ class CurrentDirectoryUpdater:
         workspace_base_dir: PurePosixPath,
         git_dev_branch: str,
         logger: Logger,
-        dbx_api: DatabricksAPI,
+        dbx_api: DatabricksClient,
         notebook_converter: NotebookConverterInterface,
         workspace_exporter: WorkspaceExporter,
         dbc_files_handler: DbcFilesHandler,
