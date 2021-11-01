@@ -1,11 +1,11 @@
 from base64 import b64encode
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from dbxdeploy.package.PackageUploaderInterface import PackageUploaderInterface
 from requests.exceptions import HTTPError
 
 
 class DbfsFileUploader(PackageUploaderInterface):
-    def __init__(self, dbx_api: DatabricksAPI):
+    def __init__(self, dbx_api: DatabricksClient):
         self.__dbx_api = dbx_api
 
     def upload(self, content: bytes, file_path: str, overwrite: bool = False):

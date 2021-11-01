@@ -1,5 +1,5 @@
 from typing import List
-from databricks_api.databricks import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from dbxdeploy.job.JobCreator import JobCreator
 from dbxdeploy.notebook.Notebook import Notebook
 from dbxdeploy.package.PackageMetadata import PackageMetadata
@@ -10,7 +10,7 @@ class JobsCreatorAndRunner:
     def __init__(
         self,
         logger: Logger,
-        dbx_api: DatabricksAPI,
+        dbx_api: DatabricksClient,
         job_creator: JobCreator,
     ):
         self.__logger = logger

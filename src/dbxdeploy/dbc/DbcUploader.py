@@ -1,11 +1,11 @@
 from base64 import b64encode
 from pathlib import PurePosixPath
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from requests.exceptions import HTTPError
 
 
 class DbcUploader:
-    def __init__(self, dbx_api: DatabricksAPI):
+    def __init__(self, dbx_api: DatabricksClient):
         self.__dbx_api = dbx_api
 
     def upload(self, dbc_content: bytes, release_path: PurePosixPath):

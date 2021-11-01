@@ -1,7 +1,7 @@
 from pathlib import PurePosixPath
 from dbxdeploy.job.RunsGetter import RunsGetter
 from dbxdeploy.package.PackageMetadata import PackageMetadata
-from databricks_api import DatabricksAPI
+from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from logging import Logger
 
 
@@ -9,7 +9,7 @@ class NotebookKiller:
     def __init__(
         self,
         logger: Logger,
-        dbx_api: DatabricksAPI,
+        dbx_api: DatabricksClient,
         runs_getter: RunsGetter,
     ):
         self.__logger = logger
