@@ -1,7 +1,11 @@
 import tomlkit
-from tomlkit import table
+from tomlkit import table, inline_table, array
 from tomlkit.toml_document import TOMLDocument
 from pathlib import Path
+from pyfonycore import pyproject
+from pyfonycore.bootstrap.config.raw import raw_config_reader
+from pyfonycore.bootstrap.config.raw import root_module_name_resolver
+from pyfonycore.bootstrap.config.raw import allowed_environments_resolver
 from dbxdeploy.package.RequirementsLineConverter import RequirementsLineConverter
 from dbxdeploy.package.RequirementsGenerator import RequirementsGenerator
 from dbxdeploy.package.RequirementsConfig import RequirementsConfig
@@ -52,8 +56,19 @@ class LockedPyprojectCreator:
                 if self.__is_linux_dependency(requirement):
                     new_dependencies.add(*requirement)
 
+            bootstrap_config = raw_config_reader.read(pyproject.get_path())
+            root_module_name = root_module_name_resolver.resolve(bootstrap_config)
+            allowed_environments = allowed_environments_resolver.resolve(bootstrap_config)
+
+            tool_poetry_packages = array()
+            tool_poetry_packages.append(inline_table().append("include", root_module_name).append("from", "src"))
+
             toml_doc["tool"]["poetry"]["version"] = package_metadata.package_version
             toml_doc["tool"]["poetry"]["dependencies"] = new_dependencies
+            toml_doc["tool"]["poetry"]["packages"] = tool_poetry_packages
+            toml_doc["pyfony"]["bootstrap"]["root_module_name"] = root_module_name
+            toml_doc["pyfony"]["bootstrap"]["allowed_environments"] = allowed_environments
+
             del toml_doc["tool"]["poetry"]["dev-dependencies"]
 
         return toml_doc

@@ -2,6 +2,8 @@ import json
 import zipfile
 from pyfonycore import pyproject
 from pyfonycore.bootstrap.config.raw import raw_config_reader
+from pyfonycore.bootstrap.config.raw import root_module_name_resolver
+from pyfonycore.bootstrap.config.raw import allowed_environments_resolver
 from pathlib import Path
 
 
@@ -23,4 +25,13 @@ class BootstrapConfigAppender:
 
     def __prepare_bootstrap_config(self):
         bootstrap_config = raw_config_reader.read(pyproject.get_path())
+        root_module_name = root_module_name_resolver.resolve(bootstrap_config)
+        allowed_environments = allowed_environments_resolver.resolve(bootstrap_config)
+
+        if "root_module_name" not in bootstrap_config:
+            bootstrap_config["root_module_name"] = root_module_name
+
+        if "allowed_environments" not in bootstrap_config:
+            bootstrap_config["allowed_environments"] = allowed_environments
+
         return json.dumps(bootstrap_config)
