@@ -7,3 +7,8 @@ parameters:
     source:
       notebooks:
         base_dir: 'src/foobar'
+    target:
+      workspace:
+        base_dir: '/foobar/master'
+      repo:
+        root_dir: '/Repos/foobar'
