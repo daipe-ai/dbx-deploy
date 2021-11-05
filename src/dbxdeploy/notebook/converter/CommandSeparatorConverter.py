@@ -42,7 +42,7 @@ class CommandSeparatorConverter(NotebookConverterInterface):
         cells = self.__cells_extractor.extract(source, r"#[\s]+COMMAND[\s]+[\-]+\n+")
 
         def cleanup_cell(cell: dict):
-            if cell["source"] == "# MAGIC %install_master_package_whl":
+            if cell["source"] == "# MAGIC %install_master_package_whl" or cell["source"] == "# %install_master_package_whl":
                 cell["source"] = self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path)
 
             if cell["source"] == f"# MAGIC {self.__codestyle_loader.get_setup_command()}":
@@ -66,6 +66,10 @@ class CommandSeparatorConverter(NotebookConverterInterface):
 
     def to_workspace_import_notebook(self, source: str, package_file_path: str, dependencies_dir_path: str) -> str:
         source = empty_lines_remover.remove(source)
+        source = source.replace(
+            "# %install_master_package_whl",
+            self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path),
+        )
         source = source.replace(
             "# MAGIC %install_master_package_whl",
             self.__package_installer.get_package_install_command(package_file_path, dependencies_dir_path),

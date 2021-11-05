@@ -46,9 +46,9 @@ class CurrentDirectoryUpdater:
         self.__update_notebooks(current_release_path, notebooks, package_path, dependencies_dir_path)
 
     def update_only_master_package_notebook(
-        self, notebook: Notebook, current_release_path: PurePosixPath, package_path: str, dependencies_dir_path: str
+        self, notebooks: List[Notebook], current_release_path: PurePosixPath, package_path: str, dependencies_dir_path: str
     ):
-        self.__update_notebooks(current_release_path, [notebook], package_path, dependencies_dir_path)
+        self.__update_notebooks(current_release_path, notebooks, package_path, dependencies_dir_path)
 
     def __remove_missing_notebooks(self, current_release_path: PurePosixPath, notebooks: List[Notebook]):
         existing_notebooks_full_paths = self.__resolve_existing_notebooks_paths(current_release_path)

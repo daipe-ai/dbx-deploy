@@ -15,6 +15,7 @@ parameters:
         patterns: ['**/*.py']
         consumers_patterns: ['**/*.consumer.py']
         master_package_notebook_path: '%dbxdeploy.source.notebooks.base_dir%/app/install_master_package.py'
+        bootstrap_notebook_path: '%dbxdeploy.source.notebooks.base_dir%/app/bootstrap.py'
         cell_separator: 'command' # command or percent
     target:
       storage: 'dbfs'
@@ -356,6 +357,7 @@ services:
       - '%dbxdeploy.source.notebooks.patterns%'
       - '%dbxdeploy.source.notebooks.consumers_patterns%'
       - '%dbxdeploy.source.notebooks.master_package_notebook_path%'
+      - '%dbxdeploy.source.notebooks.bootstrap_notebook_path%'
 
   dbxdeploy.notebook.RelativePathResolver:
     arguments:
