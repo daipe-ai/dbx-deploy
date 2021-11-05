@@ -11,7 +11,7 @@ class CommandConverter:
 
     def convert(self, command: dict):
         if self.__package_installer.is_package_install_command(command["command"]):
-            return self.__process_title("# MAGIC %install_master_package_whl", command)
+            return self.__process_title("# %install_master_package_whl", command)
 
         magic_command = self.__detect_magic_command(command["command"])
 

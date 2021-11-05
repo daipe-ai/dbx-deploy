@@ -37,13 +37,13 @@ class NotebooksDeployer:
         self.__logger.info(f"All packages released, updating {self.__workspace_base_dir}")
         self.__current_directory_updater.update(notebooks, self.__workspace_base_dir, package_path, dependencies_dir)
 
-    def deploy_only_master_package_notebook(self, package_metadata: PackageMetadata, notebook: Notebook):
+    def deploy_only_master_package_notebook(self, package_metadata: PackageMetadata, notebooks: List[Notebook]):
         package_path = self.__target_paths_resolver.get_package_upload_path_for_deploy(package_metadata)
         dependencies_dir = self.__target_paths_resolver.get_dependencies_upload_dir_for_deploy(package_metadata)
 
         self.__logger.info(f"All packages released, updating {self.__workspace_base_dir}")
         self.__current_directory_updater.update_only_master_package_notebook(
-            notebook, self.__workspace_base_dir, package_path, dependencies_dir
+            notebooks, self.__workspace_base_dir, package_path, dependencies_dir
         )
 
     def release(self, package_metadata: PackageMetadata, notebooks: List[Notebook]):

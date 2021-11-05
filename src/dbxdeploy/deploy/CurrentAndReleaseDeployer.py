@@ -23,6 +23,14 @@ class CurrentAndReleaseDeployer:
         self.__notebooks_deployer.release(package_metadata, notebooks)
 
     def deploy_only_master_package_notebook(self, package_metadata: PackageMetadata):
-        master_package_notebook = self.__notebooks_locator.locate_master_package_notebook()
+        bootstrap_notebooks = []
 
-        self.__notebooks_deployer.deploy_only_master_package_notebook(package_metadata, master_package_notebook)
+        self.__notebooks_locator.check_at_least_one_bootstrap_ntb_present()
+
+        if self.__notebooks_locator.bootstrap_notebook_present():
+            bootstrap_notebooks.append(self.__notebooks_locator.locate_bootstrap_notebook())
+
+        if self.__notebooks_locator.master_package_notebook_present():
+            bootstrap_notebooks.append(self.__notebooks_locator.locate_master_package_notebook())
+
+        self.__notebooks_deployer.deploy_only_master_package_notebook(package_metadata, bootstrap_notebooks)
