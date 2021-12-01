@@ -52,7 +52,7 @@ class WorkspaceExportCommand(ConsoleCommand):
         self.__logger.info("Export completed")
 
     def __read_file(self, zip_file: ZipFile, file: ZipInfo):
-        if file.orig_filename[-1:] == "/":
+        if file.orig_filename[-1:] == "/" or not file.orig_filename.endswith(".python"):
             return
 
         file_path_without_rootdir = (
