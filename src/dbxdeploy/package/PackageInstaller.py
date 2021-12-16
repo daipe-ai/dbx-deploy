@@ -66,7 +66,7 @@ class PackageInstaller:
 
         if "@" not in parsed_url.netloc:
             parsed_url = parsed_url._replace(
-                netloc=f'{{os.getenv("{username_env_var_name}")}}:{{os.getenv("{password_env_var_name}")}}@{parsed_url.netloc}'
+                netloc=f"{{os.getenv('{username_env_var_name}')}}:{{os.getenv('{password_env_var_name}')}}@{parsed_url.netloc}"
             )
 
         return f"--index-url {parsed_url.geturl()}"
@@ -84,7 +84,7 @@ class PackageInstaller:
 
             if "@" not in parsed_url.netloc:
                 parsed_url = parsed_url._replace(
-                    netloc=f'{{os.getenv("{username_env_var_name}")}}:{{os.getenv("{password_env_var_name}")}}@{parsed_url.netloc}'
+                    netloc=f"{{os.getenv('{username_env_var_name}')}}:{{os.getenv('{password_env_var_name}')}}@{parsed_url.netloc}"
                 )
 
             extra_indexes_to_return.append(f"--extra-index-url {parsed_url.geturl()}")
