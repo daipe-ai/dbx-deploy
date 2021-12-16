@@ -91,7 +91,7 @@ class CurrentDirectoryUpdater:
         file_names = []
 
         def resolve_filenames(zip_file: ZipFile, file: ZipInfo):
-            if file.orig_filename[-1:] == "/":
+            if file.orig_filename[-1:] == "/" or not file.orig_filename.endswith(".python"):
                 return
 
             """
