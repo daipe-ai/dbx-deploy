@@ -35,6 +35,7 @@ pyfony-core = "^0.8.1"
 console-bundle = "^0.5"
 Jinja2 = "^2.0.0"
 databricks-cli = "^0.16.0"
+daipe-core = ">=1.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

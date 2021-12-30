@@ -24,8 +24,9 @@ parameters:
         release_path: '%dbxdeploy.target.workspace.base_dir%/{current_time}_{random_string}'
         current_path: '%dbxdeploy.target.workspace.base_dir%/_current'
       repo:
-        root_dir: "/Repos/%daipe.root_module.name%-%kernel.environment%"
-        path: "%dbxdeploy.target.repo.root_dir%/{repo_name}"
+        root_dir: # @deprecated, use base_dir instead - will be removed in 2.0
+        path: # @deprecated, use base_dir instead - will be removed in 2.0
+        base_dir: '/Repos/%daipe.root_module.name%-%kernel.environment%/{branch_name}' # to be changed to "/Repos/{repo_name}/{branch_name}" in 2.0
       package:
         base_dir: 'dbfs:/FileStore/jars'
         deploy_path: '%dbxdeploy.target.package.base_dir%/{package_name}/{current_time}_{random_string}/{package_filename}'
@@ -389,6 +390,7 @@ services:
     arguments:
       - '%dbxdeploy.target.repo.root_dir%'
       - '%dbxdeploy.target.repo.path%'
+      - '%dbxdeploy.target.repo.base_dir%'
       - '@consolebundle.logger'
 
   dbxdeploy.repos.RepoUpdateCommand:
