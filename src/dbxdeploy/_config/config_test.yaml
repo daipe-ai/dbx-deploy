@@ -10,5 +10,3 @@ parameters:
     target:
       workspace:
         base_dir: '/foobar/master'
-      repo:
-        root_dir: '/Repos/foobar'
