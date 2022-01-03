@@ -34,7 +34,7 @@ class PackageInstaller:
             "import IPython\n\n"
             'if "DAIPE_BOOTSTRAPPED" not in os.environ:\n'
             "    IPython.get_ipython().run_line_magic"
-            f'("pip", "install {self.__modify_dbfs(package_file_path)} {pip_options}")  # noqa'
+            f'("pip", f"install {self.__modify_dbfs(package_file_path)} {pip_options}")  # noqa'
         )
 
     def __get_online_install_command(self, package_file_path: str):
