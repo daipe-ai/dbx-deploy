@@ -386,17 +386,37 @@ services:
     arguments:
       - '%dbxdeploy.export.black.enabled%'
 
-  dbxdeploy.repos.RepoManager:
+  dbxdeploy.repos.RepoPathResolver:
     arguments:
       - '%dbxdeploy.target.repo.root_dir%'
       - '%dbxdeploy.target.repo.path%'
       - '%dbxdeploy.target.repo.base_dir%'
+
+  dbxdeploy.repos.RepoCreator:
+    arguments:
       - '@consolebundle.logger'
+      - '@dbxdeploy.databricks.repos_api'
+      - '@dbxdeploy.databricks.workspace_api'
+
+  dbxdeploy.repos.RepoUpdater:
+    arguments:
+      - '@consolebundle.logger'
+      - '@dbxdeploy.databricks.repos_api'
+      - '@dbxdeploy.databricks.workspace_api'
+
+  dbxdeploy.repos.RepoDeleter:
+    arguments:
+      - '@consolebundle.logger'
+      - '@dbxdeploy.databricks.repos_api'
 
   dbxdeploy.repos.RepoUpdateCommand:
+    arguments:
+      - '@consolebundle.logger'
     tags:
       - 'console.command'
 
   dbxdeploy.repos.RepoDeleteCommand:
+    arguments:
+      - '@consolebundle.logger'
     tags:
       - 'console.command'

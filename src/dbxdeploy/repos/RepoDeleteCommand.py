@@ -1,12 +1,17 @@
+import sys
 from argparse import Namespace, ArgumentParser
+from logging import Logger
 from consolebundle.ConsoleCommand import ConsoleCommand
-from dbxdeploy.repos.RepoManager import RepoManager
 from dbxdeploy.repos import argparser_configurator
+from dbxdeploy.repos.RepoDeleter import RepoDeleter
+from dbxdeploy.repos.RepoPathResolver import RepoPathResolver
 
 
 class RepoDeleteCommand(ConsoleCommand):
-    def __init__(self, repo_manager: RepoManager):
-        self.__repo_manager = repo_manager
+    def __init__(self, logger: Logger, repo_path_resolver: RepoPathResolver, repo_deleter: RepoDeleter):
+        self.__logger = logger
+        self.__repo_path_resolver = repo_path_resolver
+        self.__repo_deleter = repo_deleter
 
     def get_command(self) -> str:
         return "dbx:repo:delete"
@@ -18,7 +23,10 @@ class RepoDeleteCommand(ConsoleCommand):
         argparser_configurator.add_common_repos_args(argument_parser)
 
     def run(self, input_args: Namespace):
-        if not input_args.repo_url:
-            raise Exception("Missed required arguments. Check -h for the list of required arguments.")
+        if not input_args.branch and not input_args.tag:
+            self.__logger.error("Either branch or tag must be provided")
+            sys.exit(1)
 
-        self.__repo_manager.delete(input_args.repo_url, input_args.repo_name, input_args.branch, input_args.tag)
+        repo_path = self.__repo_path_resolver.resolve(input_args.repo_name, input_args.branch, input_args.tag)
+
+        self.__repo_deleter.delete(repo_path)
