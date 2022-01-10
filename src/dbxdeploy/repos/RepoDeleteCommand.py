@@ -1,4 +1,3 @@
-import sys
 from argparse import Namespace, ArgumentParser
 from logging import Logger
 from consolebundle.ConsoleCommand import ConsoleCommand
@@ -23,10 +22,6 @@ class RepoDeleteCommand(ConsoleCommand):
         argparser_configurator.add_common_repos_args(argument_parser)
 
     def run(self, input_args: Namespace):
-        if not input_args.branch and not input_args.tag:
-            self.__logger.error("Either branch or tag must be provided")
-            sys.exit(1)
-
         repo_path = self.__repo_path_resolver.resolve(input_args.repo_name, input_args.branch, input_args.tag)
 
         self.__repo_deleter.delete(repo_path)

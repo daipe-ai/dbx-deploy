@@ -35,9 +35,19 @@ class RepoCreator:
         return repo_id
 
     def recreate(self, repo_url: str, repo_path: str):
-        self.__logger.info(f"Recreating repo {repo_path} from {repo_url}")
-        repo_id = self.__repos_api.get_repo_id(repo_path)
-        self.__repos_api.delete(repo_id)
+        try:
+            repo_id = self.__repos_api.get_repo_id(repo_path)
+        except RuntimeError as e:
+            if "Can't find repo ID" in str(e):
+                repo_group_path = os.path.split(repo_path)[0]
+                self.__workspace_api.mkdirs(repo_group_path)
+            else:
+                raise e
+        else:
+            self.__logger.info(f"Deleting repo {repo_path}")
+            self.__repos_api.delete(repo_id)
+
+        self.__logger.info(f"Creating repo {repo_path} from {repo_url}")
         return self.__repos_api.create(url=repo_url, provider=self.__get_provider_from_url(repo_url), path=repo_path)["id"]
 
     def __check_correct_project(self, repo_id, repo_url):

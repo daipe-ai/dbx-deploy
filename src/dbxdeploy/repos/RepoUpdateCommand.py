@@ -32,6 +32,14 @@ class RepoUpdateCommand(ConsoleCommand):
             self.__logger.error("Missed required arguments. Check -h for the list of required arguments.")
             sys.exit(1)
 
+        if not input_args.branch and not input_args.tag:
+            self.__logger.error("Either branch or tag must be provided")
+            sys.exit(1)
+
+        if input_args.branch and input_args.tag:
+            self.__logger.error("Both branch and tag cannot be provided")
+            sys.exit(1)
+
         repo_path = self.__repo_path_resolver.resolve(input_args.repo_name, input_args.branch, input_args.tag)
 
         if input_args.force:
@@ -42,9 +50,7 @@ class RepoUpdateCommand(ConsoleCommand):
         if input_args.branch:
             self.__repo_updater.create_or_update_branch(repo_id, input_args.branch)
             self.__logger.info(f"Repo {repo_path} successfully updated to branch {input_args.branch}")
-        elif input_args.tag:
+
+        if input_args.tag:
             self.__repo_updater.create_or_update_tag(repo_id, input_args.tag)
             self.__logger.info(f"Repo {repo_path} successfully updated to tag {input_args.tag}")
-        else:
-            self.__logger.error("Either branch or tag must be provided")
-            sys.exit(1)
