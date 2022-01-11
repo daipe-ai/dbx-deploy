@@ -1,4 +1,4 @@
-from pygit2 import GitError
+from pygit2 import GitError  # pyre-ignore[21]  # pylint: disable = no-name-in-module
 from pathlib import PurePosixPath
 from dbxdeploy.git.CurrentBranchResolver import CurrentBranchResolver
 from dbxdeploy.package.PackageMetadata import PackageMetadata
@@ -36,10 +36,10 @@ class TargetPathsResolver:
         return self.__replace_dependency_path(package_metadata, self.__dependencies_release_path, dependency_filename)
 
     def get_dependencies_upload_dir_for_deploy(self, package_metadata: PackageMetadata):
-        return self.__replace_path(package_metadata, self.__dependencies_deploy_path.rstrip("{package_filename}"), None)
+        return self.__replace_path(package_metadata, self.__dependencies_deploy_path.rstrip("{package_filename}"), "")
 
     def get_dependencies_upload_dir_for_release(self, package_metadata: PackageMetadata):
-        return self.__replace_path(package_metadata, self.__dependencies_release_path.rstrip("{package_filename}"), None)
+        return self.__replace_path(package_metadata, self.__dependencies_release_path.rstrip("{package_filename}"), "")
 
     def get_workspace_release_path(self, package_metadata: PackageMetadata) -> PurePosixPath:
         return self.__replace_workspace_path(package_metadata, self.__workspace_release_path)
@@ -64,7 +64,7 @@ class TargetPathsResolver:
         if "{current_branch}" in package_path:
             try:
                 replacements["current_branch"] = self.__current_branch_resolver.resolve()
-            except GitError:
+            except GitError:  # pyre-ignore
                 replacements["current_branch"] = "__no_git_repo__"
 
         return package_path.format(**replacements)

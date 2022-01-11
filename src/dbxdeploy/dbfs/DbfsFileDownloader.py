@@ -17,8 +17,8 @@ class DbfsFileDownloader:
         try:
             self.__dbx_api.dbfs.get_status(dbfs_path)
 
-        except HTTPError as ex:
-            if ex.response.status_code != 404:
+        except HTTPError as e:
+            if e.response.status_code != 404:
                 raise
 
             return False

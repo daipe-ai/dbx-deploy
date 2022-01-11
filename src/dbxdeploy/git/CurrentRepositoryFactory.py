@@ -1,5 +1,5 @@
 from pathlib import Path
-from pygit2 import Repository, discover_repository, GitError
+from pygit2 import Repository, discover_repository, GitError  # pyre-ignore  # pylint: disable = no-name-in-module
 
 
 class CurrentRepositoryFactory:

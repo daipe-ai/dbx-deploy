@@ -16,10 +16,10 @@ class PackageMetadataLoader:
     def load(self, project_base_dir: Path) -> PackageMetadata:
         pyproject_path = project_base_dir.joinpath("pyproject.toml")
 
-        with pyproject_path.open("r") as t:
-            lock = tomlkit.parse(t.read())
+        with pyproject_path.open("r") as f:
+            lock = tomlkit.parse(f.read())
 
-            tool_params = lock["tool"]["poetry"]
+            tool_params = lock["tool"]["poetry"]  # pyre-ignore[16]
 
             package_name = str(tool_params["name"])
             package_version = str(tool_params["version"])

@@ -59,7 +59,7 @@ class PackageBuilder:
 
         try:
             run_shell_command(f"{python_executable} {poetry_path} build --format wheel", cwd=str(base_path), shell=True)
-        except BaseException:
+        except Exception:  # pylint: disable = broad-except
             pass
         finally:
             pyproject_orig_path.replace(pyproject_dist)

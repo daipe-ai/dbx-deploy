@@ -1,3 +1,4 @@
+from typing import Callable
 from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from logging import Logger
 
@@ -9,7 +10,7 @@ class JobsDeleter:
 
     def remove_all(self):
         def callback(job_id, notebook_path):
-            self.__logger.info("Deleting job #{}: {}".format(job_id, notebook_path))
+            self.__logger.info(f"Deleting job #{job_id}: {notebook_path}")
             self.__dbx_api.jobs.delete_job(job_id)
 
         self.__remove(callback)
@@ -17,12 +18,12 @@ class JobsDeleter:
     def remove(self, notebook_paths: set):
         def callback(job_id, notebook_path):
             if notebook_path in notebook_paths:
-                self.__logger.info("Deleting job #{}: {}".format(job_id, notebook_path))
+                self.__logger.info(f"Deleting job #{job_id}: {notebook_path}")
                 self.__dbx_api.jobs.delete_job(job_id)
 
         self.__remove(callback)
 
-    def __remove(self, callback: callable):
+    def __remove(self, callback: Callable):
         while True:
             jobs_response = self.__dbx_api.jobs.list_jobs()
 
@@ -35,7 +36,7 @@ class JobsDeleter:
 
             jobs = jobs_response["jobs"]
 
-            self.__logger.info("{} active jobs found".format(len(jobs)))
+            self.__logger.info(f"{len(jobs)} active jobs found")
 
             for job in jobs:
                 job_id = job["job_id"]

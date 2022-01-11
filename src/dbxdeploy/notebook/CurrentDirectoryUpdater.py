@@ -4,7 +4,7 @@ from typing import List
 from zipfile import ZipInfo, ZipFile
 from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from pathlib import PurePosixPath
-from pygit2 import GitError
+from pygit2 import GitError  # pyre-ignore:  # pylint: disable = no-name-in-module
 from dbxdeploy.git.CurrentBranchResolver import CurrentBranchResolver
 from dbxdeploy.notebook.converter.NotebookConverterInterface import NotebookConverterInterface
 from dbxdeploy.notebook.converter.UnexpectedSourceException import UnexpectedSourceException
@@ -58,7 +58,7 @@ class CurrentDirectoryUpdater:
 
         for notebook_to_delete in existing_notebooks - new_notebooks:
             full_notebook_path = self.__workspace_base_dir.joinpath(notebook_to_delete)
-            self.__logger.warning("Removing deleted/missing notebook {}".format(full_notebook_path))
+            self.__logger.warning(f"Removing deleted/missing notebook {full_notebook_path}")
             self.__dbx_api.workspace.delete(str(full_notebook_path))
 
     def __update_notebooks(
@@ -76,7 +76,7 @@ class CurrentDirectoryUpdater:
 
             script = self.__notebook_converter.to_workspace_import_notebook(source, package_path, dependencies_dir_path)
 
-            self.__logger.info("Updating {}".format(target_path))
+            self.__logger.info(f"Updating {target_path}")
             self.__workspace_importer.overwrite_script(script, target_path)
 
     def __should_remove_missing_notebooks(self):
@@ -90,15 +90,14 @@ class CurrentDirectoryUpdater:
     def __resolve_existing_notebooks_paths(self, current_release_path: PurePosixPath):
         file_names = []
 
-        def resolve_filenames(zip_file: ZipFile, file: ZipInfo):
+        def resolve_filenames(zip_file: ZipFile, file: ZipInfo):  # pylint: disable = unused-argument
             if file.orig_filename[-1:] == "/" or not file.orig_filename.endswith(".python"):
                 return
 
-            """
-            _current/myproject/foo/bar.python -> myproject/foo/bar.python (dbx:release)
-            mybranch/myproject/foo/bar.python -> myproject/foo/bar.python (dbx:deploy)
-            """
-            file_path_without_rootdir = file.orig_filename[file.orig_filename.index("/") + 1 :]  # noqa: 5203
+            # _current/myproject/foo/bar.python -> myproject/foo/bar.python (dbx:release)
+            # mybranch/myproject/foo/bar.python -> myproject/foo/bar.python (dbx:deploy)
+
+            file_path_without_rootdir = file.orig_filename[file.orig_filename.index("/") + 1 :]
 
             file_names.append(file_path_without_rootdir)
 

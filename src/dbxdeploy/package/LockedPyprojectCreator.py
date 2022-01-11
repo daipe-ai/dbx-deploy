@@ -24,8 +24,8 @@ class LockedPyprojectCreator:
     def create(self, package_metadata: PackageMetadata, pyproject_orig_path: Path, pyproject_new_path: Path):
         toml_doc = self.get_locked_pyproject_toml(package_metadata, pyproject_orig_path)
 
-        with pyproject_new_path.open("w") as t:
-            t.write(toml_doc.as_string())
+        with pyproject_new_path.open("w") as f:
+            f.write(toml_doc.as_string())
 
     def get_locked_pyproject_toml(self, package_metadata: PackageMetadata, pyproject_orig_path: Path) -> TOMLDocument:
         main_dependencies = self.__load_main_dependencies()
@@ -41,10 +41,10 @@ class LockedPyprojectCreator:
         return list(map(self.__requirements_line_converter.parse, requirements_txt.splitlines()))
 
     def __generate_pyproject_new(self, package_metadata: PackageMetadata, pyproject_orig_path: Path, requirements: list) -> TOMLDocument:
-        with pyproject_orig_path.open("r") as t:
-            toml_doc = tomlkit.parse(t.read())
+        with pyproject_orig_path.open("r") as f:
+            toml_doc = tomlkit.parse(f.read())
 
-            dependencies = toml_doc["tool"]["poetry"]["dependencies"]
+            dependencies = toml_doc["tool"]["poetry"]["dependencies"]  # pyre-ignore[16]
 
             if "python" not in dependencies:
                 raise Exception('"python" must be defined in [tool.poetry.dependencies]')
@@ -63,13 +63,13 @@ class LockedPyprojectCreator:
             tool_poetry_packages = array()
             tool_poetry_packages.append(inline_table().append("include", root_module_name).append("from", "src"))
 
-            toml_doc["tool"]["poetry"]["version"] = package_metadata.package_version
-            toml_doc["tool"]["poetry"]["dependencies"] = new_dependencies
-            toml_doc["tool"]["poetry"]["packages"] = tool_poetry_packages
-            toml_doc["pyfony"]["bootstrap"]["root_module_name"] = root_module_name
-            toml_doc["pyfony"]["bootstrap"]["allowed_environments"] = allowed_environments
+            toml_doc["tool"]["poetry"]["version"] = package_metadata.package_version  # pyre-ignore[16]
+            toml_doc["tool"]["poetry"]["dependencies"] = new_dependencies  # pyre-ignore[16]
+            toml_doc["tool"]["poetry"]["packages"] = tool_poetry_packages  # pyre-ignore[16]
+            toml_doc["pyfony"]["bootstrap"]["root_module_name"] = root_module_name  # pyre-ignore[16]
+            toml_doc["pyfony"]["bootstrap"]["allowed_environments"] = allowed_environments  # pyre-ignore[16]
 
-            del toml_doc["tool"]["poetry"]["dev-dependencies"]
+            del toml_doc["tool"]["poetry"]["dev-dependencies"]  # pyre-ignore[16]
 
         return toml_doc
 

@@ -12,7 +12,7 @@ class WorkspaceExporter:
     def export(self, path: PurePosixPath) -> bytes:
         try:
             response = self.__dbx_api.workspace.export_workspace(str(path), format="DBC")
-        except HTTPError:
-            raise WorkspaceExportException()
+        except HTTPError as e:
+            raise WorkspaceExportException() from e
 
         return base64.decodebytes(response["content"].encode("utf-8"))

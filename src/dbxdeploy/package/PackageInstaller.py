@@ -1,3 +1,4 @@
+from typing import List
 from urllib.parse import urlparse
 from dbxdeploy.package.PackageIndexResolver import PackageIndexResolver
 
@@ -5,11 +6,9 @@ from dbxdeploy.package.PackageIndexResolver import PackageIndexResolver
 class PackageInstaller:
     def __init__(
         self,
-        package_base_dir: str,
         offline_install: bool,
         package_index_resolver: PackageIndexResolver,
     ):
-        self.__package_base_dir = package_base_dir
         self.__offline_install = offline_install
         self.__package_index_resolver = package_index_resolver
 
@@ -25,7 +24,7 @@ class PackageInstaller:
     def __modify_dbfs(self, path: str):
         return "/dbfs/" + path.lstrip("dbfs:/")
 
-    def __get_install_command(self, package_file_path: str, options: [str]):
+    def __get_install_command(self, package_file_path: str, options: List[str]):
         pip_options = " ".join(options)
 
         return (

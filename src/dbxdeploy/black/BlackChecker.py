@@ -9,7 +9,7 @@ class BlackChecker:
     @property
     def is_black_installed(self) -> bool:
         try:
-            import black  # noqa
+            import black  # pylint: disable = import-outside-toplevel, unused-import
 
             return True
 

@@ -28,7 +28,7 @@ class JobsCreatorAndRunner:
             job_id = created_job["job_id"]
             notebook_release_path = created_job["notebook_release_path"]
 
-            self.__logger.info("Running job #{}: {}".format(job_id, notebook_release_path))
+            self.__logger.info(f"Running job #{job_id}: {notebook_release_path}")
             self.__dbx_api.jobs.run_now(job_id)
 
         self.__logger.info("--")

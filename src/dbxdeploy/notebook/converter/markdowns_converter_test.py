@@ -2,7 +2,7 @@ import unittest
 from dbxdeploy.notebook.converter import markdowns_converter
 
 
-class markdowns_converter_test(unittest.TestCase):  # noqa: N801
+class markdowns_converter_test(unittest.TestCase):  # pylint: disable = invalid-name
     def test_to_databricks_markdown_converter(self):
         code = markdowns_converter.to_databricks_markdown(
             "\n".join(

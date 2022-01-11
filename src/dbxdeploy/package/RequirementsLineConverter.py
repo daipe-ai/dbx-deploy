@@ -38,31 +38,31 @@ class RequirementsLineConverter:
         if matches:
             return self.__parse_local_file_line(matches)
 
-        raise Exception("Invalid requirements.txt line: {}".format(line))
+        raise Exception(f"Invalid requirements.txt line: {line}")
 
     def __parse_line(self, matches: Match[str]):
         if matches.group(3) is None:
             return [matches.group(1), matches.group(2).strip()]
 
-        it = inline_table()
-        it.append("version", matches.group(2))
-        it.append("markers", matches.group(3))
+        line = inline_table()
+        line.append("version", matches.group(2))
+        line.append("markers", matches.group(3))
 
-        return [matches.group(1), it]
+        return [matches.group(1), line]
 
     def __parse_git_old_line(self, matches: Match[str]):
-        it = inline_table()
-        it.append("git", matches.group(1))
-        it.append("rev", matches.group(2))
+        line = inline_table()
+        line.append("git", matches.group(1))
+        line.append("rev", matches.group(2))
 
-        return [matches.group(3), it]
+        return [matches.group(3), line]
 
     def __parse_git_line(self, matches: Match[str]):
-        it = inline_table()
-        it.append("git", matches.group(2))
-        it.append("rev", matches.group(3))
+        line = inline_table()
+        line.append("git", matches.group(2))
+        line.append("rev", matches.group(3))
 
-        return [matches.group(1), it]
+        return [matches.group(1), line]
 
     def __parse_local_file_line(self, matches: Match[str]):
         file_path = Path(matches.group(2))
@@ -73,8 +73,8 @@ class RequirementsLineConverter:
         if markers is None:
             return [name, version]
 
-        it = inline_table()
-        it.append("version", version)
-        it.append("markers", markers)
+        line = inline_table()
+        line.append("version", version)
+        line.append("markers", markers)
 
-        return [name, it]
+        return [name, line]

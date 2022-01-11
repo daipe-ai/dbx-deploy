@@ -12,8 +12,8 @@ class PathsPreparer:
 
         for path in paths:
             for i in range(len(path) - 1):
-                x = path[0 : i + 1]  # noqa: 5203
-                paths.append(x)
+                path_converted = path[0 : i + 1]
+                paths.append(path_converted)
 
         unique_paths = list(set(paths))
         unique_paths = sorted(unique_paths, key=len)

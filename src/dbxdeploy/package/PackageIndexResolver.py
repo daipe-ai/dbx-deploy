@@ -1,7 +1,7 @@
 import tomlkit
 from tomlkit.toml_document import TOMLDocument
 from tomlkit.items import Table
-from typing import List
+from typing import Optional, Any
 from pathlib import Path
 
 
@@ -12,13 +12,13 @@ class PackageIndexResolver:
     ):
         self.__project_base_dir = project_base_dir
 
-    def get_default_index(self) -> Table:
+    def get_default_index(self) -> Optional[Table]:
         toml_doc = self.__load_pyproject_toml()
 
-        if "source" not in toml_doc["tool"]["poetry"]:
+        if "source" not in toml_doc["tool"]["poetry"]:  # pyre-ignore[16]
             return None
 
-        sources = toml_doc["tool"]["poetry"]["source"]
+        sources = toml_doc["tool"]["poetry"]["source"]  # pyre-ignore[16]
 
         for source in sources:
             if source.get("default") is True:
@@ -26,13 +26,13 @@ class PackageIndexResolver:
 
         return None
 
-    def get_secondary_indexes(self) -> List[Table]:
+    def get_secondary_indexes(self) -> Optional[Any]:
         toml_doc = self.__load_pyproject_toml()
 
-        if "source" not in toml_doc["tool"]["poetry"]:
+        if "source" not in toml_doc["tool"]["poetry"]:  # pyre-ignore[16]
             return None
 
-        sources = toml_doc["tool"]["poetry"]["source"]
+        sources = toml_doc["tool"]["poetry"]["source"]  # pyre-ignore[16]
         extra_indexes = []
 
         for source in sources:

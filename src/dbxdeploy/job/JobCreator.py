@@ -19,7 +19,7 @@ class JobCreator:
     def create(self, notebook_path: PurePosixPath, cluster_id: str, package_metadata: PackageMetadata):
         notebook_release_path = self.__target_paths_resolver.get_workspace_release_path(package_metadata) / notebook_path
 
-        self.__logger.info("Creating job for {}".format(str(notebook_release_path)))
+        self.__logger.info(f"Creating job for {notebook_release_path}")
 
         job = self.__dbx_api.jobs.create_job(
             name=str(notebook_path),
@@ -31,7 +31,7 @@ class JobCreator:
             max_concurrent_runs=1,
         )
 
-        self.__logger.info("job #{} created".format(job["job_id"]))
+        self.__logger.info(f"job #{job['job_id']} created")
 
         job["notebook_release_path"] = notebook_release_path
 

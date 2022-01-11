@@ -1,6 +1,6 @@
 from dbxnotebookexporter.json.formatCellContent import formatCellContent
 import dbxnotebookexporter.json.JsonNotebookExporter as JsonNotebookExporterModule
-import nbconvert.templates.skeleton as nb_convert_skeleton
+import nbconvert.templates.skeleton as nb_convert_skeleton  # pyre-ignore[21]:
 import jinja2
 import os
 
@@ -9,7 +9,7 @@ class JinjaTemplateLoader:
     def load(self):
         base_paths = [
             os.path.dirname(JsonNotebookExporterModule.__file__),
-            nb_convert_skeleton.__path__._path[0],
+            nb_convert_skeleton.__path__._path[0],  # pylint: disable = protected-access, no-member
         ]
 
         template_loader = jinja2.FileSystemLoader(searchpath=base_paths)

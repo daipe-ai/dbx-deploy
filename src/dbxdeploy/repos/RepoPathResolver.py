@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 class RepoPathResolver:
     def __init__(
         self,
@@ -12,7 +15,7 @@ class RepoPathResolver:
 
         self.__repo_base_dir = repo_base_dir
 
-    def resolve(self, repo_name: str = None, branch: str = None, tag: str = None):
+    def resolve(self, repo_name: Optional[str], branch: Optional[str], tag: Optional[str]):
         self.__validate_placeholder_arguments("{repo_name}", repo_name, "--repo_name")
         self.__validate_placeholder_arguments("{branch_name}", branch, "--branch")
         self.__validate_placeholder_arguments("{tag_name}", tag, "--tag")

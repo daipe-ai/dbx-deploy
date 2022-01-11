@@ -13,7 +13,6 @@ from dbxdeploy.dbfs.DbfsFileDownloader import DbfsFileDownloader
 class DependencyBuilder:
     def __init__(
         self,
-        project_base_dir: Path,
         logger: Logger,
         dbx_api: DatabricksClient,
         dbfs_file_uploader: DbfsFileUploader,
@@ -21,7 +20,6 @@ class DependencyBuilder:
         job_cluster_definition: dict,
         requirements_generator: RequirementsGenerator,
     ):
-        self.__project_base_dir = project_base_dir
         self.__logger = logger
         self.__dbx_api = dbx_api
         self.__dbfs_file_uploader = dbfs_file_uploader
@@ -72,7 +70,7 @@ class DependencyBuilder:
         try:
             self.__submit_python_script_on_job_cluster(dbfs_script_path, package_metadata, wait=True)
 
-        except BaseException:
+        except Exception:  # pylint: disable = broad-except
             self.__logger.error("Build failed")
             return
 

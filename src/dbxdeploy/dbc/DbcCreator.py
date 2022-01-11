@@ -29,28 +29,26 @@ class DbcCreator:
 
         in_memory_output = BytesIO()
 
-        zip_file = zipfile.ZipFile(in_memory_output, "w", zipfile.ZIP_DEFLATED)
+        with zipfile.ZipFile(in_memory_output, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            # directories must be created first, otherwise DataBricks is not able to process that zip/dbc file
+            for dir_path in self.__paths_preparer.prepare(databricks_relative_paths, root_ignored_path_name):
+                zip_file.writestr(dir_path + "/", "")
 
-        # directories must be created first, otherwise DataBricks is not able to process that zip/dbc file
-        for dir_path in self.__paths_preparer.prepare(databricks_relative_paths, root_ignored_path_name):
-            zip_file.writestr(dir_path + "/", "")
+            for notebook in notebooks:
+                source = load_notebook(notebook.path)
 
-        for notebook in notebooks:
-            source = load_notebook(notebook.path)
+                try:
+                    self.__notebook_converter.validate_source(source)
+                except UnexpectedSourceException:
+                    self.__logger.debug(f"Skipping unrecognized file {notebook.relative_path}")
+                    continue
 
-            try:
-                self.__notebook_converter.validate_source(source)
-            except UnexpectedSourceException:
-                self.__logger.debug(f"Skipping unrecognized file {notebook.relative_path}")
-                continue
+                notebook_source = self.__notebook_converter.to_dbc_notebook(
+                    notebook.path.stem, source, package_file_path, dependencies_dir_path
+                )
+                zip_path = PurePosixPath(root_ignored_path_name).joinpath(notebook.databricks_relative_path).with_suffix(".python")
+                zip_file.writestr(str(zip_path), notebook_source)
 
-            notebook_source = self.__notebook_converter.to_dbc_notebook(
-                notebook.path.stem, source, package_file_path, dependencies_dir_path
-            )
-            zip_path = PurePosixPath(root_ignored_path_name).joinpath(notebook.databricks_relative_path).with_suffix(".python")
-            zip_file.writestr(str(zip_path), notebook_source)
-
-        zip_file.close()
         in_memory_output.seek(0)
 
         zip_content = in_memory_output.getvalue()

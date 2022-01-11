@@ -43,11 +43,11 @@ class PackageDependencyLoader:
         with lockfile_path.open("r") as f:
             config = tomlkit.parse(f.read())
 
-        return [package for package in config["package"] if package["category"] == "main" and package["name"]]
+        return [package for package in config["package"] if package["category"] == "main" and package["name"]]  # pyre-ignore[16]
 
     def __find_poetry_lock_version_by_name(self, dependencies: List[Table], dependency_name: str) -> str:
         for dependency in dependencies:
-            if dependency["name"].lower() == dependency_name.lower():
-                return dependency["version"]
+            if dependency["name"].lower() == dependency_name.lower():  # pyre-ignore[16]
+                return str(dependency["version"])
 
         raise Exception(f"Dependency {dependency_name} not found in poetry.lock")
