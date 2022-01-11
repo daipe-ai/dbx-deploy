@@ -8,12 +8,12 @@ class ClusterRestarter:
         self.__dbx_api = dbx_api
 
     def restart(self, cluster_id: str):
-        self.__logger.info("Checking state of cluster {}".format(cluster_id))
+        self.__logger.info(f"Checking state of cluster {cluster_id}")
         cluster = self.__dbx_api.cluster.get_cluster(cluster_id)
 
         if cluster["state"] != "PENDING" and cluster["state"] != "RUNNING":
-            self.__logger.info("Cannot in {} state, restart not needed".format(cluster["state"]))
+            self.__logger.info(f'Cannot in {cluster["state"]} state, restart not needed')
             return
 
-        self.__logger.info("Restarting cluster {}".format(cluster_id))
+        self.__logger.info(f"Restarting cluster {cluster_id}")
         self.__dbx_api.cluster.restart_cluster(cluster_id)

@@ -8,14 +8,14 @@ def delete_directory_content_recursive(dir_path: Path):
         dir_list = []
 
         for root, dirs, files in os.walk(dir_path):
-            for f in files:
-                file_list.append(os.path.join(root, f))
+            for file in files:
+                file_list.append(os.path.join(root, file))
 
-            for d in dirs:
-                dir_list.append(os.path.join(root, d))
+            for dir_ in dirs:
+                dir_list.append(os.path.join(root, dir_))
 
-        for f in file_list:
-            os.unlink(f)
+        for file in file_list:
+            os.unlink(file)
 
-        for d in dir_list:
-            os.rmdir(d)
+        for dir_ in dir_list:
+            os.rmdir(dir_)

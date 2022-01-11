@@ -55,9 +55,7 @@ class WorkspaceExportCommand(ConsoleCommand):
         if file.orig_filename[-1:] == "/" or not file.orig_filename.endswith(".python"):
             return
 
-        file_path_without_rootdir = (
-            file.orig_filename[file.orig_filename.index("/") + 1 : file.orig_filename.rindex(".")] + ".py"  # noqa: 5203
-        )
+        file_path_without_rootdir = file.orig_filename[file.orig_filename.index("/") + 1 : file.orig_filename.rindex(".")] + ".py"
         local_file_path = self.__local_base_dir.joinpath(file_path_without_rootdir)
 
         if local_file_path.exists():
@@ -73,9 +71,9 @@ class WorkspaceExportCommand(ConsoleCommand):
             try:
                 self.__dbc_notebook_converter.convert(zip_file, file)
 
-            except Exception as ex:
+            except Exception as e:  # pylint: disable = broad-except
                 self.__logger.error(f"Black cannot format file {file.orig_filename}, skipping...")
-                self.__logger.error(ex)
+                self.__logger.error(e)
                 return
 
         py_content = self.__dbc_notebook_converter.convert(zip_file, file)

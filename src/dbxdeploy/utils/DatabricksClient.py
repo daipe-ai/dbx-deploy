@@ -1,3 +1,4 @@
+# pyre-ignore-all-errors
 import re
 
 import databricks_cli.sdk.service as services
@@ -5,8 +6,8 @@ from databricks_cli.sdk import ApiClient
 
 
 def camel_to_snake(name):
-    s = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s).lower()
+    string = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", string).lower()
 
 
 def _get_services():

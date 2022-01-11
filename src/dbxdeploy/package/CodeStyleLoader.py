@@ -25,7 +25,7 @@ class CodeStyleLoader:
 
     def get_codestyle_setup_command(self) -> str:
         toml_doc = self.__load_pyproject_toml()
-        flake8_cmd = toml_doc["tool"]["poe"]["tasks"]["flake8"]
+        flake8_cmd = toml_doc["tool"]["poe"]["tasks"]["flake8"]  # pyre-ignore[16]
         flake8_options = str(flake8_cmd).split()
         flake8_options = " ".join([f"--{opt[2:].replace('=', ' ').replace('-', '_')}" for opt in flake8_options if opt.startswith("--")])
 
@@ -49,6 +49,6 @@ class CodeStyleLoader:
 
         return {
             package["name"]: package["version"]
-            for package in config["package"]
+            for package in config["package"]  # pyre-ignore[16]
             if package["category"] == "dev" and package["name"] in packages
         }

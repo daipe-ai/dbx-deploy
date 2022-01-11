@@ -1,13 +1,11 @@
 import os
 from dbxdeploy.dbc.CommandConverter import CommandConverter
 from dbxdeploy.black.BlackChecker import BlackChecker
-from logging import Logger
 
 
 class CommandsConverter:
-    def __init__(self, force_end_file_newline: bool, logger: Logger, command_converter: CommandConverter, black_checker: BlackChecker):
+    def __init__(self, force_end_file_newline: bool, command_converter: CommandConverter, black_checker: BlackChecker):
         self.__force_end_file_newline = force_end_file_newline
-        self.__logger = logger
         self.__command_converter = command_converter
         self.__black_checker = black_checker
 
@@ -31,12 +29,11 @@ class CommandsConverter:
             return starting_line + "\n" + text
 
         if self.__black_checker.is_black_enabled and self.__black_checker.is_black_installed:
-            import black
+            import black  # pylint: disable = import-outside-toplevel
 
             black_config = black.parse_pyproject_toml(os.getcwd() + "/pyproject.toml")
             black_mode = black.Mode(**black_config)
 
             return black.format_str(first_line + "\n" + output, mode=black_mode)
 
-        else:
-            return format_without_black(first_line, output)
+        return format_without_black(first_line, output)

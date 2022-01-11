@@ -15,10 +15,9 @@ class BootstrapConfigAppender:
 
         dist_info_dir = f"{package_name}-{package_file_name_parts[1]}.dist-info"
 
-        zip_file = zipfile.ZipFile(package_path, "a")
-        zip_file.writestr(dist_info_dir + "/entry_points.txt", self.__prepare_entry_points(package_name))
-        zip_file.writestr(dist_info_dir + "/bootstrap_config.json", self.__prepare_bootstrap_config())
-        zip_file.close()
+        with zipfile.ZipFile(package_path, "a") as zip_file:
+            zip_file.writestr(dist_info_dir + "/entry_points.txt", self.__prepare_entry_points(package_name))
+            zip_file.writestr(dist_info_dir + "/bootstrap_config.json", self.__prepare_bootstrap_config())
 
     def __prepare_entry_points(self, package_name):
         return f"[pyfony.bootstrap]\npackage_name={package_name}\n"

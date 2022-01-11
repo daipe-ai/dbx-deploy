@@ -73,6 +73,10 @@ class RequirementsGenerator:
         for index, line in enumerate(requirements):
             if line.startswith("--index-url") and "@" in line or line.startswith("--extra-index-url") and "@" in line:
                 matches = re.match(r"(.*http://|.*https://)(.*?)(@.*)", line)
+
+                if not matches:
+                    raise Exception(f"Unexpected requirements line: {line}")
+
                 redacted_line = matches.group(1) + "[REDACTED]" + matches.group(3)
                 requirements[index] = redacted_line
 

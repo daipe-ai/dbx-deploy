@@ -2,7 +2,7 @@ import unittest
 from dbxdeploy.notebook.converter import empty_lines_remover
 
 
-class empty_lines_remover_test(unittest.TestCase):  # noqa: N801
+class empty_lines_remover_test(unittest.TestCase):  # pylint: disable = invalid-name
     def test_forced_end_file_new_line(self):
         code = empty_lines_remover.remove(
             "\n".join(

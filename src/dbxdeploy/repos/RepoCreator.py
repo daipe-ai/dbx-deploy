@@ -69,5 +69,5 @@ class RepoCreator:
         }
         try:
             return provider_map[urllib3.get_host(url)[1]]
-        except KeyError:
-            raise Exception(f"Git provider for {url} not listed.")
+        except KeyError as e:
+            raise Exception(f"Git provider for {url} not listed.") from e

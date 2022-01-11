@@ -208,7 +208,6 @@ services:
 
   dbxdeploy.package.DependencyBuilder:
     arguments:
-      - '@dbxdeploy.deploy.working_dir'
       - '@consolebundle.logger'
       - '@dbxdeploy.package.dependency_builder.databricks_api'
       - '@dbxdeploy.package.dependency_builder.DbfsFileUploader'
@@ -224,7 +223,6 @@ services:
 
   dbxdeploy.package.PackageInstaller:
     arguments:
-      - '%dbxdeploy.target.package.base_dir%'
       - '%dbxdeploy.target.package.offline_install%'
 
   dbxdeploy.package.PackageIndexResolver:
@@ -266,7 +264,6 @@ services:
   dbxdeploy.dbc.CommandsConverter:
     arguments:
       - '%dbxdeploy.export.force_end_file_newline%'
-      - '@consolebundle.logger'
 
   dbxdeploy.dbc.CommandConverter:
 
@@ -402,7 +399,6 @@ services:
     arguments:
       - '@consolebundle.logger'
       - '@dbxdeploy.databricks.repos_api'
-      - '@dbxdeploy.databricks.workspace_api'
 
   dbxdeploy.repos.RepoDeleter:
     arguments:

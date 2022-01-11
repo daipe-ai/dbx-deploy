@@ -1,3 +1,4 @@
+from typing import Callable
 from dbxdeploy.package.PackageBuilder import PackageBuilder
 from dbxdeploy.package.PackageMetadata import PackageMetadata
 from pathlib import Path
@@ -67,7 +68,7 @@ class PackageDeployer:
 
         self.__invoke(package_metadata, whl_content_ready_callback)
 
-    def __invoke(self, package_metadata: PackageMetadata, whl_content_ready_callback: callable):
+    def __invoke(self, package_metadata: PackageMetadata, whl_content_ready_callback: Callable):
         self.__logger.info("Building master package (WHL)")
 
         self.__package_builder.build(self.__project_base_dir, package_metadata)

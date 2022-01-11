@@ -15,8 +15,8 @@ class DbfsFileUploader(PackageUploaderInterface):
         try:
             self.__dbx_api.dbfs.get_status(file_path)
 
-        except HTTPError as ex:
-            if ex.response.status_code != 404:
+        except HTTPError as e:
+            if e.response.status_code != 404:
                 raise
 
             return False
@@ -38,4 +38,4 @@ class DbfsFileUploader(PackageUploaderInterface):
 
     def __chunked(self, source, size):
         for i in range(0, len(source), size):
-            yield source[i : i + size]  # noqa: 5203
+            yield source[i : i + size]
