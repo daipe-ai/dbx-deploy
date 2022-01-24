@@ -2,6 +2,7 @@ import time
 from pathlib import Path
 from pathlib import PurePosixPath
 from logging import Logger
+from box import Box
 from dbxdeploy.utils.DatabricksClient import DatabricksClient
 from dbxdeploy.package.PackageMetadata import PackageMetadata
 from dbxdeploy.package.RequirementsGenerator import RequirementsGenerator
@@ -17,7 +18,7 @@ class DependencyBuilder:
         dbx_api: DatabricksClient,
         dbfs_file_uploader: DbfsFileUploader,
         dbfs_file_downloader: DbfsFileDownloader,
-        job_cluster_definition: dict,
+        job_cluster_definition: Box,
         requirements_generator: RequirementsGenerator,
     ):
         self.__logger = logger
@@ -65,7 +66,7 @@ class DependencyBuilder:
         self.__dbfs_file_uploader.upload(requirements_txt.encode("utf-8"), str(dbfs_requirements_path))
         self.__logger.info("Build Script uploaded")
 
-        self.__logger.info("Building python packages on Databricks cluster...")
+        self.__logger.info(f"Building python packages on Databricks cluster... ({self.__job_cluster_definition.spark_version})")
 
         try:
             self.__submit_python_script_on_job_cluster(dbfs_script_path, package_metadata, wait=True)
