@@ -54,7 +54,27 @@ root_module_name = "dbxdeploy"
 [tool.black]
 line-length = 140
 
+[tool.pylint.basic]
+module-rgx = "(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$"
+
+[tool.pylint.messages_control]
+disable = [
+    "missing-docstring",
+    "wrong-import-order",
+    "duplicate-code",
+    "line-too-long",
+    "bad-continuation",
+    "too-many-arguments",
+    "too-few-public-methods",
+    "ungrouped-imports",
+    "no-self-use",
+    "too-many-locals",
+    "too-many-instance-attributes",
+]
+
+good-names = ["e", "i", "k", "n", "f", "v", "df"]
+
 [tool.poe.tasks]
 black = "black src"
 black-check = "black --check src"
-pylint = "pylint --rcfile=.pylintrc --module-rgx=.+ src"
+pylint = "pylint src"
