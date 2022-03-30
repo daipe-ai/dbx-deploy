@@ -416,3 +416,19 @@ services:
       - '@consolebundle.logger'
     tags:
       - 'console.command'
+
+  dbxdeploy.deploy.RunJobCommand:
+    arguments:
+      - '@consolebundle.logger'
+      - '@dbxdeploy.utils.DatabricksClient'
+    tags:
+      - 'console.command'
+
+  dbxdeploy.deploy.FollowRunCommand:
+    arguments:
+      - '@consolebundle.logger'
+      - '@dbxdeploy.utils.DatabricksClient'
+      - 20
+      - 1800
+    tags:
+      - 'console.command'
