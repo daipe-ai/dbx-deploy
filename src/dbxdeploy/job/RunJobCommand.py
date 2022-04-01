@@ -57,12 +57,11 @@ class RunJobCommand(ConsoleCommand):
 
     def __follow_run(self, run: Dict):
         run_id = run["run_id"]
-
         state = self.__job_getter.get_run_state(run_id)
 
         timer = 0
         while "result_state" not in state and timer < self.__time_limit:
-            self.__logger.info(state["life_cycle_state"])
+            self.__logger.info(f"{state['life_cycle_state']} - {run['run_page_url']}")
             time.sleep(self.__refresh_period)
             timer += self.__refresh_period
             state = self.__job_getter.get_run_state(run_id)
