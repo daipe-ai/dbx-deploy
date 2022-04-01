@@ -320,6 +320,15 @@ services:
       - '@consolebundle.logger'
       - '@dbxdeploy.utils.DatabricksClient'
 
+  dbxdeploy.job.RunJobCommand:
+    arguments:
+      - '@consolebundle.logger'
+      - '@dbxdeploy.utils.DatabricksClient'
+      - 'dbxdeploy.databricks.job.refresh_period'
+      - 'dbxdeploy.databricks.job.time_limit'
+    tags:
+      - 'console.command'
+
   dbxdeploy.notebook.CurrentDirectoryUpdater:
     arguments:
       - '@dbxdeploy.target.workspace.base_dir'
@@ -422,21 +431,5 @@ services:
   dbxdeploy.repos.RepoDeleteCommand:
     arguments:
       - '@consolebundle.logger'
-    tags:
-      - 'console.command'
-
-  dbxdeploy.deploy.RunJobCommand:
-    arguments:
-      - '@consolebundle.logger'
-      - '@dbxdeploy.utils.DatabricksClient'
-    tags:
-      - 'console.command'
-
-  dbxdeploy.deploy.FollowRunCommand:
-    arguments:
-      - '@consolebundle.logger'
-      - '@dbxdeploy.utils.DatabricksClient'
-      - 'dbxdeploy.databricks.job.refresh_period'
-      - 'dbxdeploy.databricks.job.time_limit'
     tags:
       - 'console.command'

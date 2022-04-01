@@ -1,14 +1,17 @@
 import sys
 import time
+
 from logging import Logger
 from argparse import Namespace, ArgumentParser
+from typing import Dict
+
 from consolebundle.ConsoleCommand import ConsoleCommand
 
 from dbxdeploy.job.JobGetter import JobGetter
 from dbxdeploy.utils.DatabricksClient import DatabricksClient
 
 
-class FollowRunCommand(ConsoleCommand):
+class RunJobCommand(ConsoleCommand):
     def __init__(
         self,
         logger: Logger,
@@ -25,20 +28,35 @@ class FollowRunCommand(ConsoleCommand):
 
     def configure(self, argument_parser: ArgumentParser):
         argument_parser.add_argument("--job-name", dest="job_name", help="Databricks job name")
+        argument_parser.add_argument("--follow", action="store_true", dest="follow", help="Whether to wait for the run to finish or not")
 
     def get_command(self) -> str:
-        return "dbx:job:follow-run"
+        return "dbx:job:run"
 
     def get_description(self):
-        return "Follow an active job run by job_name"
+        return "Run a job by a name"
 
     def run(self, input_args: Namespace):
         job_name = input_args.job_name
-        run_id = self.__job_getter.get_active_run_id_by_job_name(job_name)
+        self.__logger.info(f"Job name `{job_name}`")
+        job_id = self.__job_getter.get_job_id_by_name(job_name)
 
-        if not run_id:
-            self.__logger.error(f"Active run of the job `{job_name}` doesn't exist")
+        if not job_id:
+            self.__logger.error(f"Job with the name `{job_name}` doesn't exist")
             return
+
+        self.__logger.info("Initiating run...")
+
+        run_init = self.__dbx_api.jobs.run_now(job_id=job_id)
+        run = self.__dbx_api.jobs.get_run(run_id=run_init["run_id"])
+
+        self.__logger.info(f"Run of `{job_name}` running at {run['run_page_url']}")
+
+        if input_args.follow:
+            self.__follow_run(run)
+
+    def __follow_run(self, run: Dict):
+        run_id = run["run_id"]
 
         state = self.__job_getter.get_run_state(run_id)
 
@@ -49,7 +67,10 @@ class FollowRunCommand(ConsoleCommand):
             timer += self.__refresh_period
             state = self.__job_getter.get_run_state(run_id)
 
+        if "result_state" not in state:
+            self.__logger.error(f"Job run {run_id}: {run['run_page_url']} did not finish in time limit.")
+            sys.exit(1)
+
         if not state["result_state"] == "SUCCESS":
-            run = self.__dbx_api.jobs.get_run(run_id=run_id)
             self.__logger.error(f"Job run {run_id}: {run['run_page_url']} was not successful.")
             sys.exit(1)
