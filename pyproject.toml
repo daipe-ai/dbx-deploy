@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dbx-deploy"
-version = "1.4.0a4"
+version = "1.3.2"
 description = "Databricks Deployment Tool"
 readme = "README.md"
 repository = "https://github.com/daipe-ai/dbx-deploy"

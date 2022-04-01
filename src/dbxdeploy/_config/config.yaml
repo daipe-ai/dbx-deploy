@@ -324,8 +324,8 @@ services:
     arguments:
       - '@consolebundle.logger'
       - '@dbxdeploy.utils.DatabricksClient'
-      - 'dbxdeploy.databricks.job.refresh_period'
-      - 'dbxdeploy.databricks.job.time_limit'
+      - '%dbxdeploy.databricks.job.refresh_period%'
+      - '%dbxdeploy.databricks.job.time_limit%'
     tags:
       - 'console.command'
 
