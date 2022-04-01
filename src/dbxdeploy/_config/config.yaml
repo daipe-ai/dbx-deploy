@@ -9,6 +9,9 @@ parameters:
       dev_branch: 'master'
     databricks:
       cluster_id: # deprecated, will be removed in 2.0; use CLI argument to defined cluster_id instead
+      job:
+        refresh_period: 20
+        time_limit: 1800
     source:
       notebooks:
         base_dir: 'src/%daipe.root_module.name%'
@@ -311,6 +314,20 @@ services:
     arguments:
       - '@consolebundle.logger'
       - '@dbxdeploy.utils.DatabricksClient'
+
+  dbxdeploy.job.JobGetter:
+    arguments:
+      - '@consolebundle.logger'
+      - '@dbxdeploy.utils.DatabricksClient'
+
+  dbxdeploy.job.RunJobCommand:
+    arguments:
+      - '@consolebundle.logger'
+      - '@dbxdeploy.utils.DatabricksClient'
+      - '%dbxdeploy.databricks.job.refresh_period%'
+      - '%dbxdeploy.databricks.job.time_limit%'
+    tags:
+      - 'console.command'
 
   dbxdeploy.notebook.CurrentDirectoryUpdater:
     arguments:
