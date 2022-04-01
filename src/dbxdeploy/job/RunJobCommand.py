@@ -28,7 +28,14 @@ class RunJobCommand(ConsoleCommand):
 
     def configure(self, argument_parser: ArgumentParser):
         argument_parser.add_argument("--job-name", dest="job_name", help="Databricks job name")
-        argument_parser.add_argument("--follow", action="store_true", dest="follow", help="Whether to wait for the run to finish or not")
+        argument_parser.add_argument("--wait", action="store_true", dest="wait", help="Whether to wait for the run to finish or not")
+        argument_parser.add_argument(
+            "--time-limit",
+            dest="time_limit",
+            default=self.__time_limit,
+            type=int,
+            help="How long to wait for the run to finish, default from config",
+        )
 
     def get_command(self) -> str:
         return "dbx:job:run"
@@ -52,15 +59,15 @@ class RunJobCommand(ConsoleCommand):
 
         self.__logger.info(f"Run of `{job_name}` running at {run['run_page_url']}")
 
-        if input_args.follow:
-            self.__follow_run(run)
+        if input_args.wait:
+            self.__wait_for_run_to_finish(run, input_args.time_limit)
 
-    def __follow_run(self, run: Dict):
+    def __wait_for_run_to_finish(self, run: Dict, time_limit: int):
         run_id = run["run_id"]
         state = self.__job_getter.get_run_state(run_id)
 
         timer = 0
-        while "result_state" not in state and timer < self.__time_limit:
+        while "result_state" not in state and timer < time_limit:
             self.__logger.info(f"{state['life_cycle_state']} - {run['run_page_url']}")
             time.sleep(self.__refresh_period)
             timer += self.__refresh_period
