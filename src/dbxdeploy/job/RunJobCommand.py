@@ -66,17 +66,33 @@ class RunJobCommand(ConsoleCommand):
         run_id = run["run_id"]
         state = self.__job_getter.get_run_state(run_id)
 
+        def is_finished(state: Dict) -> bool:
+            return "result_state" in state or state["life_cycle_state"] == "SKIPPED"
+
         timer = 0
-        while "result_state" not in state and timer < time_limit:
+        while not is_finished(state) and timer < time_limit:
             self.__logger.info(f"{state['life_cycle_state']} - {run['run_page_url']}")
             time.sleep(self.__refresh_period)
             timer += self.__refresh_period
             state = self.__job_getter.get_run_state(run_id)
 
-        if "result_state" not in state:
-            self.__logger.error(f"Job run {run_id}: {run['run_page_url']} did not finish in time limit.")
-            sys.exit(1)
+        def is_success(state: Dict) -> bool:
+            return "result_state" in state and state["result_state"] == "SUCCESS"
 
-        if not state["result_state"] == "SUCCESS":
-            self.__logger.error(f"Job run {run_id}: {run['run_page_url']} was not successful.")
-            sys.exit(1)
+        if not is_success(state):
+            self.__handle_fail(run, state)
+
+    def __handle_fail(self, run: Dict, state: Dict):
+        def log(run: Dict):
+            return f"Job run {run['run_id']}: {run['run_page_url']}"
+
+        if state["life_cycle_state"] == "SKIPPED":
+            self.__logger.error(f"{log(run)} was skipped")
+        elif "result_state" not in state:
+            self.__logger.error(f"{log(run)} did not finish in time limit")
+        elif not state["result_state"] == "SUCCESS":
+            self.__logger.error(f"{log(run)} was not successful")
+        else:
+            self.__logger.error(f"{log(run)} failed due to unknown error:\n{state}")
+
+        sys.exit(1)
