@@ -187,8 +187,6 @@ services:
       - '@dbxdeploy.deploy.working_dir'
 
   dbxdeploy.git.CurrentBranchResolver:
-
-  dbxdeploy.git.CurrentRepositoryFactory:
     arguments:
       - '@dbxdeploy.deploy.working_dir'
 
